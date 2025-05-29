@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
+    <title>Confirm Your Email - Kikapu Marketplace</title>
+    <style>
+        :root {
+            color-scheme: light;
+        }
+        @media (max-width: 600px) {
+            .container { width: 100% !important; padding: 20px !important; }
+            .content { padding: 20px !important; }
+            .header { padding: 30px 20px !important; }
+            .button { padding: 12px 30px !important; }
+            h1 { font-size: 24px !important; }
+            h2 { font-size: 20px !important; }
+            p { font-size: 14px !important; }
+        }
+        @media (prefers-color-scheme: dark) {
+            .email-background { background-color: #1a1a1a !important; }
+            .email-container { background-color: #2d2d2d !important; }
+            .content { background-color: #2d2d2d !important; }
+            h1, h2 { color: #ffffff !important; }
+            p { color: #e0e0e0 !important; }
+            .footer { background-color: #252525 !important; }
+            .social-link { color: #E08D35 !important; }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f7fa;" class="email-background">
+    {% autoescape off %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+        <tr>
+            <td align="center" style="padding: 40px 0;">
+                <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #FDF5E6; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);" class="email-container">
+                    <!-- Header with Progress Indicator -->
+                    <tr>
+                        <td align="center" style="background-color: #E08D35; padding: 40px 20px; border-radius: 8px 8px 0 0;" class="header">
+                            <img src="{{ protocol }}://{{ domain }}{% static 'images/lgo.png' %}" 
+                                 alt="Kikapu Logo" 
+                                 style="max-width: 180px; height: auto; margin-bottom: 20px;"
+                                 width="180">
+                            <div style="margin: 20px 0;">
+                                <table width="70%" cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
+                                    <tr>
+                                        <td align="center" width="33%">
+                                            <div style="background: #FDF5E6; color: #E08D35; width: 30px; height: 30px; line-height: 30px; border-radius: 50%; font-weight: bold;">✓</div>
+                                            <p style="color: #FDF5E6; font-size: 12px; margin: 5px 0;">Register</p>
+                                        </td>
+                                        <td align="center" width="33%">
+                                            <div style="background: #FDF5E6; color: #E08D35; width: 30px; height: 30px; line-height: 30px; border-radius: 50%; font-weight: bold;">2</div>
+                                            <p style="color: #FDF5E6; font-size: 12px; margin: 5px 0;">Verify Email</p>
+                                        </td>
+                                        <td align="center" width="33%">
+                                            <div style="background: rgba(253, 245, 230, 0.5); color: #FDF5E6; width: 30px; height: 30px; line-height: 30px; border-radius: 50%;">3</div>
+                                            <p style="color: #FDF5E6; font-size: 12px; margin: 5px 0;">Complete Profile</p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <h1 style="color: #FDF5E6; margin: 20px 0 0; font-size: 28px; font-weight: 700;">Welcome to Kikapu!</h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Content -->
+                    <tr>
+                        <td align="center" style="padding: 40px 30px;">
+                            <h2 style="color: #2d3748; margin: 0 0 20px; font-size: 24px;">Hi {{ user.username }},</h2>
+                            <p style="color: #718096; font-size: 16px; line-height: 1.6; margin-bottom: 25px;">
+                                Thank you for joining our marketplace community! To start exploring and trading on Kikapu, please verify your email address by clicking the button below:
+                            </p>
+                            
+                            <!-- Button -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td align="center" style="padding: 20px 0;">
+                                        <a href="{{ protocol }}://{{ domain }}{% url 'activate' uidb64=uid token=token %}" 
+                                           style="background-color: #E08D35; color: #FDF5E6; text-decoration: none; padding: 15px 40px; border-radius: 50px; font-weight: 600; font-size: 16px; display: inline-block;">
+                                            Verify My Email
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Fallback Link -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8f9fa; margin: 20px 0; border-radius: 8px;">
+                                <tr>
+                                    <td style="padding: 15px;">
+                                        <p style="font-size: 13px; margin: 0; color: #718096;">
+                                            Button not working? Copy and paste this link:<br>
+                                            <span style="color: #E08D35; word-break: break-all;">
+                                                {{ protocol }}://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+                                            </span>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Enhanced Footer -->
+                    <tr>
+                        <td style="background-color: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; border-top: 1px solid rgba(137, 97, 58, 0.1);" class="footer">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                                <tr>
+                                    <td align="center" style="padding-bottom: 20px;">
+                                        <table width="250" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                                            <tr>
+                                                <td align="center">
+                                                    <img src="{{ protocol }}://{{ domain }}{% static 'images/email-security.png' %}" 
+                                                         alt="Security Icon" 
+                                                         width="24" 
+                                                         style="margin-bottom: 10px;">
+                                                    <p style="color: #718096; font-size: 12px; margin: 0;">
+                                                        This is a secure email from Kikapu.<br>Link expires in 24 hours.
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        <div style="margin: 20px 0;">
+                                            <a href="https://facebook.com/kikapu" style="color: #E08D35; text-decoration: none; margin: 0 12px; font-weight: 500;" class="social-link">Facebook</a>
+                                            <a href="https://twitter.com/kikapu" style="color: #E08D35; text-decoration: none; margin: 0 12px; font-weight: 500;" class="social-link">Twitter</a>
+                                            <a href="https://instagram.com/kikapu" style="color: #E08D35; text-decoration: none; margin: 0 12px; font-weight: 500;" class="social-link">Instagram</a>
+                                        </div>
+                                        <p style="color: #718096; font-size: 12px; margin: 5px 0;">
+                                            © {% now "Y" %} Kikapu. All rights reserved.<br>
+                                            00100 Nairobi, Kenya
+                                        </p>
+                                        <p style="color: #718096; font-size: 12px; margin: 15px 0 0;">
+                                            Questions? Email us at 
+                                            <a href="mailto:support@kikapu.com" style="color: #E08D35; text-decoration: none; font-weight: 500;">support@kikapu.com</a>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    {% endautoescape %}
+</body>
+</html>

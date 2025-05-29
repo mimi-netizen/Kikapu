@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Registration Successful - Kikapu Marketplace{% endblock %}
+
+{% block meta_description %}Thank you for registering with Kikapu Marketplace. Please check your email to activate your account.{% endblock %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/success.css' %}">
+<meta property="og:title" content="Registration Successful - Kikapu Marketplace">
+<meta property="og:description" content="Thank you for registering with Kikapu. Please check your email to activate your account.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:image" content="{% static 'images/kikapu-social.png' %}">
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .success-section {
+        padding-top: 140px;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #FDF5E6 0%, #f5f7fa 100%);
+    }
+
+    .success-card {
+        background: #fff;
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .success-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, #E08D35 0%, #b08654 100%);
+    }
+
+    .success-icon {
+        width: 90px;
+        height: 90px;
+        background: rgba(137, 97, 58, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem;
+    }
+
+    .success-icon i {
+        font-size: 40px;
+        color: #E08D35;
+    }
+
+    .success-title {
+        color: #2d3748;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+
+    .success-message {
+        color: #4a5568;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+
+    .alert-custom {
+        background: rgba(137, 97, 58, 0.1);
+        border: none;
+        border-left: 4px solid #E08D35;
+        color: #4a5568;
+        padding: 1rem;
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+    }
+
+    .btn-resend {
+        background: linear-gradient(90deg, #E08D35 0%, #b08654 100%);
+        color: #fff;
+        border: none;
+        padding: 0.8rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-resend:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(137, 97, 58, 0.2);
+        color: #fff;
+    }
+
+    .btn-login {
+        background: transparent;
+        color: #E08D35;
+        border: 2px solid #E08D35;
+        padding: 0.8rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-login:hover {
+        background: rgba(137, 97, 58, 0.1);
+        color: #E08D35;
+    }
+
+    .support-link {
+        color: #E08D35;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+
+    .support-link:hover {
+        color: #b08654;
+        text-decoration: none;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        .success-section {
+            padding-top: 100px;
+            padding-bottom: 40px;
+        }
+
+        .success-card {
+            margin: 0 15px;
+        }
+
+        .success-title {
+            font-size: 1.5rem;
+        }
+
+        .success-message {
+            font-size: 1rem;
+        }
+
+        .success-icon {
+            width: 70px;
+            height: 70px;
+        }
+
+        .success-icon i {
+            font-size: 30px;
+        }
+
+        .btn-resend, .btn-login {
+            width: 100%;
+            margin-bottom: 0.5rem;
+            padding: 0.7rem 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="bg-light">
+  <div class="container py-2">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'register' %}">Register</a></li>
+      <li class="breadcrumb-item active">Success</li>
+    </ol>
+  </div>
+</nav>
+
+<section class="success-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8 col-sm-11">
+                <div class="success-card animate__animated animate__fadeInUp">
+                    <div class="progress-indicator">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 100%"></div>
+                        </div>
+                        <div class="steps">
+                            <div class="step completed"><i class="fas fa-user-plus"></i></div>
+                            <div class="step completed"><i class="fas fa-check-circle"></i></div>
+                            <div class="step active"><i class="fas fa-envelope"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-5 text-center">
+                        <div class="success-icon animate__animated animate__bounceIn animate__delay-1s">
+                            <i class="fas fa-envelope-open-text"></i>
+                        </div>
+
+                        <h1 class="success-title animate__animated animate__fadeInUp animate__delay-1s">
+                            Welcome to Kikapu!
+                        </h1>
+                        
+                        <p class="success-message animate__animated animate__fadeInUp animate__delay-1s">
+                            Thank you for joining Kikapu Marketplace. We've sent an activation link to:
+                            <strong class="email-highlight">{{ email }}</strong>
+                        </p>
+
+                        <div class="alert alert-custom animate__animated animate__fadeInUp animate__delay-1s">
+                            <div class="alert-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="alert-content">
+                                <h4>Next Steps:</h4>
+                                <ol class="steps-list">
+                                    <li>Check your email inbox</li>
+                                    <li>Click the activation link</li>
+                                    <li>Complete your profile</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <div class="timer-section animate__animated animate__fadeInUp animate__delay-1s">
+                            <p>Email should arrive in:</p>
+                            <div id="emailTimer" class="countdown">02:00</div>
+                        </div>
+
+                        <div class="action-buttons animate__animated animate__fadeInUp animate__delay-2s">
+                            <form method="post" action="{% url 'resend_activation' %}" class="resend-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="email" value="{{ email }}">
+                                <button type="submit" class="btn btn-resend" id="resendButton" disabled>
+                                    <i class="fas fa-redo me-2"></i>Resend Email
+                                    <span class="countdown-text"></span>
+                                </button>
+                            </form>
+                            <a href="{% url 'login' %}" class="btn btn-login">
+                                <i class="fas fa-sign-in-alt me-2"></i>Go to Login
+                            </a>
+                        </div>
+
+                        <div class="support-section mt-4 animate__animated animate__fadeInUp animate__delay-2s">
+                            <p class="mb-2">Didn't receive the email? Try these steps:</p>
+                            <ul class="troubleshooting-list">
+                                <li>Check your spam/junk folder</li>
+                                <li>Make sure {{ email }} is correct</li>
+                                <li><a href="{% url 'contact' %}" class="support-link">Contact our support team</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const resendButton = document.getElementById('resendButton');
+    const timerDisplay = document.getElementById('emailTimer');
+    let timeLeft = 120; // 2 minutes
+
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        if (timeLeft === 0) {
+            resendButton.disabled = false;
+            resendButton.querySelector('.countdown-text').textContent = '';
+            clearInterval(timerInterval);
+            timerDisplay.parentElement.style.display = 'none';
+        } else {
+            timeLeft--;
+        }
+    }
+
+    const timerInterval = setInterval(updateTimer, 1000);
+    updateTimer();
+
+    // Add loading state to resend button when clicked
+    document.querySelector('.resend-form').addEventListener('submit', function() {
+        resendButton.disabled = true;
+        resendButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sending...';
+    });
+});
+</script>
+{% endblock %}

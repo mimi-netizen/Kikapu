@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login to Kikapu - Buy & Sell in Kenya{% endblock %}
+
+{% block meta_description %}Login to your Kikapu account. Kenya's trusted marketplace for buying and selling. Secure and easy access to your account.{% endblock %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+<meta property="og:title" content="Sign In - Kikapu Marketplace">
+<meta property="og:description" content="Access your Kikapu account to start trading.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:image" content="{% static 'images/kikapu-social.png' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="bg-light">
+  <div class="container py-2">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+      <li class="breadcrumb-item active">Login</li>
+    </ol>
+  </div>
+</nav>
+
+<section class="login-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-8 col-sm-10">
+                <div class="login-container animate__animated animate__fadeInUp">
+                    <div class="auth-header text-center">
+                        <h1 class="login-title">Login to Your Account</h1>
+                    </div>
+
+                    <!-- Alert Messages -->
+                    {% if messages %}
+                        <div class="messages-container">
+                            {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show animate__animated animate__fadeInDown">
+                                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %} me-2"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <form method="POST" novalidate id="loginForm" class="needs-validation">
+                        {% csrf_token %}
+                        
+                        <!-- Email Field -->
+                        <div class="form-group mb-4">
+                            <label for="email" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                <input type="email" 
+                                       name="email" 
+                                       id="email" 
+                                       class="form-control" 
+                                       placeholder="Enter your email"
+                                       required
+                                       autocomplete="email"
+                                       autofocus>
+                            </div>
+                            <div class="invalid-feedback">
+                                Please enter your email address
+                            </div>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="form-group mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                <input type="password" 
+                                       name="password" 
+                                       id="password" 
+                                       class="form-control" 
+                                       placeholder="Enter your password"
+                                       required>
+                                <button type="button" 
+                                        class="btn btn-outline-secondary toggle-password" 
+                                        aria-label="Toggle password visibility">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Remember Me & Forgot Password -->
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                                <label class="form-check-label" for="remember">Keep me logged in</label>
+                            </div>
+                            <a href="{% url 'reset_password' %}" class="forgot-link">Forgot Password?</a>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-login w-100">
+                            <span class="spinner-border spinner-border-sm me-2 d-none" role="status"></span>
+                            Login
+                        </button>
+
+                        <!-- Register Link -->
+                        <div class="text-center mt-4">
+                            <p class="mb-0">Don't have an account? 
+                                <a href="{% url 'register' %}" class="register-link">Create Account</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Security Info -->
+                <div class="security-info mt-4">
+                    <div class="row g-3">
+                        <div class="col-4">
+                            <div class="security-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Secure Login</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="security-item">
+                                <i class="fas fa-user-shield"></i>
+                                <span>Privacy Protected</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="security-item">
+                                <i class="fas fa-headset"></i>
+                                <span>Support Available</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('loginForm');
+
+    // Toggle password visibility
+    const toggleButton = document.querySelector('.toggle-password');
+    if (toggleButton) {
+        toggleButton.addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        });
+    }
+
+    // Form submission handler
+    form.addEventListener('submit', function(e) {
+        if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const spinner = submitBtn.querySelector('.spinner-border');
+        
+        submitBtn.disabled = true;
+        spinner.classList.remove('d-none');
+    });
+});
+</script>
+{% endblock %}

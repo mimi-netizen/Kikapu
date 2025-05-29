@@ -1,0 +1,380 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/seller-store.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid py-5" style="margin-top: 80px;">
+    <!-- Store Header -->
+    <div class="container mb-5">
+        <div class="row">
+            <div class="col-md-4 text-center">
+                {% if seller.profile_pic %}
+                    <img src="{{ seller.profile_pic.url }}" alt="{{ seller.store_name }}" 
+                         class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                {% else %}
+                    <img src="{% static 'img/default-profile.png' %}" alt="Default Profile" 
+                         class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                {% endif %}
+            </div>
+            <div class="col-md-8">
+                <h1 class="mb-2">{{ seller.store_name|default:seller.user.username }}'s Store</h1>
+                <p class="text-muted mb-3">{{ seller.store_description|default:"No store description available." }}</p>
+                
+                <!-- Store Stats -->
+                <div class="row g-3 mb-4">
+                    <div class="col-auto">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <h3 class="mb-0">{{ stats.total_ads }}</h3>
+                                <small class="text-muted">Total Ads</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <h3 class="mb-0">{{ stats.rating|floatformat:1 }}</h3>
+                                <small class="text-muted">Rating</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <h3 class="mb-0">{{ stats.followers_count }}</h3>
+                                <small class="text-muted">Followers</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Follow Button -->
+                {% if user.is_authenticated and user != seller.user %}
+                    <button id="followButton" class="btn btn-outline-primary mb-3 me-2">
+                        <i class="fas fa-user-plus me-1"></i>
+                        <span id="followText">
+                            {% if user.profile in seller.followers.all %}
+                                Unfollow
+                            {% else %}
+                                Follow
+                            {% endif %}
+                        </span>
+                    </button>
+                
+
+                <!-- Rate Seller Button -->
+                {% if user.is_authenticated and user != seller.user %}
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#rateSellerModal">
+        <i class="fas fa-star me-1"></i> Rate Seller
+    </button>
+
+    <!-- Message Seller Button -->
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#messageModal">
+        <i class="fas fa-envelope me-1"></i> Message Seller
+    </button>
+{% endif %}
+
+               
+
+                <!-- Contact & Business Hours -->
+                <div class="mb-4">
+                    <p><i class="fas fa-clock me-2"></i>{{ seller.business_hours|default:"Business hours not specified" }}</p>
+                    <p><i class="fas fa-phone me-2"></i>{{ seller.phone_number }}</p>
+                    {% if seller.whatsapp_number %}
+                        <a href="https://wa.me/{{ seller.whatsapp_number }}" class="btn btn-success btn-sm">
+                            <i class="fab fa-whatsapp me-1"></i> WhatsApp
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Store Content -->
+    <div class="container">
+        <div class="row">
+            <!-- Filters Sidebar -->
+            <div class="col-md-3">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Search Store</h5>
+                        <form method="GET" action="">
+                            <div class="mb-3">
+                                <input type="text" name="search" class="form-control" 
+                                       placeholder="Search in store..." value="{{ search_query }}">
+                            </div>
+                            
+                            <h6 class="mb-2">Categories</h6>
+                            <div class="nav flex-column">
+                                <a href="?{% if search_query %}search={{ search_query }}&{% endif %}" 
+                                   class="nav-link {% if not current_category %}active{% endif %}">
+                                    All Categories
+                                </a>
+                                {% for category in all_categories %}
+                                    <a href="?category={{ category.slug }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                                       class="nav-link {% if current_category == category.slug %}active{% endif %}">
+                                        {{ category.category_name }} ({{ category.ad_set.count }})
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="col-md-9">
+    <div class="row g-4">
+        {% for ad in seller_ads %}
+            <div class="col-md-4 mb-4">
+                <div class="card product-card h-100">
+                    <div class="product-image">
+                        {% if ad.images.first %}
+                            <img src="{{ ad.images.first.image.url }}" alt="{{ ad.title }}" class="card-img-top">
+                        {% else %}
+                            <img src="{% static 'img/no-image.png' %}" class="card-img-top" alt="No Image">
+                        {% endif %}
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title product-title">{{ ad.title }}</h5>
+                        <p class="card-text product-description">
+                            {{ ad.description|striptags|truncatewords:15 }}
+                        </p>
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="price">Ksh {{ ad.price|intcomma }}</span>
+                                <a href="{% url 'ads:ads-detail' ad.id %}" class="btn btn-outline-primary btn-sm">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5">
+                <h3 class="text-muted">No ads available</h3>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+$(document).ready(function() {
+    // Remove any existing initialization code and replace with this
+
+    // Handle modal triggers
+    $('.btn[data-toggle="modal"]').click(function() {
+        var targetModal = $($(this).data('target'));
+        targetModal.modal('show');
+    });
+
+    // Handle rate seller form submission
+    $('#rateSellerModal form').on('submit', function(e) {
+        e.preventDefault();
+        
+        if (!$('input[name="rating"]:checked').val()) {
+            alert('Please select a rating');
+            return;
+        }
+
+        var form = $(this);
+        var url = form.attr('action');
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                $('#rateSellerModal').modal('hide');
+                location.reload();
+            },
+            error: function(xhr, errmsg, err) {
+                alert('An error occurred. Please try again.');
+            }
+        });
+    });
+
+    // Handle message form submission
+    $('#messageModal form').on('submit', function(e) {
+        e.preventDefault();
+        
+        var form = $(this);
+        var url = form.attr('action');
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                $('#messageModal').modal('hide');
+                form[0].reset();
+                alert('Message sent successfully!');
+            },
+            error: function(xhr, errmsg, err) {
+                alert('An error occurred. Please try again.');
+            }
+        });
+    });
+
+    // Rest of your existing follow button code
+    document.addEventListener('DOMContentLoaded', function() {
+
+    
+    
+    const followButton = document.getElementById('followButton');
+    if (followButton) {
+        followButton.addEventListener('click', function() {
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            fetch('{% url "profiles:toggle-follow" seller.id %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    // Update followers count in the stats card
+                    const followersCountElement = document.querySelector('.card-body h3');
+                    if (followersCountElement) {
+                        followersCountElement.textContent = data.followers_count;
+                    }
+                    
+                    // Update button text
+                    const followText = document.getElementById('followText');
+                    followText.textContent = data.is_following ? 'Unfollow' : 'Follow';
+                } else {
+                    alert(data.error || 'An error occurred');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while processing your request.');
+            });
+        });
+    }
+
+
+});
+
+});
+
+</script>
+
+{% endblock %}
+
+{# Place the modal markup here, directly as a child of body #}
+<div class="modal fade" id="rateSellerModal" tabindex="-1" role="dialog" aria-labelledby="rateSellerModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rateSellerModalLabel">Rate {{ seller.store_name|default:seller.user.username }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{% url 'profiles:rate_seller' seller.id %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Rating</label>
+                        <div class="star-rating">
+                            <input type="radio" name="rating" value="5" id="rate5" required>
+                            <label for="rate5">★</label>
+                            <input type="radio" name="rating" value="4" id="rate4">
+                            <label for="rate4">★</label>
+                            <input type="radio" name="rating" value="3" id="rate3">
+                            <label for="rate3">★</label>
+                            <input type="radio" name="rating" value="2" id="rate2">
+                            <label for="rate2">★</label>
+                            <input type="radio" name="rating" value="1" id="rate1">
+                            <label for="rate1">★</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Comment</label>
+                        <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit Rating</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Message Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="messageModalLabel">Send Message to {{ seller.user.username }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="POST" action="{% url 'ads:send-message' seller.user.id %}">
+        {% csrf_token %}
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="message">Your Message</label>
+            <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Send Message</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Message Login Prompt Modal -->
+<div class="modal fade" id="messageLoginPromptModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-body text-center p-5">
+        <div class="animate__animated animate__bounceIn">
+          <div class="display-1 mb-3">💌</div>
+          <h3 class="mb-4">Want to Message the Seller?</h3>
+          <p class="mb-4">To send messages to sellers, you'll need to be part of our community! Join us today and start connecting with sellers.</p>
+          <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary btn-lg animate__animated animate__pulse animate__infinite">
+              <i class="fas fa-sign-in-alt me-2"></i> Login
+            </a>
+            <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg">
+              <i class="fas fa-user-plus me-2"></i> Register
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="page-header" style="background: url({% static 'img/banner1.jpg' %});">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="breadcrumb-wrapper">
+          <h2 class="product-title">My Favorites</h2>
+          <ol class="breadcrumb">
+            <li><a href="#">Home /</a></li>
+            <li class="current">My Favorites</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page Header End -->
+
+<!-- Start Content -->
+<div id="content" class="section-padding">
+  <div class="container">
+    <div class="row">
+      <!-- Account Sidebar -->
+      <div class="col-lg-3 col-md-12 mb-4">
+        {% include 'profiles/account-sidebar.html' %}
+      </div>
+      <!-- Account Sidebar -->
+      <div class="col-sm-12 col-md-12 col-lg-9">
+        <div class="page-content">
+          <div class="inner-box">
+            <div class="dashboard-box">
+              <h2 class="dashbord-title">My Favourites ({{ bookmarks_count }})</h2>
+            </div>
+            <div class="dashboard-wrapper">
+              {% if bookmarked_ads %}
+              <div class="table-responsive">
+                <table class="table dashboardtable tablemyads">
+                  <thead>
+                    <tr>
+                      <th>Photo</th>
+                      <th>Title</th>
+                      <th class="d-none d-md-table-cell">Category</th>
+                      <th class="d-none d-sm-table-cell">Price</th>
+                      <th class="d-none d-md-table-cell">Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for ad in bookmarked_ads %}
+                    <tr>
+                      <td class="photo">
+                        {% if ad.images.first %}
+                          <img class="img-fluid" src="{{ ad.images.first.image.url }}" alt="{{ ad.title }}"
+                               style="max-width: 100px; height: auto;">
+                        {% else %}
+                          <img class="img-fluid" src="{% static 'img/default-ad.jpg' %}" alt="No image"
+                               style="max-width: 100px; height: auto;">
+                        {% endif %}
+                      </td>
+                      <td data-title="Title">
+                        <h3 class="ad-title">{{ ad.title }}</h3>
+                        <span class="ad-id d-block d-sm-none">Ad ID: {{ ad.id }}</span>
+                        <span class="price d-block d-sm-none">Ksh {{ ad.price|intcomma }}</span>
+                      </td>
+                      <td data-title="Category" class="d-none d-md-table-cell">
+                        <span class="adcategories">{{ ad.category.category }}</span>
+                      </td>
+                      <td data-title="Price" class="d-none d-sm-table-cell">
+                        <h3>Ksh {{ ad.price|intcomma }}</h3>
+                      </td>
+                      <td data-title="Status" class="d-none d-md-table-cell">
+                        {% if ad.is_sold %}
+                          <span class="adstatus adstatussold">Sold</span>
+                        {% elif not ad.is_active %}
+                          <span class="adstatus adstatusexpired">Expired</span>
+                        {% else %}
+                          <span class="adstatus adstatusactive">Active</span>
+                        {% endif %}
+                      </td>
+                      <td data-title="Action">
+                        <div class="btns-actions">
+                          <a class="btn-action btn-view" href="{% url 'ads:ads-detail' ad.id %}">
+                            <i class="lni-eye"></i>
+                          </a>
+                          <a class="btn-action btn-delete bookmark-toggle" href="#" data-ad-id="{{ ad.id }}">
+                            <i class="lni-trash"></i>
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% else %}
+              <div class="alert alert-info text-center">
+                <p>You haven't saved any ads to your favorites yet.</p>
+                <a href="{% url 'ads:ads-listing' %}" class="btn btn-common mt-3">Browse Ads</a>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Content -->
+{% endblock content %}
+
+<style>
+/* Responsive styles */
+@media (max-width: 767px) {
+  .table-responsive {
+    border: 0;
+  }
+  
+  .dashboardtable tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+  }
+  
+  .dashboardtable td {
+    display: block;
+    text-align: right;
+    padding: .75rem;
+    position: relative;
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  .dashboardtable td:last-child {
+    border-bottom: 0;
+  }
+  
+  .dashboardtable td:before {
+    content: attr(data-title);
+    float: left;
+    font-weight: bold;
+  }
+  
+  .ad-title {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .photo {
+    text-align: center !important;
+  }
+  
+  .photo img {
+    max-width: 150px;
+  }
+  
+  .btns-actions {
+    justify-content: flex-end;
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+/* General styles */
+.btn-action {
+  padding: 0.375rem 0.75rem;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-view {
+  background-color: #236267;
+  color: white;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-action:hover {
+  opacity: 0.85;
+  color: white;
+}
+
+.adstatus {
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.875rem;
+}
+
+.adstatusactive {
+  background-color: #28a745;
+  color: white;
+}
+
+.adstatussold {
+  background-color: #dc3545;
+  color: white;
+}
+
+.adstatusexpired {
+  background-color: #1c4e52;
+  color: white;
+}
+
+.inner-box {
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.dashboard-box {
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.dashboard-wrapper {
+  padding: 1rem;
+}
+</style>

@@ -1,0 +1,262 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/footer.css' %}">
+
+<style>
+  /* Footer Responsive Styles */
+  @media (max-width: 768px) {
+    .footer-Content {
+      padding: 40px 15px; /* Added horizontal padding */
+    }
+
+    .footer-Content .widget {
+      margin-bottom: 30px;
+    }
+
+    .footer-logo img {
+      width: 150px;
+      margin-bottom: 15px;
+    }
+
+    .textwidget p {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .media-content-list li {
+      margin-bottom: 15px;
+    }
+
+    .media-content-list .media-left {
+      width: 70px;
+      height: 55px;
+    }
+
+    .media-content-list .media-body {
+      margin-left: 80px;
+    }
+
+    .media-content-list .media-body h4 {
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .block-title {
+      font-size: 18px;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+    }
+
+    .footer-social {
+      margin-top: 15px;
+    }
+
+    .footer-social li {
+      margin-right: 8px;
+    }
+
+    .footer-social li a {
+      width: 28px;
+      height: 28px;
+      line-height: 28px;
+      font-size: 14px;
+    }
+
+    #copyright {
+      text-align: center;
+      padding: 15px;  /* Added horizontal padding */
+    }
+
+    #copyright .site-info {
+      float: none !important;
+      margin-bottom: 10px;
+    }
+
+    #copyright .float-right {
+      float: none !important;
+      text-align: center;
+    }
+
+    #copyright p {
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .footer-logo {
+      display: none;
+    }
+    
+    /* Add container padding for small screens */
+    .container {
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .footer-Content {
+      padding: 30px 15px;  /* Kept horizontal padding */
+    }
+
+    .footer-Content [class*="col-"] {
+      margin-bottom: 30px;
+      padding-left: 15px;  /* Added column padding */
+      padding-right: 15px;  /* Added column padding */
+    }
+
+    .footer-Content [class*="col-"]:last-child {
+      margin-bottom: 0;
+    }
+
+    .block-title {
+      font-size: 16px;
+    }
+
+    .media-content-list .media-left {
+      width: 60px;
+      height: 45px;
+    }
+
+    .media-content-list .media-body h4 {
+      font-size: 12px;
+      line-height: 16px;
+    }
+
+    .footer-social li {
+      margin-right: 5px;
+    }
+
+    .footer-social li a {
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
+      font-size: 12px;
+    }
+    
+    /* Fix container width for very small screens */
+    .container {
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+</style>
+
+<!-- Footer Section Start -->
+<footer itemscope itemtype="http://schema.org/WPFooter" role="contentinfo">
+    <section class="footer-Content">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6 col-mb-12">
+            <div class="widget" itemscope itemtype="http://schema.org/Organization">
+              <h3 class="footer-logo d-none d-lg-block">
+                <img itemprop="logo" src="{% static 'images/lgo.png' %}" alt="Kikapu Marketplace Logo">
+              </h3>
+              <div class="textwidget">
+                <p itemprop="description">Buy And Sell Everything From Vehicles, Animal feeds, Merchandise Or Search up Land, Guide Jobs And More</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6 col-mb-12">
+            <nav class="widget" aria-label="Latest Advertisements">
+              <h3 class="block-title">Latest Ads</h3>
+              <ul class="media-content-list" role="list">
+                {% for ad in footer_recent_ads %}
+                <li itemscope itemtype="http://schema.org/Product">
+                  <div class="media-left">
+                    {% for img in ad.images.all %}
+                    <img itemprop="image" class="img-fluid" src="{{ img.image.url }}" alt="{{ ad.title }}">
+                    {% endfor %}
+                  </div>
+                  <div class="media-body">
+                    <h4 class="post-title"><a href="{% url 'ads:ads-detail' ad.id %}" itemprop="url"><span itemprop="name">{{ ad.title }}</span></a></h4>
+                    <time class="date" datetime="{{ ad.date_created|date:'Y-m-d' }}">{{ ad.date_created|date }}</time>
+                  </div>
+                </li>
+                {% endfor %}
+              </ul>
+            </nav>
+          </div>
+
+          <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6 col-mb-12">
+            <div class="widget">
+              <h3 class="block-title">Help & Support</h3>
+              <ul class="menu">
+                <li><a href="{% url 'terms-of-service' %}">Privacy Policy</a></li>
+                <li><a href="{% url 'faq' %}">FAQ</a></li>
+                <li><a href="{% url 'contact' %}">Contact us</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6 col-mb-12">
+            <div class="widget">
+              <h3 class="block-title">Connect with us</h3>
+              <p class="text-sub">We have years of experience and our agents are avalable to help you 24 hours a day, seven days week.</p>
+              <!-- <form method="post" id="subscribe-form" name="subscribe-form" class="validate">
+                <div class="form-group is-empty">
+                  <input type="email" value="" name="Email" class="form-control" id="EMAIL" placeholder="Email address" required="">
+                  <button type="submit" name="subscribe" id="subscribes" class="btn btn-common sub-btn"><i class="lni-check-box"></i></button>
+                  <div class="clearfix"></div>
+                </div>
+              </form>  -->
+              <ul class="footer-social">
+                <li><a class="facebook" target="blank" href="https://www.facebook.com/"><i class="lni-facebook-filled"></i></a></li>
+                <li><a class="twitter" target="blank" href="https://www.twitter.com/"><i class="lni-twitter-filled"></i></a></li>
+                <li><a class="linkedin" target="blank" href="https://www.linkedin.com/"><i class="lni-linkedin-fill"></i></a></li>
+                <li><a class="google-plus" target="blank" href="https://www.google.com/"><i class="lni-google-plus"></i></a></li>
+              </ul>          
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Footer area End -->
+    
+    <!-- Copyright Start  -->
+    <div id="copyright">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="site-info float-left">
+              <p>&copy; {% now "Y" %} Kikapu - All rights reserved</p>
+            </div>              
+            <div class="float-right"> 
+              <p>Software developed by <a href="https://github.com/mimi-netizen" rel="noopener" target="_blank">Celyne Kydd</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Copyright End -->
+
+  </footer>
+  <!-- Footer Section End --> 
+
+  <!-- Go to Top Link -->
+  <a href="#" class="back-to-top" aria-label="Scroll to top">
+    <i class="lni-chevron-up" aria-hidden="true"></i>
+  </a>
+
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="{% static 'js/jquery-min.js' %}"></script>
+  <script src="{% static 'js/popper.min.js' %}"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'js/jquery.counterup.min.js' %}"></script>
+  <script src="{% static 'js/waypoints.min.js' %}"></script>
+  <script src="{% static 'js/wow.js' %}"></script>
+  <script src="{% static 'js/owl.carousel.min.js' %}"></script>
+  <script src="{% static 'js/nivo-lightbox.js' %}"></script>
+  <script src="{% static 'js/jquery.slicknav.js' %}"></script>
+  <script src="{% static 'js/form-validator.min.js' %}"></script>
+  <script src="{% static 'js/contact-form-script.min.js' %}"></script>
+  <script src="{% static 'js/summernote.js' %}"></script>
+  
+  <script src="https://unpkg.com/filepond/dist/filepond.js"></script>
+  
+  <script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
+
+  <script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
+
+  <script src="{% static 'js/main.js' %}"></script>
+
+</body>
+</html>

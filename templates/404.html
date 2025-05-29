@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="Page not found - Kikapu Marketplace. Browse our latest listings or contact support for assistance." />
+    <meta name="robots" content="noindex,follow" />
+    <link rel="canonical" href="{{ request.build_absolute_uri }}" />
+    
+    <title>Page Not Found - Kikapu Marketplace</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'fonts/line-icons.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/error-page.css' %}" />
+
+    <!-- Structured Data for Better SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "{{ request.scheme }}://{{ request.get_host }}",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ request.scheme }}://{{ request.get_host }}/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+  </head>
+  <body>
+    <div class="error section-padding">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
+            <div class="error-content text-center">
+              <div class="error-message">
+                <h1 class="display-4">Oops! Page Not Found</h1>
+                <p class="lead mb-4">The page you're looking for doesn't exist or has been moved.</p>
+                
+                <!-- Search Box -->
+                <div class="search-box mb-4">
+                  <form method="GET" action="{% url 'ads:ads-search' %}" class="d-flex justify-content-center">
+                    <div class="input-group" style="max-width: 500px;">
+                      <input type="text" name="query" class="form-control" placeholder="Search for items...">
+                      <button class="btn btn-primary" type="submit">
+                        <i class="lni-search"></i> Search
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="quick-links mb-4">
+                  <h4 class="mb-3">Popular Categories</h4>
+                  <div class="d-flex flex-wrap justify-content-center gap-2">
+                    {% for category in popular_categories|slice:":6" %}
+                      <a href="{% url 'ads:category-archive' category.slug %}" class="btn btn-outline-secondary btn-sm">
+                        {{ category.name }}
+                      </a>
+                    {% endfor %}
+                  </div>
+                </div>
+
+                <div class="error-actions">
+                  <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
+                    <i class="lni-home"></i> Back to Home
+                  </a>
+                  <a href="{% url 'contact' %}" class="btn btn-outline-primary btn-lg ms-2">
+                    <i class="lni-support"></i> Contact Support
+                  </a>
+                </div>
+              </div>
+
+              <!-- Related Items -->
+              {% if suggested_items %}
+              <div class="suggested-items mt-5">
+                <h4 class="mb-3">You Might Be Interested In</h4>
+                <div class="row g-4">
+                  {% for item in suggested_items|slice:":4" %}
+                    <div class="col-6 col-md-3">
+                      <div class="card h-100">
+                        <img src="{{ item.images.first.image.url }}" class="card-img-top" alt="{{ item.title }}">
+                        <div class="card-body">
+                          <h5 class="card-title">{{ item.title|truncatechars:40 }}</h5>
+                          <p class="card-text text-primary">Ksh {{ item.price|intcomma }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Track 404 errors with Google Analytics -->
+    <script>
+      if (typeof ga === 'function') {
+        ga('send', {
+          hitType: 'event',
+          eventCategory: 'Error',
+          eventAction: '404 Not Found',
+          eventLabel: window.location.href
+        });
+      }
+    </script>
+    
+    <script src="{% static 'js/jquery-min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  </body>
+</html>

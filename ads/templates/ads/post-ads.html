@@ -1,0 +1,520 @@
+{% extends "base.html" %}
+{% load static %}
+{% load ad_filters %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="{% static 'css/post.css' %}">
+<link href="{% static 'css/ckeditor-content.css' %}" rel="stylesheet">
+
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item active">Post Ad</li>
+        </ol>
+    </nav>
+
+    <!-- Main Form Container -->
+    <div class="product-form-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" class="ads-form">
+            {% csrf_token %}
+            
+            <!-- Product Information Section -->
+            <div class="product-section">
+                <div class="section-title">
+                    <span class="section-number">1</span>
+                    <span class="section-text">Ad Information</span>
+                </div>
+
+                <!-- Image Upload Section -->
+                <div class="image-upload-container">
+                    <div class="image-upload-grid">
+                        <!-- Main Image Upload Box -->
+                        <label class="image-upload-box main-image" for="image-upload-1">
+                            <i class="fas fa-plus"></i>
+                            <span>Add Main Image</span>
+                            <div class="main-image-badge">Main Image</div>
+                            <input type="file" 
+                                   id="image-upload-1" 
+                                   name="images" 
+                                   accept="image/*" 
+                                   style="display: none;">
+                        </label>
+                        <!-- Additional Image Upload Boxes -->
+                        {% for i in '2345'|make_list %}
+                        <label class="image-upload-box" for="image-upload-{{i}}">
+                            <i class="fas fa-plus"></i>
+                            <span>Add Image</span>
+                            <input type="file" 
+                                   id="image-upload-{{i}}" 
+                                   name="images" 
+                                   accept="image/*" 
+                                   style="display: none;">
+                        </label>
+                        {% endfor %}
+                    </div>
+                    <div class="help-text">
+                        <i class="fas fa-info-circle"></i>
+                        Upload up to 5 images. Maximum size per image: 3MB.
+                    </div>
+                </div>
+
+                <!-- Basic Information -->
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <label class="form-label required">Title</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="error-msg mt-2">
+                                {% for error in form.title.errors %}
+                                    <div class="alert alert-danger py-2">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label required">Category</label>
+                        {{ form.category }}
+                        {% if form.category.errors %}{{ form.category.errors }}{% endif %}
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label required">Condition</label>
+                        {{ form.condition }}
+                        {% if form.condition.errors %}{{ form.condition.errors }}{% endif %}
+                    </div>
+                </div>
+
+                <!-- Price and Contact -->
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label required">Price (KES)</label>
+                        {{ form.price }}
+                        {% if form.price.errors %}{{ form.price.errors }}{% endif %}
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label required">Phone Number</label>
+                        {{ form.phone_number }}
+                        {% if form.phone_number.errors %}{{ form.phone_number.errors }}{% endif %}
+                    </div>
+                </div>
+
+                <!-- Location -->
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label required">County</label>
+                        {{ form.county }}
+                        {% if form.county.errors %}{{ form.county.errors }}{% endif %}
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label required">City</label>
+                        {{ form.city }}
+                        {% if form.city.errors %}{{ form.city.errors }}{% endif %}
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <label class="form-label required">Description</label>
+                        <div class="description-help alert alert-info mb-2">
+                            <h6 class="mb-2"><i class="fas fa-lightbulb"></i> Writing Tips:</h6>
+                            <ul class="mb-0">
+                                <li>Be clear and concise</li>
+                                <li>List key features</li>
+                                <li>Include important details</li>
+                                <li>Mention item condition</li>
+                            </ul>
+                        </div>
+                        {{ form.description }}
+                        {% if form.description.errors %}{{ form.description.errors }}{% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bundle Deal Options -->
+            <div class="product-section mt-4">
+                <div class="section-title">
+                    <span class="section-number">2</span>
+                    <span class="section-text">Bundle Deal Options</span>
+                </div>
+                <div class="form-check mb-3">
+                    {{ form.is_bundle_deal }}
+                    <label class="form-check-label" for="{{ form.is_bundle_deal.id_for_label }}">
+                        Enable Bundle Deal
+                    </label>
+                </div>
+                <div class="collapse" id="bundleDealOptions">
+                    <div class="card card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Bundle Price (KES)</label>
+                                {{ form.bundle_price }}
+                                <small class="text-muted">Price per item when bought in bundle</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Minimum Quantity</label>
+                                {{ form.min_bundle_quantity }}
+                                <small class="text-muted">Minimum items required for bundle price</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Details Section -->
+            <div class="product-details-section mt-4">
+                <div class="section-title">
+                    <span class="section-number">2</span>
+                    <span class="section-text">Product Details</span>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-4">
+                            <label class="form-label">Brand</label>
+                            {{ form.brand }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-4">
+                            <label class="form-label">Colour</label>
+                            {{ form.colour }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Clothing Size</label>
+                            {{ form.clothing_size }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Shoe Size</label>
+                            {{ form.shoe_size }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Custom Size</label>
+                            {{ form.custom_size }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group mb-4">
+                            <label class="form-label">Weight (kg)</label>
+                            {{ form.weight }}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-4">
+                            <label class="form-label">Length (cm)</label>
+                            {{ form.length }}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-4">
+                            <label class="form-label">Width (cm)</label>
+                            {{ form.width }}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-4">
+                            <label class="form-label">Height (cm)</label>
+                            {{ form.height }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label class="form-label">Are you open to negotiation?</label>
+                    <div class="d-flex gap-4">
+                        {% for radio in form.negotiable %}
+                            <div class="form-check">
+                                {{ radio }}
+                                <label class="form-check-label" for="{{ radio.id_for_label }}">
+                                    {{ radio.choice_label }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Preview Section -->
+            <div class="product-section mt-4">
+                <div class="section-title">
+                    <span class="section-number">3</span>
+                    <span class="section-text">Ad Preview</span>
+                </div>
+                <div class="ad-preview">
+                    <h3 id="preview-title">Your Ad Title</h3>
+                    <div id="preview-images" class="mb-3">
+                        <img id="main-preview-image" src="" alt="Main image preview" style="display: none; max-width: 100%; height: auto; border-radius: 8px;">
+                    </div>
+                    <div id="preview-description"></div>
+                    <div class="mt-3">
+                        <strong>Price:</strong> <span id="preview-price">KES 0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auto-save Indicator -->
+            <div class="autosave-indicator" style="display: none;">
+                <i class="fas fa-save"></i> Draft saved
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-check"></i> Post Ad
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update image upload preview functionality
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.addEventListener('change', function(e) {
+            const file = this.files[0];
+            if (file) {
+                if (file.size > 3 * 1024 * 1024) {
+                    alert('File size must be less than 3MB');
+                    this.value = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                const parent = input.parentElement;
+                const icon = parent.querySelector('i');
+                const span = parent.querySelector('span');
+
+                reader.onload = function(e) {
+                    if (parent && e.target.result) {
+                        parent.style.backgroundImage = `url(${e.target.result})`;
+                        parent.style.backgroundSize = 'cover';
+                        parent.style.backgroundPosition = 'center';
+                        
+                        // Safely hide icon and span if they exist
+                        if (icon) icon.style.display = 'none';
+                        if (span) span.style.display = 'none';
+
+                        // Update main preview if this is the first image
+                        if (input.id === 'image-upload-1') {
+                            const mainPreviewImage = document.getElementById('main-preview-image');
+                            if (mainPreviewImage) {
+                                mainPreviewImage.src = e.target.result;
+                                mainPreviewImage.style.display = 'block';
+                            }
+                        }
+                    }
+                };
+
+                reader.onerror = function(error) {
+                    console.error('Error reading file:', error);
+                    alert('Error loading image. Please try another file.');
+                };
+
+                try {
+                    reader.readAsDataURL(file);
+                } catch (error) {
+                    console.error('Error starting file read:', error);
+                    alert('Error processing image. Please try another file.');
+                }
+            }
+        });
+    });
+
+    // City population
+    const countySelect = document.getElementById('id_county');
+    const citySelect = document.getElementById('id_city');
+    
+    countySelect.addEventListener('change', function() {
+        const countyId = this.value;
+        citySelect.innerHTML = '<option value="">Select City</option>';
+
+        if (countyId) {
+            // Remove 'ads/' from the beginning of the URL
+            fetch(`/api/cities/${countyId}/`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Cities:', data);
+                    data.forEach(city => {
+                        citySelect.add(new Option(city.name, city.id));
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    });
+
+    // CKEditor initialization with error handling
+    if (typeof CKEDITOR !== 'undefined') {
+        try {
+            CKEDITOR.replace('id_description');
+        } catch (error) {
+            console.error('CKEditor initialization failed:', error);
+            // Fallback to regular textarea
+            const descriptionField = document.getElementById('id_description');
+            if (descriptionField) {
+                descriptionField.style.display = 'block';
+                descriptionField.classList.add('form-control');
+            }
+        }
+    } else {
+        console.error("CKEDITOR is not loaded");
+        // Show error message to user
+        const editorContainer = document.querySelector('.django-ckeditor-widget');
+        if (editorContainer) {
+            editorContainer.innerHTML = '<div class="alert alert-warning">Rich text editor failed to load. Using basic editor.</div><textarea id="id_description" class="form-control"></textarea>';
+        }
+    }
+
+    // Character Counter for Title
+    const titleInput = document.querySelector('input[name="title"]');
+    if (titleInput) {
+        const counter = document.createElement('div');
+        counter.className = 'char-counter';
+        titleInput.parentNode.appendChild(counter);
+        
+        titleInput.addEventListener('input', function() {
+            counter.textContent = `${this.value.length}/200 characters`;
+        });
+    }
+
+    // Price Suggestions
+    const priceInput = document.querySelector('input[name="price"]');
+    const categorySelect = document.querySelector('select[name="category"]');
+    
+    if (priceInput && categorySelect) {
+        categorySelect.addEventListener('change', function() {
+            fetch(`/api/price-suggestions/${this.value}/`)
+                .then(response => response.json())
+                .then(data => {
+                    const suggestion = document.createElement('div');
+                    suggestion.className = 'price-suggestion';
+                    suggestion.innerHTML = `
+                        <i class="fas fa-lightbulb"></i>
+                        <strong>Price Suggestion:</strong><br>
+                        Average price in this category: KES ${data.average}<br>
+                        Price range: KES ${data.min} - KES ${data.max}
+                    `;
+                    priceInput.parentNode.appendChild(suggestion);
+                });
+        });
+    }
+
+    // Auto-save functionality
+    let autoSaveTimeout;
+    const form = document.querySelector('form');
+    const indicator = document.querySelector('.autosave-indicator');
+    
+    function autoSave() {
+        const formData = new FormData(form);
+        fetch('/api/auto-save-draft/', {
+            method: 'POST',
+            body: formData
+        }).then(() => {
+            indicator.style.display = 'block';
+            setTimeout(() => {
+                indicator.style.display = 'none';
+            }, 2000);
+        });
+    }
+
+    form.addEventListener('input', () => {
+        clearTimeout(autoSaveTimeout);
+        autoSaveTimeout = setTimeout(autoSave, 2000);
+    });
+
+    // Load draft on page load
+    fetch('/api/load-draft/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success' && data.draft) {
+                // Populate form fields with draft data
+                Object.keys(data.draft).forEach(key => {
+                    const field = document.querySelector(`[name="${key}"]`);
+                    if (field) {
+                        field.value = data.draft[key];
+                    }
+                });
+                
+                // Update CKEditor content if it exists
+                if (CKEDITOR.instances.id_description) {
+                    CKEDITOR.instances.id_description.setData(data.draft.description);
+                }
+                
+                // Update preview
+                updatePreview();
+            }
+        })
+        .catch(error => console.error('Error loading draft:', error));
+
+    // Live Preview
+    function updatePreview() {
+        document.getElementById('preview-title').textContent = titleInput.value || 'Your Ad Title';
+        document.getElementById('preview-price').textContent = 'KES ' + (priceInput.value || '0.00');
+        // Update description when CKEditor changes
+        if (CKEDITOR.instances.id_description) {
+            document.getElementById('preview-description').innerHTML = 
+                CKEDITOR.instances.id_description.getData();
+        }
+    }
+
+    // Update preview on input changes
+    form.addEventListener('input', updatePreview);
+    if (CKEDITOR.instances.id_description) {
+        CKEDITOR.instances.id_description.on('change', updatePreview);
+    }
+
+    // Size field handling
+    const clothingSize = document.querySelector('select[name="clothing_size"]');
+    const shoeSize = document.querySelector('select[name="shoe_size"]');
+    const customSize = document.querySelector('input[name="custom_size"]');
+
+    function handleSizeChange(e) {
+        if (e.target.value === 'CUSTOM') {
+            customSize.style.display = 'block';
+            customSize.required = true;
+        } else if (clothingSize.value !== 'CUSTOM' && shoeSize.value !== 'CUSTOM') {
+            customSize.style.display = 'none';
+            customSize.required = false;
+        }
+    }
+
+    clothingSize.addEventListener('change', handleSizeChange);
+    shoeSize.addEventListener('change', handleSizeChange);
+});
+</script>
+{% endblock extra_js %}

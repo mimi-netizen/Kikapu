@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Contact Us - Kikapu Marketplace{% endblock %}
+
+{% block meta_description %}Get in touch with Kikapu Marketplace. We're here to help with your questions, suggestions, or concerns about buying and selling in Kenya.{% endblock %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/contact.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Schema Markup -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "name": "Contact Kikapu Marketplace",
+  "description": "Get in touch with our support team",
+  "url": "{{ request.build_absolute_uri }}",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+254-706-278-692",
+    "contactType": "customer service",
+    "email": "info@kikapuads.com",
+    "areaServed": "KE",
+    "availableLanguage": ["en", "sw"]
+  }
+}
+</script>
+
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="bg-light py-2">
+  <div class="container">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Contact Us</li>
+    </ol>
+  </div>
+</nav>
+
+<!-- Contact Section -->
+<section id="contact" class="section-padding">
+  <div class="container">
+    <div class="row">
+      <!-- Contact Information -->
+      <div class="col-lg-4 mb-4 mb-lg-0">
+        <div class="contact-info">
+          <h2 class="section-title">Get In Touch</h2>
+          <p class="text-muted mb-4">We're here to help and answer any question you might have.</p>
+          
+          <div class="contact-details">
+            <div class="contact-item">
+              <div class="icon">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <div class="info">
+                <h3>Address</h3>
+                <p>00100 Nairobi, Kenya</p>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="icon">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <div class="info">
+                <h3>Email Us</h3>
+                <p><a href="mailto:info@kikapuads.com">info@kikapuads.com</a></p>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="icon">
+                <i class="fas fa-phone-alt"></i>
+              </div>
+              <div class="info">
+                <h3>Call Us</h3>
+                <p><a href="tel:+254706278692">+254 706 278 692</a></p>
+              </div>
+            </div>
+
+            <div class="social-links mt-4">
+              <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+              <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+              <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="col-lg-8">
+        <div class="contact-form-wrapper">
+          <h3>Send us a Message</h3>
+          <form id="contactForm" class="contact-form" method="POST">
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="name">Your Name</label>
+                  <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="email">Email Address</label>
+                  <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="form-group">
+                  <label for="subject">Subject</label>
+                  <input type="text" class="form-control" id="subject" name="subject" required>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="form-group">
+                  <label for="message">Message</label>
+                  <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                </div>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-paper-plane me-2"></i>Send Message
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map Section -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <div class="map-container">
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.818959741522!2d36.81665281475422!3d-1.2833337359803382!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f10d22f42bf45%3A0x3e39f77f7f8d75b1!2sNairobi%2C%20Kenya!5e0!3m2!1sen!2sus!4v1625612345678!5m2!1sen!2sus"
+            width="100%" 
+            height="450" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="quick-faq section-padding bg-light">
+  <div class="container">
+    <h3 class="text-center mb-4">Frequently Asked Questions</h3>
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="accordion" id="faqAccordion">
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                How can I report a problem with my order?
+              </button>
+            </h2>
+            <div id="faq1" class="accordion-collapse collapse show">
+              <div class="accordion-body">
+                You can report issues through our contact form or by emailing support directly.
+              </div>
+            </div>
+          </div>
+          <!-- Add more FAQ items as needed -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Form validation and submission handling
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  // Add your form submission logic here
+  // You can use fetch or axios to submit the form data
+  
+  // Show success message
+  toastr.success('Your message has been sent successfully! We\'ll get back to you soon.');
+});
+</script>
+{% endblock %}

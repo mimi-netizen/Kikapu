@@ -1,0 +1,95 @@
+.location-input {
+    position: relative;
+    flex: 1;
+}
+
+.use-location-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 8px;
+    font-size: 16px;
+    z-index: 10;
+    transition: all 0.2s ease;
+}
+
+.use-location-btn:hover {
+    color: var(--primary-color);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.use-location-btn:focus {
+    outline: none;
+}
+
+.use-location-btn i {
+    pointer-events: none;
+}
+
+.use-location-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.location-input {
+    position: relative;
+}
+
+.location-autocomplete {
+    padding-right: 35px !important;
+}
+
+.location-error-toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--danger-gradient);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 1000;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translate(-50%, 100%);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+/* Google Places Autocomplete customization */
+.pac-container {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: none;
+    margin-top: 5px;
+}
+
+.pac-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.pac-item:hover {
+    background-color: var(--light-bg);
+}
+
+.pac-icon {
+    color: var(--primary-color);
+}

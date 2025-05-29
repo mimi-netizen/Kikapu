@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<section class="my-ads section-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <h4 class="mb-0">My Ads</h4>
+            <a href="{% url 'ads:post-ads' %}" class="btn btn-primary">
+              <i class="fas fa-plus"></i> Post New Ad
+            </a>
+          </div>
+          <div class="card-body">
+            <!-- Stats Row -->
+            <div class="row g-3 mb-4">
+              <div class="col-6 col-md-3">
+                <div class="stats-card bg-primary text-white p-3 rounded h-100">
+                  <h3 class="h5">{{ total_ads }}</h3>
+                  <p class="mb-0">Total Ads</p>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="stats-card bg-success text-white p-3 rounded h-100">
+                  <h3 class="h5">{{ total_ads }}</h3>
+                  <p class="mb-0">Active Ads</p>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="stats-card bg-warning text-white p-3 rounded h-100">
+                  <h3 class="h5">{{ pending_ads }}</h3>
+                  <p class="mb-0">Pending Ads</p>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="stats-card bg-danger text-white p-3 rounded h-100">
+                  <h3 class="h5">{{ expired_ads }}</h3>
+                  <p class="mb-0">Expired Ads</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters mb-4">
+              <form method="GET" class="row g-3">
+                <div class="col-12 col-md-4">
+                  <input type="text" name="search" class="form-control" placeholder="Search your ads..." 
+                         value="{{ request.GET.search|default:'' }}">
+                </div>
+                <div class="col-6 col-md-3">
+                  <select name="status" class="form-select">
+                    <option value="">All Status</option>
+                    <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="expired" {% if request.GET.status == 'expired' %}selected{% endif %}>Expired</option>
+                  </select>
+                </div>
+                <div class="col-6 col-md-3">
+                  <select name="category" class="form-select">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+                      {{ category.category }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-12 col-md-2">
+                  <button type="submit" class="btn btn-primary w-100">Filter</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Ads Grid -->
+            <div class="row g-4">
+              {% if ads %}
+                {% for ad in ads %}
+                  <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                    <div class="ad-card h-100">
+                      <div class="position-relative aspect-ratio-container">
+                        {% if ad.images.first %}
+                          <img src="{{ ad.images.first.image.url }}" alt="{{ ad.title }}" class="img-fluid rounded-top w-100 object-fit-cover">
+                        {% else %}
+                          <img src="{% static 'img/placeholder.png' %}" alt="No image" class="img-fluid rounded-top w-100 object-fit-cover">
+                        {% endif %}
+                        <span class="status-badge status-{{ ad.status }} position-absolute top-0 end-0 m-2 px-2 py-1 rounded">
+                          {{ ad.get_status_display }}
+                        </span>
+                      </div>
+                      <div class="ad-content p-3">
+                        <h5 class="text-truncate"><a href="{% url 'ads:ads-detail' ad.id %}" class="text-decoration-none">{{ ad.title }}</a></h5>
+                        <p class="text-muted mb-2 small">
+                          <i class="fas fa-tag me-1"></i> {{ ad.category }}
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                          <span class="price fw-bold">Ksh {{ ad.price|intcomma }}</span>
+                          <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                              Actions
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                              <li><a class="dropdown-item" href="{% url 'ads:ads-edit' ad.id %}">
+                                <i class="fas fa-edit me-2"></i> Edit
+                              </a></li>
+                              <li><a class="dropdown-item" href="{% url 'ads:ads-detail' ad.id %}">
+                                <i class="fas fa-sync me-2"></i> Renew
+                              </a></li>
+                              <li><a class="dropdown-item text-danger" href="#" 
+                                     onclick="confirmDelete('{% url 'ads:ads-delete' ad.id %}')">
+                                <i class="fas fa-trash me-2"></i> Delete
+                              </a></li>
+                            </ul>
+                          </div>
+                        </div>
+                        <div class="stats mt-2 small text-muted d-flex gap-3">
+                          <span><i class="fas fa-eye me-1"></i> {{ ad.views_count }}</span>
+                          <span><i class="fas fa-heart me-1"></i> {{ ad.saved_by.count }}</span>
+                          <span><i class="fas fa-clock me-1"></i> {{ ad.date_created|timesince }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <div class="col-12 text-center py-5">
+                  <h4>No ads found</h4>
+                  <p>Start selling by posting your first ad!</p>
+                  <a href="{% url 'ads:post-ads' %}" class="btn btn-primary mt-3">
+                    <i class="fas fa-plus"></i> Post An Ad
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+
+            <!-- Pagination -->
+            {% if ads.has_other_pages %}
+            <nav class="mt-4">
+              <ul class="pagination justify-content-center flex-wrap">
+                {% if ads.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ ads.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">Previous</a>
+                </li>
+                {% endif %}
+                
+                {% for num in ads.paginator.page_range %}
+                  {% if ads.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                  {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">{{ num }}</a></li>
+                  {% endif %}
+                {% endfor %}
+                
+                {% if ads.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ ads.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">Next</a>
+                </li>
+                {% endif %}
+              </ul>
+            </nav>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Ad</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this ad? This action cannot be undone.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <a href="" class="btn btn-danger" id="deleteConfirm">Delete</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% block extra_css %}
+<style>
+  .stats-card {
+    border-radius: 10px;
+    transition: transform 0.2s;
+  }
+  .stats-card:hover {
+    transform: translateY(-5px);
+  }
+  .ad-card {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    transition: all 0.2s;
+    background: #fff;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .ad-card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+  }
+  .aspect-ratio-container {
+    position: relative;
+    padding-top: 75%; /* 4:3 Aspect Ratio */
+    overflow: hidden;
+  }
+  .aspect-ratio-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .status-badge {
+    font-size: 0.8rem;
+    font-weight: 500;
+    z-index: 1;
+  }
+  .status-active {
+    background-color: #198754;
+    color: white;
+  }
+  .status-pending {
+    background-color: #ffc107;
+    color: black;
+  }
+  .status-expired {
+    background-color: #dc3545;
+    color: white;
+  }
+  .ad-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  @media (max-width: 576px) {
+    .stats-card h3 {
+      font-size: 1.25rem;
+    }
+    .stats-card p {
+      font-size: 0.875rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmDelete(deleteUrl) {
+  const modal = document.getElementById('deleteModal');
+  const deleteConfirm = document.getElementById('deleteConfirm');
+  deleteConfirm.href = deleteUrl;
+  new bootstrap.Modal(modal).show();
+}
+</script>
+{% endblock %}
+
+{% endblock content %}

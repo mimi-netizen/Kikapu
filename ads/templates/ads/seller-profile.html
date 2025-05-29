@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% load ad_filters %}
+
+{% block content %}
+<!-- Seller Profile Section Start -->
+<section class="seller-profile section-padding">
+  <div class="container">
+    <!-- Store Banner -->
+    {% if seller.store_banner %}
+    <div class="store-banner mb-4" style="height: 200px; background: url('{{ seller.store_banner.url }}') center/contain no-repeat;">
+    {% else %}
+    <div class="store-banner mb-4" style="height: 200px; background: #f8f9fa;">
+    {% endif %}
+      <div class="store-banner-overlay"></div>
+    </div>
+
+    <div class="row">
+      <!-- Seller Information -->
+      <div class="col-lg-3">
+        <div class="seller-info card">
+          <div class="card-body text-center">
+            <!-- Store Logo/Profile Picture -->
+            <div class="seller-avatar mb-3">
+              {% if seller.store_logo %}
+                <img src="{{ seller.store_logo.url }}" alt="{{ seller.store_name }}" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+              {% else %}
+                <img src="{{ seller.profile_pic.url }}" alt="{{ seller.user.username }}" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+              {% endif %}
+            </div>
+            
+            <!-- Store/Seller Name -->
+            <h3>{{ seller.store_name|default:seller.user.username }}</h3>
+            
+            <!-- Store Description -->
+            {% if seller.store_description %}
+            <p class="text-muted mb-3">{{ seller.store_description }}</p>
+            {% endif %}
+
+            <!-- Seller Stats -->
+            <div class="seller-stats mb-3">
+              <div class="row text-center">
+                <div class="col">
+                  <h5>{{ seller.average_rating|floatformat:1 }}</h5>
+                  <small class="text-muted">Rating</small>
+                </div>
+                <div class="col">
+                  <h5>{{ seller.followers_count }}</h5>
+                  <small class="text-muted">Followers</small>
+                </div>
+                <div class="col">
+                  <h5>{{ seller_ads.count }}</h5>
+                  <small class="text-muted">Ads</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Business Hours -->
+            {% if seller.business_hours %}
+            <div class="business-hours mb-3">
+              <h6><i class="fas fa-clock"></i> Business Hours</h6>
+              <p class="text-muted">{{ seller.business_hours }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Contact Information -->
+            <ul class="seller-details list-unstyled">
+              {% if seller.location %}
+              <li class="mb-2">
+                <i class="fas fa-map-marker-alt"></i> {{ seller.location }}
+              </li>
+              {% endif %}
+              {% if seller.phone_number %}
+              <li class="mb-2">
+                <i class="fas fa-phone"></i> 
+                <a href="tel:{{ seller.phone_number }}">{{ seller.phone_number }}</a>
+              </li>
+              {% endif %}
+              {% if seller.whatsapp_number %}
+              <li class="mb-2">
+                <i class="fab fa-whatsapp text-success"></i> 
+                <a href="https://wa.me/{{ seller.whatsapp_number }}" target="_blank">
+                  WhatsApp
+                </a>
+              </li>
+              {% endif %}
+              <li class="mb-2">
+                <i class="fas fa-envelope"></i> 
+                <a href="mailto:{{ seller.user.email }}">{{ seller.user.email }}</a>
+              </li>
+            </ul>
+
+            <!-- Action Buttons -->
+            {% if request.user.is_authenticated and request.user.id != seller.user.id %}
+              <div class="action-buttons mt-3">
+                <button id="followBtn" class="btn btn-outline-primary btn-block mb-2" 
+                        data-seller-id="{{ seller.id }}"
+                        data-following="{% if request.user.profile in seller.followers.all %}true{% else %}false{% endif %}">
+                  <i class="fas {% if request.user.profile in seller.followers.all %}fa-user-minus{% else %}fa-user-plus{% endif %}"></i>
+                  <span>{% if request.user.profile in seller.followers.all %}Unfollow{% else %}Follow{% endif %}</span>
+                  <span class="followers-count">({{ seller.followers_count }})</span>
+                </button>
+                <a href="{% url 'profiles:rate_seller' seller.id %}" class="btn btn-primary btn-block mb-2">
+                  <i class="fas fa-star"></i> Rate Seller
+                </a>
+                <button class="btn btn-outline-primary btn-block" data-toggle="modal" data-target="#messageSellerModal">
+                  <i class="fas fa-envelope"></i> Message Seller
+                </button>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Seller's Ads -->
+      <div class="col-lg-9">
+        <!-- Add Search and Categories Section -->
+        <div class="search-categories mb-4">
+          <div class="card">
+            <div class="card-body">
+              <!-- Search Bar -->
+              <form method="GET" action="{% url 'ads:seller-profile' seller.pk %}" class="mb-4">
+                <div class="input-group">
+                  <input type="text" name="search" class="form-control" placeholder="Search in {{ seller.store_name|default:seller.user.username }}'s store..." 
+                         value="{{ request.GET.search|default:'' }}">
+                  <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">
+                      <i class="fas fa-search"></i>
+                    </button>
+                  </div>
+                </div>
+              </form>
+
+              <!-- Categories -->
+              <div class="seller-categories">
+                <h5 class="mb-3">Categories</h5>
+                <div class="row">
+                  <!-- Show all categories first -->
+                  <div class="col-md-3 mb-2">
+                    <a href="{% url 'ads:seller-profile' seller.pk %}" 
+                       class="btn btn-outline-secondary btn-sm btn-block text-left {% if not request.GET.category %}active{% endif %}">
+                      All Categories
+                      <span class="badge badge-primary float-right">{{ seller_ads.count }}</span>
+                    </a>
+                  </div>
+                  <!-- Then show categories that have ads -->
+                  {% for category in categories %}
+                    {% with count=seller_ads|filter_by_category:category|length %}
+                    {% if count > 0 %}
+                    <div class="col-md-3 mb-2">
+                      <a href="?category={{ category.slug }}" 
+                         class="btn btn-outline-secondary btn-sm btn-block text-left {% if request.GET.category == category.slug %}active{% endif %}">
+                        {{ category.name }}
+                        <span class="badge badge-primary float-right">{{ count }}</span>
+                      </a>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results Count -->
+        <div class="mb-3">
+          <h5>
+            {% if request.GET.search or request.GET.category %}
+              Search Results ({{ seller_ads.count }} items found)
+            {% else %}
+              All Items ({{ seller_ads.count }})
+            {% endif %}
+          </h5>
+        </div>
+
+        <!-- Ads Grid -->
+        <div class="row">
+          {% if seller_ads %}
+          {% for ad in seller_ads %}
+            <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3">
+              <div class="featured-box">
+                <figure>
+                  <div class="icon">
+                    {% if user.is_authenticated %}
+                      <span class="bg-green">
+                        <i class="lni-heart bookmark-btn" data-item-id="{{ ad.id }}" style="cursor: pointer;"></i>
+                      </span>
+                    {% endif %}
+                  </div>
+                  <a href="{% url 'ads:ads-detail' ad.id %}">
+                    {% if ad.images.first %}
+                      <img class="img-fluid" src="{{ ad.images.first.image.url }}" alt="{{ ad.title }}"
+                           onerror="this.onerror=null; this.src='{% static 'img/placeholder.png' %}';">
+                    {% else %}
+                      <img class="img-fluid" src="{% static 'img/placeholder.png' %}" alt="No image">
+                    {% endif %}
+                  </a>
+                </figure>
+                <div class="feature-content">
+                  <div class="product">
+                    <a href="{% url 'ads:category-archive' ad.category.slug %}">{{ ad.category }}</a>
+                  </div>
+                  <h4 style="font-size: 11px; margin-bottom: 6px;">
+                    <a href="{% url 'ads:ads-detail' ad.id %}">{{ ad.title|truncatechars:40 }}</a>
+                  </h4>
+                  <div class="meta-tag">
+                    <span>
+                      <i class="lni-map-marker"></i> {{ ad.county }}, {{ ad.city }}
+                    </span>
+                  </div>
+                  <div class="dsc" style="font-size: 12px; margin: 6px 0; color: #666;">
+                    {{ ad.description|truncatewords:10 }}
+                  </div>
+                  <div class="price-box">
+                    <h5 class="price" style="font-size: 14px; color: #E08D35;">
+                      Ksh {{ ad.price|intcomma }}
+                    </h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+          {% else %}
+            <div class="col-lg-12">
+              <h4 class="text-center">No ads found</h4>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Add some CSS -->
+{% block extra_css %}
+<style>
+.store-banner {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.store-banner-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.5));
+}
+.seller-info {
+  margin-top: -50px;
+  position: relative;
+  z-index: 1;
+  border: none;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const followBtn = document.getElementById('followBtn');
+    if (followBtn) {
+        followBtn.addEventListener('click', function() {
+            const sellerId = this.dataset.sellerId;
+            const url = "{% url 'profiles:toggle-follow' seller.id %}";  // Update this line
+            console.log('Sending request to:', url);  // Debug line
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+            })
+            .then(response => {
+                console.log('Response status:', response.status);  // Debug line
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);  // Debug line
+                if (data.status === 'success') {
+                    // Update button text and icon
+                    const icon = this.querySelector('i');
+                    const text = this.querySelector('span');
+                    const count = this.querySelector('.followers-count');
+                    
+                    if (data.is_following) {
+                        icon.classList.replace('fa-user-plus', 'fa-user-minus');
+                        text.textContent = 'Unfollow';
+                    } else {
+                        icon.classList.replace('fa-user-minus', 'fa-user-plus');
+                        text.textContent = 'Follow';
+                    }
+                    count.textContent = `(${data.followers_count})`;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    }
+});
+
+// Add this to your existing extra_js block
+function initializeSaveButtons() {
+    document.querySelectorAll('.bookmark-btn').forEach(btn => {
+        if (!btn.dataset.initialized) {
+            btn.addEventListener('click', function() {
+                const adId = this.dataset.adId;
+                fetch(`/ads/toggle-save/${adId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.saved) {
+                        this.classList.add('saved');
+                        this.style.color = '#E08D35';
+                    } else {
+                        this.classList.remove('saved');
+                        this.style.color = '';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+            btn.dataset.initialized = 'true';
+        }
+    });
+}
+
+// Initialize save buttons on page load
+initializeSaveButtons();
+</script>
+{% endblock %}
+{% endblock content %}

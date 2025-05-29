@@ -1,0 +1,748 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% load custom_filters %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+<link rel="stylesheet" href="{% static 'css/listings.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+
+<!-- Keep external dependencies -->
+<script src="https://cdn.jsdelivr.net/gh/somanchiu/Keyless-Google-Maps-API@v7.0/mapsJavaScriptAPI.js"></script>
+
+<!-- Add index.js -->
+<script src="{% static 'js/index.js' %}"></script>
+
+<!-- Back to Top Button -->
+<button id="back-to-top" class="back-to-top" aria-label="Back to top">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+{% endblock %}
+
+<!--{% block hero %}
+<div class="ad-banner">
+  <div class="hero-carousel-container">
+    <div class="hero-carousel-slides">
+          {% for banner in hero_banners %}
+          <div class="hero-carousel-slide" style="display: none;">
+            {% if banner.url %}
+            <a href="{{ banner.url }}" class="ad-link">
+            {% endif %}
+              <img src="{{ banner.image.url }}" class="banner-img img-fluid" alt="{{ banner.title }}">
+            {% if banner.url %}
+            </a>
+            {% endif %}
+          </div>
+          {% empty %}
+          <div class="hero-carousel-slide">
+            <a href="#" class="ad-link">
+              <img src="{% static 'images/placeholder-ad.jpg' %}" alt="Advertisement" class="img-fluid">
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+        {% if hero_banners.count > 1 %}
+        <button class="carousel-button prev" onclick="moveHeroSlide(-1)">❮</button>
+        <button class="carousel-button next" onclick="moveHeroSlide(1)">❯</button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} -->
+
+{% block content %}
+
+<!-- Hero Banner Section Start -->
+     
+<div class="hero-banner-section">
+  <div class="container-fluid px-0">
+
+  
+   
+  </div>
+</div>
+<!-- Hero Banner Section End -->
+
+<!-- Age Verification Modal -->
+<div id="ageVerifyModal" class="age-verify-modal">
+  <div class="age-verify-content">
+    <div class="age-verify-icon">
+      <i class="fas fa-exclamation-circle"></i>
+    </div>
+    <h3 class="age-verify-title">Age Verification Required</h3>
+    <p class="age-verify-text">
+      Woah there! 🎯 Before you proceed, we need to make sure you're old enough for this category.
+    </p>
+    <div class="age-verify-buttons">
+      <button class="verify-btn verify-yes" onclick="verifyAge(true)">
+        <i class="fas fa-check-circle me-2"></i> Yes, I'm above 18
+      </button>
+      <button class="verify-btn verify-no" onclick="verifyAge(false)">
+        <i class="fas fa-times-circle me-2"></i> No, I'm under 18
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Create a wrapper after the hero area -->
+<div class="main-content-wrapper">
+  <div class="container-fluid px-0"> 
+    <div class="row g-0"> 
+      <!-- Main Content Column -->
+      <div class="col-lg-12"> 
+        <!-- Today's Deals Section -->
+        <div class="container py-3">
+          <div class="section-header">
+            <h2 class="section-title">Today's Deals</h2>
+          </div>
+          
+          <div class="deals-grid-container">
+            <!-- Bundle Deals Grid -->
+            <div class="deals-grid">
+              <div class="grid-header">
+                <h3>Bestsellers</h3>
+                <div class="grid-tag">Top price & quality picks</div>
+              </div>
+              <div class="grid-content">
+                {% for deal in bundle_deals %}
+                <div class="deal-card">
+                  <img src="{{ deal.get_main_image.url }}" alt="{{ deal.title }}">
+                  <div class="deal-info">
+                    <h4 class="deal-title">{{ deal.title }}</h4>
+                    <div class="deal-price">KES{{ deal.price|floatformat:2 }}</div>
+                    {% if deal.original_price %}
+                    <div class="original-price">KES{{ deal.original_price|floatformat:2 }}</div>
+                    <div class="discount">{{ deal.get_discount_percentage }}% OFF</div>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Featured Deals Grid -->
+            <div class="deals-grid">
+              <div class="grid-header">
+                <h3>SuperDeals</h3>
+                <div class="grid-tag">Up to 70% off</div>
+              </div>
+              <div class="grid-content">
+                {% for deal in featured_deals %}
+                <div class="deal-card">
+                  <img src="{{ deal.get_first_image }}" alt="{{ deal.title }}" class="deal-img">
+                  <div class="deal-info">
+                    <h4 class="deal-title">{{ deal.title }}</h4>
+                    <div class="deal-price">KES{{ deal.price|floatformat:2 }}</div>
+                    {% if deal.original_price %}
+                    <div class="original-price">KES{{ deal.original_price|floatformat:2 }}</div>
+                    <div class="discount">{{ deal.get_discount_percentage }}% OFF</div>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Negotiable Deals Grid -->
+            <div class="deals-grid">
+              <div class="grid-header">
+                <h3>Big Save</h3>
+                <div class="grid-tag">500+ Brands</div>
+              </div>
+              <div class="grid-content">
+                {% for deal in negotiable_deals %}
+                <div class="deal-card">
+                  <img src="{{ deal.get_first_image }}" alt="{{ deal.title }}" class="deal-img">
+                  <div class="deal-info">
+                    <h4 class="deal-title">{{ deal.title }}</h4>
+                    <div class="deal-price">KES{{ deal.price|floatformat:2 }}</div>
+                    {% if deal.original_price %}
+                    <div class="original-price">KES{{ deal.original_price|floatformat:2 }}</div>
+                    <div class="discount">{{ deal.get_discount_percentage }}% OFF</div>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Popular Category Section 
+        <div class="container py-3">
+          <div class="section-header">
+            <h2 class="section-title">Popular Categories</h2>
+            <a href="#" class="see-all">See All <i class="fas fa-chevron-right"></i></a>
+          </div>
+          
+          <div class="categories-grid">
+            {% for category in popular_categories %}
+            <div class="category-wrapper">
+              <a href="{% url 'ads:category-detail' category.slug %}" class="category-card">
+                <div class="category-inner" style="background-color: {{ category.bg_color }}">
+                  <img src="{{ category.icon.url }}" alt="{{ category.name }}" class="category-icon">
+                  <div class="category-name">{{ category.name }}</div>
+                  <div class="item-count">{{ category.item_count }} items</div>
+                </div>
+              </a>
+            </div>
+            {% endfor %}
+          </div>
+        </div> -->
+
+        <!-- Shop by Category Section -->
+  <div class="popular-categories mb-4">
+    <div class="section-header">
+      <h2 class="section-title">Popular Categories</h2>
+    </div>
+    <div class="popular-categories-layout">
+        <!-- Left Grid - Categories -->
+        <div class="popular-categories-slider">
+          <a href="#" class="popular-category-card">
+            <div class="popular-category-label">
+              <h3>Home & Garden</h3>
+            </div>
+            <div class="popular-category-icon">
+              <img class="icon" src="{% static 'images/icons/home.png' %}" alt="Home & Garden" width="60" height="60">
+            </div>
+          </a>
+          <a href="#" class="popular-category-card">
+            <div class="popular-category-label">
+              <h3>Jobs & Services</h3>
+            </div>
+            <div class="popular-category-icon">
+              <img class="icon" src="{% static 'images/icons/jobs.png' %}" alt="Hair Extensions & Wigs" width="60" height="60">
+            </div>
+          </a>
+          <a href="#" class="popular-category-card">
+            <div class="popular-category-label">
+              <h3>Cars & Vehicles</h3>
+            </div>
+            <div class="popular-category-icon">
+              <img class="icon" src="{% static 'images/icons/vehicles.png' %}" alt="Men's Clothing" width="60" height="60">
+            </div>
+          </a>
+          <a href="#" class="popular-category-card">
+            <div class="popular-category-label">
+              <h3>Accessories</h3>
+            </div>
+            <div class="popular-category-icon">
+              <img class="icon" src="{% static 'images/icons/accessories.png' %}" alt="Accessories" width="60" height="60">
+            </div>
+          </a>
+          <a href="#" class="popular-category-card">
+            <div class="popular-category-label">
+              <h3>Consumer Electronics</h3>
+            </div>
+            <div class="popular-category-icon">
+              <img class="icon" src="{% static 'images/icons/electronics.png' %}" alt="Consumer Electronics" width="60" height="60">
+            </div>
+          </a>
+          <a href="#" class="popular-category-card">
+            <div class="popular-category-label">
+              <h3>Kids & Babies</h3>
+            </div>
+            <div class="popular-category-icon">
+              <img class="icon" src="{% static 'images/icons/toys.png' %}" alt="Home Improvement & Lighting" width="60" height="60">
+            </div>
+          </a>
+        </div>
+
+        <!-- Right Grid - Featured Promotion -->
+        <div class="promotion-section">
+          <a href="#" class="promotion-card">
+            <div class="promotion-content">
+              <h3>Your fashion choice</h3>
+              <button class="shop-now-btn">Shop now</button>
+            </div>
+            <div class="promotion-image">
+              <img src="{% static 'images/categories/home-garden.jpg' %}" alt="Fashion Collection">
+            </div>
+          </a>
+        </div>
+      
+    </div>
+  </div>
+
+
+        <!-- Categories and Deals Header Section -->
+        <section class="all-categories-header section-padding">
+          <div class="container">
+            <div class="row align-items-center">
+              <!-- Categories Dropdown -->
+              <div class="col-lg-4">
+                <div class="all-categories-dropdown">
+                  <button class="all-categories-btn" onclick="toggleCategoriesDropdown()">
+                    <i class="fas fa-bars me-2"></i>
+                    All Categories
+                    <i class="fas fa-chevron-down ms-2"></i>
+                  </button>
+                  <div class="all-categories-content" id="categoriesDropdown">
+                    {% for main_category in main_categories %}
+                    <div class="all-category-item">
+                      <div class="all-category-main">
+                        <div class="all-category-icon">
+                          <i class="fas {{ main_category.icon }}"></i>
+                        </div>
+                        <span>{{ main_category.category }}</span>
+                        <i class="fas fa-chevron-right"></i>
+                      </div>
+                      <div class="all-subcategories-menu">
+                        <div class="all-subcategories-header">
+                          <i class="all-categories-back fas fa-chevron-left"></i>
+                          <span>{{ main_category.category }}</span>
+                        </div>
+                        <div class="all-subcategories-list">
+                          {% for subcategory in main_category.subcategories %}
+                          <a href="{% url 'ads:category-archive' subcategory.slug %}" class="all-subcategory-item">
+                            <span>{{ subcategory.name }}</span>
+                            <span class="all-subcategory-count">({{ subcategory.count }})</span>
+                          </a>
+                          {% endfor %}
+                        </div>
+                      </div>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of main-content-wrapper -->
+
+<!-- Featured Ads Section -->
+          <section id="featured-items" class="section-padding">
+            <div class="container">
+
+               
+              <div class="section-header">
+                <h2 class="section-title">Featured Listings</h2>
+                <a href="{% url 'ads:ads-listing' %}" class="view-all">View All <i class="fas fa-chevron-right"></i></a>
+              </div>
+              <div class="row g-4">
+                {% for featured_ad in featured_ads %}
+                  <div class="col-6 col-md-3 col-lg-2">
+                    <div class="listing-card">
+                      <div class="image-wrapper">
+                        {% for img in featured_ad.images.all %}
+                          {% if forloop.first %}
+                            <a href="{% url 'ads:ads-detail' featured_ad.id %}">
+                              <img class="listing-image" src="{{ img.image.url }}" alt="{{ featured_ad.title }}">
+                            </a>
+                          {% endif %}
+                        {% endfor %}
+                      </div>
+                      <div class="listing-info">
+                        <div class="category">
+                          <a href="{% url 'ads:category-archive' featured_ad.category.slug %}">
+                            <i class="lni-folder"></i>{{ featured_ad.category }}
+                          </a>
+                        </div>
+                        <h4 class="listing-title"><a href="{% url 'ads:ads-detail' featured_ad.id %}">{{ featured_ad.title|truncatechars:40 }}</a></h4>
+                        <p class="description truncated">{{ featured_ad.description|striptags|truncatechars:40 }}</p>
+                        <div class="location">
+                          <i class="lni-map-marker"></i>{{ featured_ad.city.city_name }}, {{ featured_ad.county.county_name }}
+                        </div>
+                        <div class="listing-price">Ksh {{ featured_ad.price|intcomma }}</div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </section>
+
+<!-- Latest Ads Section -->
+          <section id="recent-items" class="section-padding">
+            <div class="container">
+              <div class="section-header">
+                <h2 class="section-title">Latest Listings</h2>
+                <a href="{% url 'ads:ads-listing' %}" class="view-all">View All <i class="fas fa-chevron-right"></i></a>
+              </div>
+              <div class="row g-4">
+                {% for recent_ad in recent_ads %}
+                  <div class="col-6 col-md-3 col-lg-2">
+                    <div class="listing-card">
+                      <div class="image-wrapper">
+                        {% for img in recent_ad.images.all %}
+                          {% if forloop.first %}
+                            <a href="{% url 'ads:ads-detail' recent_ad.id %}">
+                              <img class="listing-image" src="{{ img.image.url }}" alt="{{ recent_ad.title }}">
+                              {% if forloop.parentloop.counter <= 2 %}
+                                <span class="product-badge badge-new">New</span>
+                              {% elif recent_ad.is_featured %}
+                                <span class="product-badge badge-featured">Featured</span>
+                              {% elif recent_ad.price < recent_ad.original_price %}
+                                <span class="product-badge badge-sale">Sale</span>
+                              {% endif %}
+                            </a>
+                          {% endif %}
+                        {% endfor %}
+                      </div>
+                      <div class="listing-info">
+                        <div class="category">
+                          <a href="{% url 'ads:category-archive' recent_ad.category.slug %}">
+                            <i class="lni-folder"></i>{{ recent_ad.category }}
+                          </a>
+                        </div>
+                        <h4 class="listing-title"><a href="{% url 'ads:ads-detail' recent_ad.id %}">{{ recent_ad.title|truncatechars:40 }}</a></h4>
+                        <p class="description truncated">{{ recent_ad.description|striptags|truncatechars:40 }}</p>
+                        <div class="location">
+                          <i class="lni-map-marker"></i>{{ recent_ad.city.city_name }}, {{ recent_ad.county.county_name }}
+                        </div>
+                        <div class="listing-price">Ksh {{ recent_ad.price|intcomma }}</div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </section>
+
+          <!-- Recently Viewed Section -->
+          {% if recently_viewed_ads %}
+          <section id="recently-viewed" class="section-padding">
+            <div class="container">
+              <div class="section-header">
+                <h2 class="section-title">Recently Viewed</h2>
+              </div>
+              <div class="row g-4">
+                {% for viewed_ad in recently_viewed_ads %}
+                  <div class="col-6 col-md-3 col-lg-2">
+                    <div class="listing-card">
+                      <div class="image-wrapper">
+                        {% for img in viewed_ad.images.all %}
+                          {% if forloop.first %}
+                            <a href="{% url 'ads:ads-detail' viewed_ad.id %}">
+                              <img class="listing-image" src="{{ img.image.url }}" alt="{{ viewed_ad.title }}">
+                            </a>
+                          {% endif %}
+                        {% endfor %}
+                      </div>
+                      <div class="listing-info">
+                        <div class="category">
+                          <a href="{% url 'ads:category-archive' viewed_ad.category.slug %}">
+                            <i class="lni-folder"></i>{{ viewed_ad.category }}
+                          </a>
+                        </div>
+                        <h4 class="listing-title"><a href="{% url 'ads:ads-detail' viewed_ad.id %}">{{ viewed_ad.title|truncatechars:40 }}</a></h4>
+                        <p class="description truncated">{{ viewed_ad.description|striptags|truncatechars:40 }}</p>
+                        <div class="location">
+                          <i class="lni-map-marker"></i>{{ viewed_ad.city.city_name }}, {{ viewed_ad.county.county_name }}
+                        </div>
+                        <div class="listing-price">Ksh {{ viewed_ad.price|intcomma }}</div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </section>
+          {% endif %}
+
+          <!-- Listings from Sellers You Follow -->
+          {% if user.is_authenticated and followed_listings %}
+          <section class="followed-listings section-padding">
+            <div class="container">
+              <div class="section-header">
+                <h2 class="section-title">Listings from Sellers You Follow</h2>
+                <a href="{% url 'profiles:following-list' %}" class="view-all">View All Sellers <i class="fas fa-chevron-right"></i></a>
+              </div>
+              
+              <div class="row">
+                {% for ad in followed_listings %}
+                  <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                    <div class="listing-card">
+                      <div class="image-wrapper">
+                        {% for img in ad.images.all %}
+                          {% if forloop.first %}
+                            <a href="{% url 'ads:ads-detail' ad.id %}">
+                              <img class="listing-image" src="{{ img.image.url }}" alt="{{ ad.title }}">
+                            </a>
+                          {% endif %}
+                        {% endfor %}
+                      </div>
+                      <div class="listing-info">
+                        <div class="seller-info">
+                          <small>
+                            <a href="{% url 'ads:seller-profile' ad.seller.id %}">
+                              {{ ad.seller.store_name|default:ad.seller.user.username }}
+                            </a>
+                          </small>
+                        </div>
+                        <h4 class="listing-title">
+                          <a href="{% url 'ads:ads-detail' ad.id %}">{{ ad.title|truncatechars:40 }}</a>
+                        </h4>
+                        <p class="description truncated">{{ ad.description|striptags|truncatechars:40 }}</p>
+                        <div class="location">
+                          <i class="lni-map-marker"></i> {{ ad.city.city_name }}, {{ ad.county.county_name }}
+                        </div>
+                        <div class="listing-price">Ksh {{ ad.price|intcomma }}</div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </section>
+          {% endif %}
+
+        
+        <!-- Category Promotions -->
+        <section class="category-promotions section-padding">
+          <div class="container">
+            <div class="row g-4">
+              <div class="col-12 col-md-6">
+                <div class="promo-card" style="background: linear-gradient(45deg, #FFE5BC, #FFF);">
+                  <div class="promo-content">
+                    <h3>Electronics Sale</h3>
+                    <p>Up to 40% off on selected items</p>
+                    <a href="{% url 'ads:category-archive' 'electronics' %}" class="btn btn-primary">Shop Now</a>
+                  </div>
+                  <div class="promo-image">
+                    <img src="{% static 'images/electronics.jpg' %}" alt="Electronics Sale">
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="promo-card" style="background: linear-gradient(45deg, #E3F2FD, #FFF);">
+                  <div class="promo-content">
+                    <h3>Fashion Deals</h3>
+                    <p>New arrivals starting at Ksh 999</p>
+                    <a href="{% url 'ads:category-archive' 'womens-fashion' %}" class="btn btn-primary">Shop Now</a>
+                  </div>
+                  <div class="promo-image">
+                    <img src="{% static 'images/fashion.jpeg' %}" alt="Fashion Deals">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Rest of the content sections -->
+        <!-- Top Rated Sellers -->
+        <section class="top-sellers section-padding">
+          <div class="container">
+            <div class="section-header">
+              <h2 class="section-title">Top Rated Sellers</h2>
+              <a href="{% url 'profiles:sellers' %}" class="view-all">View All Sellers <i class="fas fa-chevron-right"></i></a>
+            </div>
+            
+            <div class="row g-4">
+              {% for seller in top_rated_sellers %}
+                <div class="col-6 col-md-4 col-lg-2">
+                  <div class="seller-card">
+                    <div class="seller-avatar">
+                      {% if seller.profile_pic %}
+                        <img src="{{ seller.profile_pic.url }}" alt="{{ seller.user.username }}">
+                      {% else %}
+                        <i class="fas fa-user-circle fa-3x"></i>
+                      {% endif %}
+                      {% if seller.is_verified %}
+                        <span class="verified-badge" title="Verified Seller">
+                          <i class="fas fa-check-circle"></i>
+                        </span>
+                      {% endif %}
+                    </div>
+                    <div class="seller-info">
+                      {% if user.is_authenticated %}
+                        <h4><a href="{% url 'ads:seller-profile' seller.id %}">{{ seller.store_name|default:seller.user.username }}</a></h4>
+                      {% else %}
+                        <h4><a href="javascript:void(0);" onclick="showLoginPrompt()">{{ seller.store_name|default:seller.user.username }}</a></h4>
+                      {% endif %}
+                      <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <span>{{ seller.avg_rating|floatformat:1 }}</span>
+                        <span class="text-muted">({{ seller.reviews_count }})</span>
+                      </div>
+                      <p class="text-muted">{{ seller.ads_count }} items</p>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </section>
+
+
+<!-- Recommended Products -->
+        <section class="recommendations section-padding">
+          <div class="container">
+            <div class="section-header">
+              <h2 class="section-title">Recommended For You</h2>
+              <a href="{% url 'ads:ads-listing' %}?recommended=true" class="view-all">View All <i class="fas fa-chevron-right"></i></a>
+            </div>
+            
+            <div class="row">
+              {% for ad in recommended_ads|slice:":6" %}
+                <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                  <div class="featured-box">
+                    <figure>
+                      <img src="{{ ad.images.first.image.url }}" alt="{{ ad.title }}">
+                    </figure>
+                    <div class="feature-content">
+                      <div class="product">
+                        <a href="{% url 'ads:category-archive' ad.category.slug %}">{{ ad.category }}</a>
+                      </div>
+                      <h4><a href="{% url 'ads:ads-detail' ad.id %}">{{ ad.title|truncatechars:40 }}</a></h4>
+                      <p class="description truncated">{{ ad.description|striptags|truncatechars:40 }}</p>
+                      <div class="price-box">
+                        <span class="price">Ksh {{ ad.price|intcomma }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </section>
+
+<!-- Trust Indicators -->
+<div class="trust-indicators py-4">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-3 col-sm-6">
+        <div class="trust-item">
+          <div class="trust-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <div class="trust-content">
+            <h4 class="head-title">Secure Trading</h4>
+            <p>Verified sellers & secure payments</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="trust-item">
+          <div class="trust-icon">
+            <i class="fas fa-user-check"></i>
+          </div>
+          <div class="trust-content">
+            <h4>Verified Users</h4>
+            <p>Identity verified buyers & sellers</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="trust-item">
+          <div class="trust-icon">
+            <i class="fas fa-headset"></i>
+          </div>
+          <div class="trust-content">
+            <h4>24/7 Support</h4>
+            <p>Round the clock customer service</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="trust-item">
+          <div class="trust-icon">
+            <i class="fas fa-box-open"></i>
+          </div>
+          <div class="trust-content">
+            <h4>Easy Trading</h4>
+            <p>Simple & convenient buying/selling</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Links -->
+        <div class="quick-links animate__animated animate__fadeInUp">
+          <a href="{% url 'ads:ads-listing' %}" class="quick-link">
+            <i class="fas fa-fire"></i> Trending
+          </a>
+          <a href="{% url 'ads:ads-listing' %}" class="quick-link">
+            <i class="fas fa-clock"></i> Just Added
+          </a>
+          <a href="{% url 'ads:ads-listing' %}?sort=price_low" class="quick-link">
+            <i class="fas fa-tags"></i> Best Deals
+          </a>
+          <a href="{% url 'profiles:sellers' %}?verified=true" class="quick-link">
+            <i class="fas fa-check-circle"></i> Verified Sellers
+          </a>
+        </div>
+        
+        
+
+<!-- Advertisement Bottom Banner Area Start -->
+<section class="section-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h3 class="section-title">Advertisement</h3>
+        <div class="bottom-carousel-container" style="position: relative;">
+          <div class="bottom-carousel-slides">
+            {% for banner in bottom_banners %}
+            <div class="bottom-carousel-slide" style="display: none;">
+              {% if banner.link %}
+              <a href="{{ banner.link }}" class="banner-link">
+              {% endif %}
+                <img src="{{ banner.image.url }}" class="bottom-banner-img img-fluid" alt="{{ banner.title }}">
+              {% if banner.link %}
+              </a>
+              {% endif %}
+            </div>
+            {% empty %}
+            <div class="carousel-slide">
+              <img src="{% static 'images/placeholder-ad.jpg' %}" class="bottom-banner-img img-fluid" alt="Advertisement">
+            </div>
+            {% endfor %}
+          </div>
+          {% if bottom_banners.count > 1 %}
+          <button class="carousel-button prev" onclick="moveBottomSlide(-1)">❮</button>
+          <button class="carousel-button next" onclick="moveBottomSlide(1)">❯</button>
+          {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Advertisements Bottom Banner Area End -->
+
+<!-- Back to Top Button -->
+<button id="back-to-top" class="back-to-top" aria-label="Back to top">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<!-- Login Prompt Modal -->
+        <div class="modal fade" id="loginPromptModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-body text-center p-5">
+                <div class="mb-4">
+                  <i class="fas fa-lock fa-3x text-muted"></i>
+                </div>
+                <h3 class="mb-3">Login Required</h3>
+                <p class="mb-4">Please login or create an account to view seller profiles and start shopping!</p>
+                <div class="d-flex justify-content-center gap-3">
+                  <a href="{% url 'login' %}" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt me-2"></i> Login
+                  </a>
+                  <a href="{% url 'register' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-user-plus me-2"></i> Register
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+{% endblock content %}

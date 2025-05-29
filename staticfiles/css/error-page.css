@@ -1,0 +1,94 @@
+.error {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.error-content {
+  padding: 2rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.error-message h1 {
+  color: #E08D35;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.search-box .form-control {
+  border-radius: 50px 0 0 50px;
+  height: 45px;
+}
+
+.search-box .btn {
+  border-radius: 0 50px 50px 0;
+  padding: 0 1.5rem;
+}
+
+.quick-links .btn {
+  border-radius: 50px;
+  transition: all 0.3s ease;
+}
+
+.quick-links .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.suggested-items .card {
+  transition: all 0.3s ease;
+  border: 1px solid #eee;
+}
+
+.suggested-items .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+  .error {
+    padding: 2rem 0;
+  }
+  
+  .error-content {
+    padding: 1.5rem;
+  }
+  
+  .error-message h1 {
+    font-size: 2.5rem;
+  }
+}
+
+.error-message h2 {
+    font-size: 2.5rem;
+    color: #333;
+}
+
+.error-suggestions ul li {
+    margin: 10px 0;
+}
+
+.error-suggestions ul li a {
+    color: #666;
+    transition: color 0.3s;
+}
+
+.error-suggestions ul li a:hover {
+    color: #236267;
+    text-decoration: none;
+}
+
+.btn-outline-common {
+    border: 2px solid #236267;
+    color: #236267;
+    background: transparent;
+    transition: all 0.3s;
+}
+
+.btn-outline-common:hover {
+    background: #236267;
+    color: #fff;
+}

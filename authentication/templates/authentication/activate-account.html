@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Account Activated Successfully - Kikapu Marketplace{% endblock %}
+
+{% block meta_description %}Your Kikapu account has been successfully activated. Start buying and selling on Kenya's fastest growing marketplace.{% endblock %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/activation.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<meta property="og:title" content="Account Activated - Kikapu Marketplace">
+<meta property="og:description" content="Your account has been successfully activated. Start trading on Kikapu today!">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:image" content="{% static 'images/kikapu-social.png' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="bg-light">
+    <div class="container py-2">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item active">Account Activated</li>
+        </ol>
+    </div>
+</nav>
+
+<section class="activation-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8 col-sm-10">
+                <div class="activation-container animate__animated animate__fadeInUp">
+                    <!-- Progress Steps -->
+                    <div class="activation-progress mb-4">
+                        <div class="step completed">
+                            <div class="step-icon"><i class="fas fa-user-plus"></i></div>
+                            <span>Register</span>
+                        </div>
+                        <div class="step completed">
+                            <div class="step-icon"><i class="fas fa-envelope"></i></div>
+                            <span>Verify Email</span>
+                        </div>
+                        <div class="step active">
+                            <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+                            <span>Activated</span>
+                        </div>
+                    </div>
+
+                    <div class="success-animation">
+                        <div class="checkmark-circle">
+                            <i class="fas fa-check animate__animated animate__bounceIn"></i>
+                        </div>
+                    </div>
+
+                    <h1 class="activation-title animate__animated animate__fadeInUp animate__delay-1s">
+                        Welcome to Kikapu!
+                    </h1>
+                    
+                    <p class="activation-message animate__animated animate__fadeInUp animate__delay-1s">
+                        Your account has been successfully activated. You're now ready to start your journey with Kikapu!
+                    </p>
+
+                    <div class="next-steps animate__animated animate__fadeInUp animate__delay-2s">
+                        <h3>Next Steps:</h3>
+                        <div class="steps-grid">
+                            <div class="step-item">
+                                <div class="step-icon">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                </div>
+                                <span>Login</span>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-icon">
+                                    <i class="fas fa-user-cog"></i>
+                                </div>
+                                <span>Complete Profile</span>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-icon">
+                                    <i class="fas fa-store"></i>
+                                </div>
+                                <span>Start Trading</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons animate__animated animate__fadeInUp animate__delay-2s">
+                        <a href="{% url 'login' %}" class="btn btn-login">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login to Your Account
+                        </a>
+                        <a href="{% url 'home' %}" class="btn btn-outline">
+                            <i class="fas fa-home me-2"></i>Explore Marketplace
+                        </a>
+                    </div>
+
+                    <div class="support-section mt-4 animate__animated animate__fadeInUp animate__delay-3s">
+                        <p class="mb-2">Need assistance getting started?</p>
+                        <div class="support-options">
+                            <a href="{% url 'faq' %}" class="support-link">
+                                <i class="fas fa-question-circle me-1"></i>FAQ
+                            </a>
+                            <span class="separator">•</span>
+                            <a href="{% url 'contact' %}" class="support-link">
+                                <i class="fas fa-headset me-1"></i>Contact Support
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

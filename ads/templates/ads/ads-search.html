@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<section class="featured section-padding">
+  <div class="container">
+    <!-- Search Summary -->
+    <div class="row mb-4">
+      <div class="col-12">
+        {% if query or location %}
+          <h4 class="search-summary">
+            {% if result_count > 0 %}
+              Found {{ result_count }} result{{ result_count|pluralize }} 
+              {% if query %}for "{{ query }}"{% endif %}
+              {% if location %}in {{ location }}{% endif %}
+            {% else %}
+              No results found 
+              {% if query %}for "{{ query }}"{% endif %}
+              {% if location %}in {{ location }}{% endif %}
+            {% endif %}
+          </h4>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Search Results -->
+    <div class="row">
+      {% if ads_search_result %}
+        {% for ad in ads_search_result %}
+          <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+            <div class="listing-card h-100">
+              <div class="image-wrapper">
+                {% if ad.images.all %}
+                  <a href="{% url 'ads:ads-detail' ad.id %}">
+                    <img src="{{ ad.images.first.image.url }}" alt="{{ ad.title }}" class="img-fluid">
+                  </a>
+                {% else %}
+                  <a href="{% url 'ads:ads-detail' ad.id %}">
+                    <img src="{% static 'images/no-image.png' %}" alt="No image available" class="img-fluid">
+                  </a>
+                {% endif %}
+              </div>
+              
+              <div class="listing-info p-3">
+                <div class="category small mb-2">
+                  <a href="{% url 'ads:category-archive' ad.category.slug %}" class="text-muted">
+                    <i class="fas fa-folder me-1"></i>{{ ad.category }}
+                  </a>
+                </div>
+                
+                <h5 class="listing-title mb-2">
+                  <a href="{% url 'ads:ads-detail' ad.id %}" class="text-dark">{{ ad.title }}</a>
+                </h5>
+                
+                <div class="location small mb-2">
+                  <i class="fas fa-map-marker-alt me-1"></i>
+                  {{ ad.city }}, {{ ad.county }}
+                </div>
+                
+                <div class="price mt-auto">
+                  <strong>Ksh {{ ad.price|intcomma }}</strong>
+                  {% if ad.is_negotiable %}
+                    <span class="badge bg-success ms-2">Negotiable</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="col-12 text-center py-5">
+          <div class="no-results">
+            <i class="fas fa-search fa-3x mb-3 text-muted"></i>
+            <h4>No matches found</h4>
+            <p class="text-muted">Try adjusting your search criteria or browsing all listings</p>
+            <a href="{% url 'ads:ads-listing' %}" class="btn browse-all-btn mt-3">
+              Browse All Listings
+            </a>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .search-summary {
+    color: #333;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .listing-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .listing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .image-wrapper {
+    position: relative;
+    padding-top: 75%; /* 4:3 Aspect Ratio */
+    overflow: hidden;
+  }
+  
+  .image-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  
+  .no-results {
+    padding: 3rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+  }
+
+  .browse-all-btn {
+    background-color: #E08D35;
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+  }
+  
+  .browse-all-btn:hover {
+    background-color: #75522F;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(137, 97, 58, 0.2);
+  }
+</style>
+{% endblock content %}

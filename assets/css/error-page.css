@@ -1,0 +1,37 @@
+.error-content {
+    padding: 40px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.error-message h2 {
+    font-size: 2.5rem;
+    color: #333;
+}
+
+.error-suggestions ul li {
+    margin: 10px 0;
+}
+
+.error-suggestions ul li a {
+    color: #666;
+    transition: color 0.3s;
+}
+
+.error-suggestions ul li a:hover {
+    color: #236267;
+    text-decoration: none;
+}
+
+.btn-outline-common {
+    border: 2px solid #236267;
+    color: #236267;
+    background: transparent;
+    transition: all 0.3s;
+}
+
+.btn-outline-common:hover {
+    background: #236267;
+    color: #fff;
+}

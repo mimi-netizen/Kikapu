@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3 col-md-12">
+                {% include 'profiles/account-sidebar.html' %}
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-9 col-md-12">
+                <!-- Quick Actions -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Quick Actions</h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <a href="{% url 'ads:ads-search' %}" class="btn btn-primary btn-block mb-2">
+                                    <i class="fas fa-search"></i> Browse Ads
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="{% url 'profiles:sellers' %}" class="btn btn-info btn-block mb-2">
+                                    <i class="fas fa-users"></i> Browse Sellers
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="{% url 'profiles:profile-favorite-ads' %}" class="btn btn-secondary btn-block mb-2">
+                                    <i class="fas fa-heart"></i> Saved Ads
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h3>{{ saved_ads.count }}</h3>
+                                <p class="text-muted mb-0">Saved Ads</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h3>{{ profile.following.count }}</h3>
+                                <a href="{% url 'profiles:following-list' %}" class="text-decoration-none">
+                                    <p class="text-muted mb-0">Following</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h3>{{ saved_searches.count }}</h3>
+                                <p class="text-muted mb-0">Saved Searches</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Saved Searches -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Saved Searches</h5>
+                        <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#newSearchModal">
+                            <i class="fas fa-plus"></i> New Search
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        {% if saved_searches %}
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Category</th>
+                                            <th>Price Range</th>
+                                            <th>Location</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for search in saved_searches %}
+                                        <tr>
+                                            <td>{{ search.name }}</td>
+                                            <td>{{ search.category.name|default:"-" }}</td>
+                                            <td>
+                                                {% if search.min_price or search.max_price %}
+                                                    {{ search.min_price|default:"0"|intcomma }} - {{ search.max_price|default:"Any"|intcomma }} KES
+                                                {% else %}
+                                                    Any price
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ search.location|default:"Any location" }}</td>
+                                            <td>
+                                                <a href="{% url 'ads:ads-search' %}?{{ search.query }}" class="btn btn-sm btn-info">
+                                                    <i class="fas fa-search"></i>
+                                                </a>
+                                                <button class="delete-search" data-search-id="{{ search.id }}" 
+                                                        data-url="{% url 'profiles:delete-saved-search' search.id %}">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted text-center py-3">
+                                No saved searches yet. Save your frequent searches to get notified about new matching ads!
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Favorite Sellers -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Favorite Sellers</h5>
+                        <a href="{% url 'profiles:sellers' %}" class="btn btn-sm btn-outline-primary">Browse All Sellers</a>
+                    </div>
+                    <div class="card-body">
+                        {% if favorite_sellers %}
+                            <div class="row">
+                                {% for seller in favorite_sellers %}
+                                <div class="col-md-4 mb-4">
+                                    <div class="seller-card text-center">
+                                        <img src="{% if seller.profile_pic %}{{ seller.profile_pic.url }}{% else %}{% static 'images/default-profile-pic.jpg' %}{% endif %}" 
+                                             alt="{{ seller.user.username }}" 
+                                             class="rounded-circle mb-2" 
+                                             style="width: 80px; height: 80px; object-fit: cover;">
+                                        <h6>{{ seller.store_name|default:seller.user.username }}</h6>
+                                        <div class="rating mb-2">
+                                            <i class="fas fa-star text-warning"></i>
+                                            {{ seller.average_rating|floatformat:1 }}
+                                            ({{ seller.total_reviews }})
+                                        </div>
+                                        <div class="seller-stats small text-muted mb-2">
+                                            <span><i class="fas fa-ad"></i> {{ seller.total_active_ads }} Active Ads</span>
+                                        </div>
+                                        <div class="btn-group">
+                                            <a href="{% url 'ads:seller-profile' seller.pk %}" class="btn btn-sm btn-primary">View Profile</a>
+                                            <button class="remove-favorite" data-seller-id="{{ seller.pk }}"
+                                                    data-url="{% url 'profiles:toggle-favorite-seller' seller.pk %}">
+                                                <i class="fas fa-heart-broken"></i>
+                                            </button>
+                                        </div>
+                                        <div class="contact-buttons mt-2">
+                                            {% if seller.whatsapp_number %}
+                                            <a href="https://wa.me/{{ seller.whatsapp_number }}" class="btn btn-sm btn-success" target="_blank">
+                                                <i class="fab fa-whatsapp"></i> WhatsApp
+                                            </a>
+                                            {% endif %}
+                                            {% if seller.phone_number %}
+                                            <a href="tel:{{ seller.phone_number }}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-phone"></i> Call
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted text-center py-3">
+                                You haven't added any sellers to your favorites yet. 
+                                <a href="{% url 'profiles:sellers' %}">Browse sellers</a> to find your favorites!
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Change Card Header 
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Bookmarked Ads</h5>
+                        <a href="{% url 'profiles:profile-favorite-ads' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="card-body">
+                        {% if bookmarks %}
+                            <div class="row">
+                                {% for bookmark in bookmarks|slice:":6" %}
+                                {% with ad=bookmark.ad %}
+                                <div class="col-md-4 mb-4">
+                                    <div class="card h-100">
+                                        {% if ad.images.first %}
+                                            <img src="{{ ad.images.first.image.url }}" class="card-img-top" alt="{{ ad.title }}"
+                                                 style="height: 200px; object-fit: cover;">
+                                        {% else %}
+                                            <img src="{% static 'img/default-ad.jpg' %}" class="card-img-top" alt="No image"
+                                                 style="height: 200px; object-fit: cover;">
+                                        {% endif %}
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{ ad.title }}</h6>
+                                            <p class="card-text text-primary">{{ ad.price|intcomma }} KES</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">{{ ad.date_created|naturaltime }}</small>
+                                                {% if ad.id %}
+                                                    <a href="{% url 'ads:ads-detail' ad.id %}" class="btn btn-sm btn-primary">View</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endwith %}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted text-center py-3">
+                                You haven't bookmarked any ads yet. 
+                                <a href="{% url 'ads:ads-listing' %}">Browse ads</a> and click the bookmark icon to save them!
+                            </p>
+                        {% endif %}
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- New Search Modal -->
+<div class="modal fade" id="newSearchModal" tabindex="-1" role="dialog" aria-labelledby="newSearchModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newSearchModalLabel">Save Current Search</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="saveSearchForm" method="post" action="{% url 'profiles:save-search' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="searchName">Search Name</label>
+                        <input type="text" class="form-control" id="searchName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="notifyNewMatches" name="notify_new_matches" checked>
+                            <label class="custom-control-label" for="notifyNewMatches">
+                                Notify me about new matching ads
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Handle favorite seller removal
+    $('.remove-favorite').click(function() {
+        var sellerId = $(this).data('seller-id');
+        var card = $(this).closest('.col-md-4');
+        
+        $.ajax({
+            url: `/profiles/toggle-favorite-seller/${sellerId}/`,
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    card.fadeOut(function() {
+                        $(this).remove();
+                        if ($('.seller-card').length === 0) {
+                            location.reload();
+                        }
+                    });
+                }
+            }
+        });
+    });
+
+    // Handle saved search deletion
+    $('.delete-search').click(function() {
+        if (confirm('Are you sure you want to delete this saved search?')) {
+            var searchId = $(this).data('search-id');
+            window.location.href = `/profiles/delete-saved-search/${searchId}/`;
+        }
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

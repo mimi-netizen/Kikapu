@@ -1,0 +1,51 @@
+{% extends "base.html" %} {% load static %} {% block content %}
+
+<!-- Page Header Start -->
+<div class="page-header" >
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="breadcrumb-wrapper">
+          <h2 class="product-title">Close Account</h2>
+          <ol class="breadcrumb">
+            <li><a href="#">Home /</a></li>
+            <li class="current">Close</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page Header End -->
+
+<!-- Start Content -->
+<div class="section-padding">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-5 col-md-12 col-xs-12">
+        <div class="login-area">
+          <h3><i class="lni-close"></i> Close account</h3>
+          <div class="close-account">
+            <form method="POST">
+              {% csrf_token %}
+              <p>Are you sure you want to close your account?</p>
+              <label class="radio-inline">
+                <input name="confirm_close" value="yes" type="radio" required />
+                Yes
+              </label>
+              <label class="radio-inline">
+                <input name="confirm_close" value="no" type="radio" required />
+                No
+              </label>
+              <br />
+              <button type="submit" class="btn btn-common pt">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Content -->
+
+{% endblock content %}

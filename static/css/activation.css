@@ -1,0 +1,153 @@
+.activation-section {
+    padding-top: 40px;
+    min-height: calc(100vh - 60px);
+    background: linear-gradient(135deg, #FDF5E6 0%, #f5f7fa 100%);
+}
+
+.activation-container {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    padding: 3rem;
+    text-align: center;
+    position: relative;
+}
+
+.activation-progress {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+}
+
+.step-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.5rem;
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.step.completed .step-icon {
+    background: #E08D35;
+    color: white;
+}
+
+.step.active .step-icon {
+    background: #E08D35;
+    color: white;
+    box-shadow: 0 0 0 4px rgba(224, 141, 53, 0.2);
+}
+
+.success-animation {
+    margin: 2rem auto;
+}
+
+.checkmark-circle {
+    width: 100px;
+    height: 100px;
+    background: rgba(224, 141, 53, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.checkmark-circle i {
+    font-size: 48px;
+    color: #E08D35;
+}
+
+.next-steps {
+    margin: 2rem 0;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.step-item {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.step-item:hover {
+    transform: translateY(-2px);
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.btn-login, .btn-outline {
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-login {
+    background: #E08D35;
+    color: white;
+    border: none;
+}
+
+.btn-outline {
+    border: 2px solid #E08D35;
+    color: #E08D35;
+    background: transparent;
+}
+
+.support-section {
+    border-top: 1px solid #eee;
+    padding-top: 1.5rem;
+    margin-top: 2rem;
+}
+
+.support-options {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .activation-container {
+        padding: 2rem;
+        margin: 1rem;
+    }
+
+    .steps-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn-login, .btn-outline {
+        width: 100%;
+    }
+}

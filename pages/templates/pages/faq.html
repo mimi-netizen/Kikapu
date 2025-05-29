@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}FAQ - Frequently Asked Questions | Kikapu Marketplace{% endblock %}
+
+{% block meta_description %}Find answers to commonly asked questions about buying and selling on Kikapu Marketplace. Learn about posting ads, contacting sellers, and staying safe while trading.{% endblock %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/faq.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- FAQ Schema Markup -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I post a classified ad?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "To post a classified ad: 1. Sign in to your account (or create one). 2. Click on 'Post Ad' button. 3. Select category. 4. Fill in item details. 5. Upload photos. 6. Set price and contact preferences. 7. Review and submit."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is it free to post ads?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Basic listings are completely free! However, we offer premium features like featured listings, top of category placement, highlighted ads, and extended listing duration."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I contact a seller?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You can contact sellers through our secure messaging system by clicking the 'Contact Seller' button on any ad, using the messaging form on the ad details page, or responding to seller messages in your inbox. For safety, keep all communications within our platform."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How can I report a suspicious ad?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "To report a suspicious ad: 1. Click the 'Report Ad' button on the listing. 2. Select the reason for reporting. 3. Provide additional details if necessary. 4. Submit your report. Our team reviews all reports within 24 hours."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long do ads stay active?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Free listings remain active for 30 days. After this period, you can renew for another 30 days, mark as sold, or let it expire. Premium listings can stay active for up to 90 days depending on the package."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What are the safety tips for buyers and sellers?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For safe transactions: Meet in public places for high-value items, inspect items before purchase, don't send payment before receiving items, keep communications within our platform, be wary of too-good-to-be-true deals, and never share personal financial information."
+      }
+    }
+  ]
+}
+</script>
+
+<div class="faq section-padding">
+  <div class="container">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">FAQ</li>
+      </ol>
+    </nav>
+
+    <!-- Search Bar -->
+    <div class="faq-search mb-5">
+      <div class="search-wrapper">
+        <input type="text" id="faqSearch" class="form-control" placeholder="Search frequently asked questions...">
+        <i class="fas fa-search search-icon"></i>
+      </div>
+    </div>
+
+    <!-- FAQ Categories -->
+    <div class="faq-categories mb-4">
+      <div class="row">
+        <div class="col-6 col-md-3">
+          <button class="category-btn active" data-category="general">
+            <i class="fas fa-info-circle"></i>
+            General
+          </button>
+        </div>
+        <div class="col-6 col-md-3">
+          <button class="category-btn" data-category="buying">
+            <i class="fas fa-shopping-cart"></i>
+            Buying
+          </button>
+        </div>
+        <div class="col-6 col-md-3">
+          <button class="category-btn" data-category="selling">
+            <i class="fas fa-tag"></i>
+            Selling
+          </button>
+        </div>
+        <div class="col-6 col-md-3">
+          <button class="category-btn" data-category="safety">
+            <i class="fas fa-shield-alt"></i>
+            Safety
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="head-faq text-center mb-5">
+          <h1 class="section-title">Frequently Asked Questions</h1>
+          <p class="text-muted">Find answers to common questions about using Kikapu Marketplace</p>
+        </div>
+
+        <!-- Accordion -->
+        <div class="accordion" id="faqAccordion">
+          <div class="panel panel-default" data-category="general">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#faqAccordion" href="#collapseOne">
+                  How do I post a classified ad?
+                </a>
+              </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse show">
+              <div class="panel-body">
+                <p>To post a classified ad:</p>
+                <ol>
+                  <li>Sign in to your account (or create one if you haven't already)</li>
+                  <li>Click on the "Post Ad" button in the top navigation</li>
+                  <li>Select the appropriate category for your item</li>
+                  <li>Fill in the required details about your item</li>
+                  <li>Upload clear photos of your item</li>
+                  <li>Set your price and contact preferences</li>
+                  <li>Review and submit your ad</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+          <div class="panel panel-default" data-category="general">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#faqAccordion" href="#collapseTwo">
+                  Is it free to post ads?
+                </a>
+              </h4>
+            </div>
+            <div id="collapseTwo" class="panel-collapse collapse">
+              <div class="panel-body">
+                <p>Basic listings are completely free! However, we offer premium features to help your ad stand out:</p>
+                <ul>
+                  <li>Featured listings</li>
+                  <li>Top of category placement</li>
+                  <li>Highlighted ads</li>
+                  <li>Extended listing duration</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="panel panel-default" data-category="buying">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#faqAccordion" href="#collapseThree">
+                  How do I contact a seller?
+                </a>
+              </h4>
+            </div>
+            <div id="collapseThree" class="panel-collapse collapse">
+              <div class="panel-body">
+                <p>You can contact sellers through our secure messaging system by:</p>
+                <ul>
+                  <li>Clicking the "Contact Seller" button on any ad</li>
+                  <li>Using the messaging form on the ad details page</li>
+                  <li>Responding to seller messages in your inbox</li>
+                </ul>
+                <p>For your safety, we recommend keeping all communications within our platform.</p>
+              </div>
+            </div>
+          </div>
+          <div class="panel panel-default" data-category="safety">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#faqAccordion" href="#collapseFour">
+                  How can I report a suspicious ad?
+                </a>
+              </h4>
+            </div>
+            <div id="collapseFour" class="panel-collapse collapse">
+              <div class="panel-body">
+                <p>If you spot a suspicious ad:</p>
+                <ol>
+                  <li>Click the "Report Ad" button on the ad listing</li>
+                  <li>Select the reason for reporting</li>
+                  <li>Provide additional details if necessary</li>
+                  <li>Submit your report</li>
+                </ol>
+                <p>Our team reviews all reports and takes appropriate action within 24 hours.</p>
+              </div>
+            </div>
+          </div>
+          <div class="panel panel-default" data-category="general">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#faqAccordion" href="#collapseFive">
+                  How long do ads stay active?
+                </a>
+              </h4>
+            </div>
+            <div id="collapseFive" class="panel-collapse collapse">
+              <div class="panel-body">
+                <p>Free listings remain active for 30 days. After this period, you can either:</p>
+                <ul>
+                  <li>Renew your ad for another 30 days</li>
+                  <li>Mark the item as sold</li>
+                  <li>Let the listing expire naturally</li>
+                </ul>
+                <p>Premium listings can stay active for up to 90 days depending on the package chosen.</p>
+              </div>
+            </div>
+          </div>
+          <div class="panel panel-default" data-category="safety">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#faqAccordion" href="#collapseSix">
+                  What are the safety tips for buyers and sellers?
+                </a>
+              </h4>
+            </div>
+            <div id="collapseSix" class="panel-collapse collapse">
+              <div class="panel-body">
+                <p>For safe transactions:</p>
+                <ul>
+                  <li>Meet in a public place for high-value items</li>
+                  <li>Inspect items thoroughly before purchase</li>
+                  <li>Don't send payment before receiving items</li>
+                  <li>Keep all communications within our platform</li>
+                  <li>Be wary of deals that seem too good to be true</li>
+                  <li>Never share personal financial information</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Support -->
+        <div class="text-center mt-5">
+          <p>Can't find what you're looking for?</p>
+          <a href="{% url 'contact' %}" class="btn btn-primary">
+            <i class="fas fa-headset me-2"></i>Contact Support
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ Search Script -->
+<script>
+document.getElementById('faqSearch').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const questions = document.querySelectorAll('.panel-title a');
+    
+    questions.forEach(question => {
+        const panel = question.closest('.panel');
+        const questionText = question.textContent.toLowerCase();
+        const answerText = panel.querySelector('.panel-body').textContent.toLowerCase();
+        
+        if (questionText.includes(searchTerm) || answerText.includes(searchTerm)) {
+            panel.style.display = 'block';
+            // Highlight matching text
+            if (searchTerm) {
+                highlightText(question, searchTerm);
+            } else {
+                removeHighlight(question);
+            }
+        } else {
+            panel.style.display = 'none';
+        }
+    });
+});
+
+// Category filter
+document.querySelectorAll('.category-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const category = this.dataset.category;
+        
+        // Update active state
+        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Filter questions
+        document.querySelectorAll('.panel').forEach(panel => {
+            if (category === 'all' || panel.dataset.category === category) {
+                panel.style.display = 'block';
+            } else {
+                panel.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

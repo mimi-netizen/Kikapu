@@ -1,0 +1,134 @@
+
+/* Global Section Spacing */
+.section-padding {
+  padding: 40px 0;
+}
+
+/* Container Spacing */
+.container {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 1320px; /* Increased from default 1200px for more breathing room */
+}
+
+/* Grid Spacing */
+.row {
+  --bs-gutter-x: 24px; /* Increased from default 16px */
+  --bs-gutter-y: 24px;
+}
+
+/* Card Spacing */
+.listing-card, 
+.featured-box, 
+.seller-card,
+.category-card,
+.promo-card {
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+/* Section Headers */
+.section-header {
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+}
+
+/* Content Spacing */
+.listing-info,
+.feature-content {
+  padding: 16px;
+}
+
+/* Nested Elements Spacing */
+.listing-title,
+.category-name,
+.price-box {
+  margin-bottom: 12px;
+}
+
+.description {
+  margin-bottom: 16px;
+}
+
+.location {
+  margin-bottom: 12px;
+}
+
+/* Hero Section Spacing */
+#hero-area {
+  padding: 60px 0;
+  margin-bottom: 40px;
+}
+
+.search-container {
+  padding: 24px;
+  margin-top: 32px;
+}
+
+/* Quick Links Spacing */
+.quick-links {
+  padding: 24px 0;
+  gap: 16px;
+}
+
+/* Category Grid Spacing */
+.categories-grid {
+  margin-bottom: 40px;
+}
+
+.category-icon {
+  margin-bottom: 16px;
+}
+
+/* Flash Deals Spacing */
+.flash-deals .row {
+  --bs-gutter-x: 16px;
+  --bs-gutter-y: 24px;
+}
+
+/* Promotions Spacing */
+.promo-card {
+  padding: 32px;
+  margin-bottom: 32px;
+}
+
+/* Sellers Section Spacing */
+.seller-avatar {
+  margin-bottom: 16px;
+}
+
+/* Media Queries for Responsive Spacing */
+@media (max-width: 768px) {
+  .section-padding {
+    padding: 32px 0;
+  }
+  
+  .container {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+  
+  .row {
+    --bs-gutter-x: 16px;
+    --bs-gutter-y: 16px;
+  }
+  
+  .listing-card, 
+  .featured-box, 
+  .seller-card,
+  .category-card {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .section-header {
+    margin-bottom: 24px;
+  }
+  
+  #hero-area {
+    padding: 40px 0;
+    margin-bottom: 32px;
+  }
+}

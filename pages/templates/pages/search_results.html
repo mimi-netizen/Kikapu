@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Search Results for "{{ query }}" - Kikapu Marketplace{% endblock %}
+
+{% block meta_description %}Browse search results for "{{ query }}" on Kikapu Marketplace. Find great deals on products and services in Kenya.{% endblock %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/search.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="bg-light">
+  <div class="container py-2">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+      <li class="breadcrumb-item active">Search Results</li>
+    </ol>
+  </div>
+</nav>
+
+<!-- Search Results Section -->
+<section class="search-results section-padding">
+  <div class="container">
+    <!-- Search Header -->
+    <div class="search-header mb-4">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          {% if ads %}
+            <h1 class="section-title mb-2">Results for "{{ query }}"</h1>
+            <p class="text-muted">Found {{ ads.count }} items</p>
+          {% else %}
+            <h1 class="section-title mb-2">No results found</h1>
+          {% endif %}
+        </div>
+        <div class="col-md-6">
+          <!-- Refined Search Form -->
+          <form class="refined-search" method="GET" action="{% url 'ads:ads-search' %}">
+            <div class="input-group">
+              <input type="text" 
+                     name="query" 
+                     class="form-control" 
+                     value="{{ query }}"
+                     placeholder="Refine your search...">
+              <button class="btn btn-primary" type="submit">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    {% if ads %}
+      <!-- Filter Section -->
+      <div class="filter-section mb-4">
+        <div class="row g-2">
+          <div class="col-6 col-md-3">
+            <select class="form-select" name="sort">
+              <option value="">Sort By</option>
+              <option value="price_low">Price: Low to High</option>
+              <option value="price_high">Price: High to Low</option>
+              <option value="newest">Newest First</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-3">
+            <select class="form-select" name="category">
+              <option value="">All Categories</option>
+              {% for cat in categories %}
+                <option value="{{ cat.slug }}">{{ cat.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-6 col-md-3">
+            <select class="form-select" name="location">
+              <option value="">All Locations</option>
+              {% for loc in locations %}
+                <option value="{{ loc.id }}">{{ loc.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-6 col-md-3">
+            <select class="form-select" name="condition">
+              <option value="">Any Condition</option>
+              <option value="new">New</option>
+              <option value="used">Used</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Grid -->
+      <div class="row g-4">
+        {% for ad in ads %}
+          <div class="col-6 col-md-4 col-lg-3">
+            <div class="listing-card">
+              <div class="image-wrapper">
+                {% if ad.images.first %}
+                  <a href="{% url 'ads:ads-detail' ad.id %}">
+                    <img src="{{ ad.images.first.image.url }}" alt="{{ ad.title }}">
+                  </a>
+                {% endif %}
+                {% if ad.is_featured %}
+                  <span class="badge featured">Featured</span>
+                {% endif %}
+              </div>
+              <div class="listing-info">
+                <h2 class="listing-title">
+                  <a href="{% url 'ads:ads-detail' ad.id %}">{{ ad.title|truncatechars:40 }}</a>
+                </h2>
+                <div class="listing-meta">
+                  <span class="location">
+                    <i class="fas fa-map-marker-alt"></i> {{ ad.city.city_name }}
+                  </span>
+                  <span class="date">
+                    <i class="fas fa-clock"></i> {{ ad.date_created|timesince }} ago
+                  </span>
+                </div>
+                <div class="price-row">
+                  <span class="price">Ksh {{ ad.price|intcomma }}</span>
+                  {% if ad.negotiable %}
+                    <span class="badge negotiable">Negotiable</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% if ads.has_other_pages %}
+        <nav aria-label="Page navigation" class="mt-4">
+          <ul class="pagination justify-content-center">
+            {% if ads.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ ads.previous_page_number }}&query={{ query }}">Previous</a>
+              </li>
+            {% endif %}
+            
+            {% for num in ads.paginator.page_range %}
+              <li class="page-item {% if ads.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}&query={{ query }}">{{ num }}</a>
+              </li>
+            {% endfor %}
+            
+            {% if ads.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ ads.next_page_number }}&query={{ query }}">Next</a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      {% endif %}
+
+    {% else %}
+      <!-- No Results Found -->
+      <div class="no-results text-center py-5">
+        <div class="no-results-icon mb-3">
+          <i class="fas fa-search fa-3x text-muted"></i>
+        </div>
+        <h2>No results found for "{{ query }}"</h2>
+        <p class="text-muted mb-4">Try adjusting your search for more results.</p>
+        <div class="suggestions">
+          <h3>Popular Searches</h3>
+          <div class="popular-searches d-flex justify-content-center gap-2 flex-wrap">
+            <a href="{% url 'ads:ads-search' %}?query=phones" class="btn btn-outline-secondary btn-sm">Phones</a>
+            <a href="{% url 'ads:ads-search' %}?query=laptops" class="btn btn-outline-secondary btn-sm">Laptops</a>
+            <a href="{% url 'ads:ads-search' %}?query=furniture" class="btn btn-outline-secondary btn-sm">Furniture</a>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Handle filter changes
+document.querySelectorAll('.filter-section select').forEach(select => {
+  select.addEventListener('change', function() {
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set(this.name, this.value);
+    window.location.href = currentUrl.toString();
+  });
+});
+</script>
+{% endblock %}

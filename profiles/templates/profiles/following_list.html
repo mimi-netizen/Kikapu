@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="container py-5" style="margin-top: 80px;">
+    <h1 class="mb-4">Sellers You Follow</h1>
+    
+    {% if following_count == 0 %}
+        <div class="alert alert-info">
+            You are not following any sellers yet.
+        </div>
+    {% else %}
+        <div class="row g-4">
+            {% for seller in following_sellers %}
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-hover">
+                        <div class="card-body">
+                            <div class="text-center mb-3">
+                                {% if seller.profile_pic %}
+                                    <img src="{{ seller.profile_pic.url }}" alt="{{ seller.store_name }}" 
+                                         class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'img/default-profile.png' %}" alt="Default Profile" 
+                                         class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+                                {% endif %}
+                                <h5 class="card-title">{{ seller.store_name|default:seller.user.username }}</h5>
+                            </div>
+
+                            <div class="bg-light rounded p-3 mb-3">
+                                <div class="row text-center">
+                                    <div class="col">
+                                        <p class="mb-0 fw-bold">{{ seller.avg_rating|floatformat:1 }}</p>
+                                        <small class="text-muted">Rating</small>
+                                    </div>
+                                    <div class="col">
+                                        <p class="mb-0 fw-bold">{{ seller.active_ads_count }}</p>
+                                        <small class="text-muted">Active Ads</small>
+                                    </div>
+                                    <div class="col">
+                                        <p class="mb-0 fw-bold">{{ seller.reviews_count }}</p>
+                                        <small class="text-muted">Reviews</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-center gap-2">
+                                <a href="{% url 'ads:seller-profile' seller.pk %}" class="btn btn-primary btn-sm">View Profile</a>
+                                <button class="btn btn-outline-primary btn-sm follow-btn" 
+                                        onclick="toggleFollow(this, {{ seller.id }})">
+                                    Unfollow
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.shadow-hover {
+    transition: all 0.3s ease;
+}
+
+.shadow-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1) !important;
+}
+</style>
+
+{% block extra_js %}
+<script>
+function toggleFollow(button, sellerId) {
+    fetch(`/profiles/toggle-follow/${sellerId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Remove the card from the list since user unfollowed
+            button.closest('.col-12').remove();
+            
+            // If no more sellers, show the empty state
+            if (document.querySelectorAll('.col-12').length === 0) {
+                location.reload();
+            }
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock %}
+{% endblock %}

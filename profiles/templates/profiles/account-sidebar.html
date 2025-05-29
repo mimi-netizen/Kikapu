@@ -1,0 +1,65 @@
+{% load static %}
+<div class="sidebar-box">
+    <div class="user">
+        <figure>
+            <img src="{% if user.profile.profile_pic %}{{ user.profile.profile_pic.url }}{% else %}{% static 'images/default-profile-pic.jpg' %}{% endif %}" alt="{{ user.username }}" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
+        </figure>
+        <div class="usercontent">
+            <h3>{{ user.username }}</h3>
+            {% if user.profile.is_seller %}
+                <p>Seller Account</p>
+            {% else %}
+                <p>Buyer Account</p>
+            {% endif %}
+        </div>
+    </div>
+    <nav class="navdashboard">
+        <ul>
+            <li>
+                <a href="{% url 'profiles:dashboard' %}">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            {% if user.profile.is_seller %}
+                <li>
+                    <a href="{% url 'ads:post-ads' %}">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Post New Ad</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'profiles:profile-my-ads' %}">
+                        <i class="fas fa-list"></i>
+                        <span>My Ads</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'profiles:store-settings' %}">
+                        <i class="fas fa-store"></i>
+                        <span>Store Settings</span>
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{% url 'profiles:profile-favorite-ads' %}">
+                        <i class="fas fa-heart"></i>
+                        <span>Saved Ads</span>
+                    </a>
+                </li>
+            {% endif %}
+            <li>
+                <a href="{% url 'profiles:profile-settings' %}">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'profiles:profile-close' %}" class="text-danger">
+                    <i class="fas fa-times-circle"></i>
+                    <span>Close Account</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>

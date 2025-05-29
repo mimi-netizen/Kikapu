@@ -1,0 +1,431 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+
+<!-- County Listings Section Start -->
+<section class="seller-listings py-5">
+  <div class="container">
+    <!-- Page Header with Search -->
+    <div class="row mb-4">
+      <div class="col-lg-6">
+        <h1 class="h2 mb-0">Classifieds in <span class="text-brand">{{ county.county_name }}</span></h1>
+        <p class="text-muted">Browse all listings in this county</p>
+      </div>
+      <div class="col-lg-6">
+        <div class="search-bar">
+          <div class="input-group">
+            <input type="text" class="form-control" id="searchInput" placeholder="Search ads...">
+            <div class="input-group-append">
+              <button class="btn btn-primary" type="button">
+                <i class="lni-search"></i> Search
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Options -->
+    <div class="filter-container mb-4">
+      <div class="row">
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-body p-3">
+              <div class="row align-items-center">
+                <div class="col-md-4 my-1">
+                  <select class="custom-select" id="categoryFilter">
+                    <option selected value="">All Categories</option>
+                    {% for category in categories %}
+                      <option value="{{ category.slug }}">{{ category.category }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-4 my-1">
+                  <select class="custom-select" id="sortFilter">
+                    <option selected>Latest First</option>
+                    <option>Price: High to Low</option>
+                    <option>Price: Low to High</option>
+                    <option>Oldest First</option>
+                  </select>
+                </div>
+                <div class="col-md-4 my-1">
+                  <button class="btn btn-outline-primary btn-block" id="filterButton">Apply Filters</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ads Grid -->
+    <div class="row" id="adsContainer">
+      {% if ads_by_county %}
+        {% for ad in ads_by_county %}
+          <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-4 ad-item">
+            <div class="card h-100 listing-card shadow-sm hover-shadow transition">
+              <div class="listing-badge {% if ad.is_featured %}featured{% endif %}">
+                {% if ad.is_featured %}<span>Featured</span>{% endif %}
+              </div>
+              <a href="{% url 'ads:ads-detail' ad.id %}" class="card-img-top-wrapper">
+                {% for img in ad.images.all %}
+                  {% if forloop.first %}
+                    <img class="card-img-top" src="{{ img.image.url }}" alt="{{ ad.title }}">
+                  {% endif %}
+                {% endfor %}
+              </a>
+              <div class="card-body p-3" data-category="{{ ad.category.slug }}">
+                <h5 class="card-title mb-1">
+                  <a href="{% url 'ads:ads-detail' ad.id %}" class="text-decoration-none text-dark">{{ ad.title|truncatechars:40 }}</a>
+                </h5>
+                <p class="text-primary font-weight-bold mb-2">ksh {{ ad.price|intcomma }}</p>
+                <div class="small text-muted mb-2">
+                  <i class="lni-map-marker mr-1"></i> {{ ad.county }}
+                </div>
+                <div class="listing-meta d-flex justify-content-between align-items-center">
+                  
+                  <span class="badge badge-success">
+                    <i class="lni-check-mark-circle"></i> Verified
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="col-12">
+          <div class="alert alert-info text-center p-5">
+            <i class="lni-map-marker display-4 mb-3 d-block"></i>
+            <h4>No listings found</h4>
+            <p class="mb-0">There are no active listings in {{ county.county_name }} at the moment</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Pagination / Load More -->
+    <div class="row mt-4">
+      <div class="col-12 text-center">
+        <button class="btn btn-outline-primary px-5" id="loadMoreBtn">
+          <i class="lni-reload mr-2"></i> Load More
+        </button>
+        <div class="mt-3 text-muted small">
+          <span id="shownCount">24</span> of <span id="totalCount">{{ ads_by_county.count }}</span> ads
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- County Listings Section End -->
+
+<!-- Custom Styles -->
+<style>
+  /* Brand Colors */
+  :root {
+    --brand-color: #E08D35;
+    --brand-color-hover: #75522f;
+  }
+
+  .text-brand {
+    color: var(--brand-color) !important;
+  }
+
+  .text-primary {
+    color: var(--brand-color) !important;
+  }
+
+  .btn-primary {
+    background-color: var(--brand-color);
+    border-color: var(--brand-color);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--brand-color-hover);
+    border-color: var(--brand-color-hover);
+  }
+
+  .btn-outline-primary {
+    color: var(--brand-color);
+    border-color: var(--brand-color);
+  }
+
+  .btn-outline-primary:hover {
+    background-color: var(--brand-color);
+    border-color: var(--brand-color);
+  }
+
+  .price {
+    color: var(--brand-color) !important;
+  }
+
+  .badge-success {
+    background-color: var(--brand-color);
+  }
+
+  /* Listing Badge */
+  .listing-badge.featured span {
+    background: linear-gradient(45deg, var(--brand-color), var(--brand-color-hover));
+  }
+
+  /* Header Spacing */
+  .seller-listings {
+    margin-top: 80px;  /* Add space between header and content */
+  }
+
+  /* Card Styling */
+  .listing-card {
+    border-radius: 8px;
+    background: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    border: 1px solid #eee;
+  }
+  
+  .listing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .card-img-top-wrapper {
+    position: relative;
+    height: 220px;  /* Increased height */
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+  }
+  
+  .card-img-top {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.5s ease;
+  }
+  
+  .listing-card:hover .card-img-top {
+    transform: scale(1.1);
+  }
+
+  .card-body {
+    padding: 15px;
+  }
+
+  .card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+
+  .card-title a {
+    color: #333;
+    text-decoration: none;
+  }
+
+  .listing-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+  }
+  
+  .listing-badge.featured span {
+    background: linear-gradient(45deg, #FF9800, #FF5722);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  .price {
+    color: #2196F3;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  .listing-meta {
+    font-size: 0.8rem;
+    color: #666;
+  }
+
+  .badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.75rem;
+  }
+
+  .badge-success {
+    background-color: #4CAF50;
+    color: white;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 767.98px) {
+    .seller-listings {
+      margin-top: 60px;
+    }
+
+    .card-img-top-wrapper {
+      height: 180px;
+    }
+    
+    .card-body {
+      padding: 12px;
+    }
+    
+    .card-title {
+      font-size: 0.9rem;
+    }
+  }
+  
+  @media (max-width: 575.98px) {
+    .seller-listings {
+      margin-top: 40px;
+    }
+
+    .card-img-top-wrapper {
+      height: 160px;
+    }
+  }
+</style>
+
+<!-- Custom Scripts -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Variables
+    const adsPerPage = 24;
+    let currentPage = 1;
+    let filteredAds = Array.from(document.querySelectorAll('.ad-item'));
+    const totalCount = filteredAds.length;
+    
+    // Set total count in UI
+    document.getElementById('totalCount').textContent = totalCount;
+    
+    // Initial display
+    updateVisibleAds();
+    
+    // Load More Button
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    loadMoreBtn.addEventListener('click', function() {
+      currentPage++;
+      updateVisibleAds();
+      
+      // Update counters
+      document.getElementById('shownCount').textContent = Math.min(currentPage * adsPerPage, totalCount);
+      
+      // Hide button if all ads are shown
+      if (currentPage * adsPerPage >= filteredAds.length) {
+        loadMoreBtn.style.display = 'none';
+      }
+    });
+    
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', function() {
+      filterAds();
+    });
+    
+    // Filter button
+    document.getElementById('filterButton').addEventListener('click', function() {
+      filterAds();
+    });
+    
+    // Filter function
+    function filterAds() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const categoryValue = document.getElementById('categoryFilter').value;
+      const sortValue = document.getElementById('sortFilter').value;
+      
+      // Reset pagination
+      currentPage = 1;
+      
+      // Get all ads
+      const allAds = Array.from(document.querySelectorAll('.ad-item'));
+      
+      // Filter ads
+      filteredAds = allAds.filter(ad => {
+        const title = ad.querySelector('.card-title').textContent.toLowerCase();
+        const category = ad.querySelector('.card-body').dataset.category; // Add this data attribute to your card
+        
+        // Apply search filter
+        const matchesSearch = title.includes(searchTerm);
+        
+        // Apply category filter
+        const matchesCategory = !categoryValue || category === categoryValue;
+        
+        return matchesSearch && matchesCategory;
+      });
+      
+      // Apply sorting
+      if (sortValue === 'Price: High to Low') {
+        filteredAds.sort((a, b) => {
+          const priceA = parseFloat(a.querySelector('.price').textContent.replace(/[^0-9.]/g, ''));
+          const priceB = parseFloat(b.querySelector('.price').textContent.replace(/[^0-9.]/g, ''));
+          return priceB - priceA;
+        });
+      } else if (sortValue === 'Price: Low to High') {
+        filteredAds.sort((a, b) => {
+          const priceA = parseFloat(a.querySelector('.price').textContent.replace(/[^0-9.]/g, ''));
+          const priceB = parseFloat(b.querySelector('.price').textContent.replace(/[^0-9.]/g, ''));
+          return priceA - priceB;
+        });
+      }
+      
+      // Update UI
+      document.getElementById('totalCount').textContent = filteredAds.length;
+      document.getElementById('shownCount').textContent = Math.min(adsPerPage, filteredAds.length);
+      
+      // Show/hide ads
+      updateVisibleAds();
+      
+      // Show load more button if needed
+      loadMoreBtn.style.display = filteredAds.length > adsPerPage ? 'inline-block' : 'none';
+    }
+    
+    // Update visible ads
+    function updateVisibleAds() {
+      const allAds = Array.from(document.querySelectorAll('.ad-item'));
+      const visibleCount = currentPage * adsPerPage;
+      
+      // Hide all ads first
+      allAds.forEach(ad => {
+        ad.style.display = 'none';
+      });
+      
+      // Show filtered ads up to the current page limit
+      filteredAds.slice(0, visibleCount).forEach(ad => {
+        ad.style.display = 'block';
+      });
+      
+      // If no results, show message
+      const adsContainer = document.getElementById('adsContainer');
+      if (filteredAds.length === 0) {
+        // Remove existing no results message if any
+        const existingMessage = document.querySelector('.no-results-message');
+        if (!existingMessage) {
+          const noResultsMsg = document.createElement('div');
+          noResultsMsg.className = 'col-12 no-results-message';
+          noResultsMsg.innerHTML = `
+            <div class="alert alert-info text-center p-5">
+              <i class="lni-search-alt display-4 mb-3 d-block"></i>
+              <h4>No matches found</h4>
+              <p class="mb-0">Try adjusting your search or filter criteria</p>
+            </div>
+          `;
+          adsContainer.appendChild(noResultsMsg);
+        }
+      } else {
+        // Remove no results message if it exists
+        const existingMessage = document.querySelector('.no-results-message');
+        if (existingMessage) {
+          existingMessage.remove();
+        }
+      }
+    }
+  });
+</script>
+
+{% endblock content %}

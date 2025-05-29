@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<!-- Page Header Start -->
+<div class="page-header" style="background: url({% static 'img/banner1.jpg' %});">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="breadcrumb-wrapper">
+          <h2 class="product-title">My Ads</h2>
+          <ol class="breadcrumb">
+            <li><a href="#">Home /</a></li>
+            <li class="current">My Ads</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page Header End -->
+
+<!-- Start Content -->
+<div id="content" class="section-padding">
+  <div class="container">
+    <div class="row">
+     <!-- Account Sidebar -->
+     {% include 'profiles/account-sidebar.html' %}
+     <!-- Account Sidebar -->
+      <div class="col-sm-12 col-md-8 col-lg-9">
+        <div class="page-content">
+          <div class="inner-box">
+            <div class="dashboard-box">
+              <h2 class="dashbord-title">My Ads</h2>
+            </div>
+            <div class="dashboard-wrapper">
+              <nav class="nav-table">
+                <ul>
+                    <li class="active"><a href="#">All Ads ({{ status_counts.all }})</a></li>
+                    <li><a href="#">Published ({{ status_counts.published }})</a></li>
+                    <li><a href="#">Featured ({{ status_counts.featured }})</a></li>
+                    <li><a href="#">Sold ({{ status_counts.sold }})</a></li>
+                    <li><a href="#">Active ({{ status_counts.active }})</a></li>
+                    <li><a href="#">Expired ({{ status_counts.expired }})</a></li>
+                </ul>
+            </nav>
+              <table class="table table-responsive dashboardtable tablemyads">
+                <thead>
+                  <tr>
+                    <th>
+                      <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="checkedall">
+                        <label class="custom-control-label" for="checkedall"></label>
+                      </div>
+                    </th>
+                    <th>Photo</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Ad Status</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for ad in ads %}
+                  <tr data-category="{{ ad.status|lower }}">
+                    <td>
+                      <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="ad{{ ad.id }}">
+                        <label class="custom-control-label" for="ad{{ ad.id }}"></label>
+                      </div>
+                    </td>
+                    <td class="photo">
+                      {% if ad.image %}
+                      <img class="img-fluid" src="{{ ad.image.url }}" alt="{{ ad.title }}">
+                      {% else %}
+                      <img class="img-fluid" src="{% static 'img/placeholder.png' %}" alt="No image">
+                      {% endif %}
+                    </td>
+                    <td data-title="Title">
+                      <h3>{{ ad.title }}</h3>
+                      <span>Ad ID: {{ ad.id }}</span>
+                    </td>
+                    <td data-title="Category"><span class="adcategories">{{ ad.category.name }}</span></td>
+                    <td data-title="Ad Status">
+                      <span class="adstatus {% if ad.is_sold %}adsold{% elif ad.is_active %}adactive{% else %}adexpired{% endif %}">
+                          {% if ad.is_sold %}Sold{% elif ad.is_active %}Active{% else %}Expired{% endif %}
+                      </span>
+                  </td>
+                    <td data-title="Price">
+                      <h3>ksh{{ ad.price }}</h3>
+                    </td>
+                    <td data-title="Action">
+                      <div class="btns-actions">
+                        <a class="btn-action btn-view" href="{% url 'ads:ads-detail' ad.id %}"><i class="lni-eye"></i></a>
+                        <a class="btn-action btn-edit" href="{% url 'ads:ads-edit' ad.id %}"><i class="lni-pencil"></i></a>
+                        <a class="btn-action btn-delete" href="{% url 'ads:ads-delete' ad.id %}"><i class="lni-trash"></i></a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="7" class="text-center">No ads found</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Content -->
+{% endblock content %}

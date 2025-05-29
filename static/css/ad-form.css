@@ -1,0 +1,44 @@
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.custom-file-label {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.image-preview {
+    max-width: 100px;
+    max-height: 100px;
+    margin: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 3px;
+}
+
+.invalid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: .25rem;
+    font-size: 80%;
+    color: #dc3545;
+}
+
+.form-text {
+    color: #1c4e52;
+    font-size: 0.875rem;
+}
+
+.required-field::after {
+    content: "*";
+    color: red;
+    margin-left: 4px;
+}
+
+.help-text {
+    font-size: 0.875rem;
+    color: #1c4e52;
+    margin-top: 0.25rem;
+}

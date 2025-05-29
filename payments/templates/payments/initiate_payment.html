@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Featured Ad Payment</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ ad.title }}</h5>
+                    <p class="card-text">Make your ad stand out by featuring it for 7 days!</p>
+                    
+                    <div class="alert alert-info">
+                        <p class="mb-0">Amount: KES 250</p>
+                    </div>
+                    
+                    <form id="paymentForm" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="phone_number" class="form-label">M-Pesa Phone Number</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="phone_number" 
+                                   name="phone_number" 
+                                   placeholder="254XXXXXXXXX"
+                                   required>
+                            <small class="text-muted">Enter your phone number in the format: 254XXXXXXXXX</small>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100" formaction="{% url 'payments:initiate_payment' ad.id %}">
+                            Pay with M-Pesa
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('#paymentForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        $.ajax({
+            url: "{% url 'payments:initiate_payment' ad.id %}",
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(response) {
+                if (response.status === 'success') {
+                    alert('Please check your phone for the STK push notification');
+                } else {
+                    alert('Failed to initiate payment. Please try again.');
+                }
+            },
+            error: function() {
+                alert('An error occurred. Please try again.');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

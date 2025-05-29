@@ -1,0 +1,41 @@
+{% load static %}
+{% load humanize %}
+
+{% for ad in related_ads %}
+<div class="col-xs-6 col-sm-6 col-md-4 col-lg-2">
+  <div class="featured-box">
+    <figure>
+      <div class="icon">
+        {% if user.is_authenticated %}
+          <span class="bg-green">
+            <i class="lni-heart bookmark-btn" data-item-id="{{ ad.id }}" style="cursor: pointer;"></i>
+          </span>
+        {% endif %}
+      </div>
+      <a href="{% url 'ads:ads-detail' ad.id %}">
+        {% if ad.images.first %}
+          <img class="img-fluid" src="{{ ad.images.first.image.url }}" alt="{{ ad.title }}"
+               onerror="this.onerror=null; this.src='{% static 'img/placeholder.png' %}';">
+        {% else %}
+          <img class="img-fluid" src="{% static 'img/placeholder.png' %}" alt="No image">
+        {% endif %}
+      </a>
+    </figure>
+    <div class="feature-content">
+      <div class="product">
+        <a href="{% url 'ads:category-archive' ad.category.slug %}">{{ ad.category }}</a>
+      </div>
+      <h4 style="font-size: 11px; margin-bottom: 6px;"><a href="{% url 'ads:ads-detail' ad.id %}">{{ ad.title|truncatechars:40 }}</a></h4>
+      <div class="meta-tag">
+        <span>
+          <i class="lni-map-marker"></i> {{ ad.county }}, {{ ad.city }}
+        </span>
+      </div>
+      <div class="dsc" style="font-size: 12px; margin: 6px 0; color: #666;">{{ ad.description|striptags|safe|truncatewords:10 }}</div>
+      <div class="price-box">
+        <h5 class="price" style="font-size: 14px; color: #E08D35;">Ksh {{ ad.price|intcomma }}</h5>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}

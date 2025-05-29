@@ -1,0 +1,412 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Your Kikapu Account - Buy & Sell in Kenya{% endblock %}
+
+{% block meta_description %}Join Kikapu Marketplace - Create your free account to start buying and selling in Kenya. Safe, secure, and easy registration process.{% endblock %}
+
+{% block meta_keywords %}register, sign up, create account, kikapu marketplace, buy and sell kenya{% endblock %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/register.css' %}">
+<!-- Add Open Graph tags -->
+<meta property="og:title" content="Create Your Kikapu Account">
+<meta property="og:description" content="Join Kenya's fastest growing marketplace. Create your free account today.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:image" content="{% static 'images/kikapu-social.png' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="bg-light">
+  <div class="container py-2">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+      <li class="breadcrumb-item active">Create Account</li>
+    </ol>
+  </div>
+</nav>
+
+<section class="section-padding auth-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-9">
+        <div class="registration-container position-relative">
+          <!-- Loading overlay -->
+          <div class="loading-overlay">
+            <div class="spinner-border text-primary loading-spinner" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+
+          <!-- Progress Indicator -->
+          <div class="registration-progress mb-4">
+            <div class="progress-step active" data-step="1">
+              <div class="step-number">1</div>
+              <div class="step-label">Account</div>
+            </div>
+            <div class="progress-step" data-step="2">
+              <div class="step-number">2</div>
+              <div class="step-label">Details</div>
+            </div>
+            <div class="progress-step" data-step="3">
+              <div class="step-number">3</div>
+              <div class="step-label">Verify</div>
+            </div>
+          </div>
+
+          <h3 class="form-title text-center">Join Kikapu Today</h3>
+          
+          {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          {% if reg_form.errors %}
+          <div class="alert alert-danger">
+            <strong>Error:</strong> Please correct the errors below.
+            {% if reg_form.non_field_errors %}
+            <ul>
+              {% for error in reg_form.non_field_errors %}
+              <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+          {% endif %}
+
+          <form method="post" novalidate class="registration-form" id="registrationForm">
+            {% csrf_token %}
+            
+            <!-- Step 1: Basic Info -->
+            <div class="form-step" data-step="1">
+              <div class="form-group mb-4">
+                <label for="{{ reg_form.username.id_for_label }}" class="mb-2">Choose your username</label>
+                {{ reg_form.username }}
+                {% if reg_form.username.errors %}
+                <div class="invalid-feedback d-block">
+                  {{ reg_form.username.errors }}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="form-group mb-4">
+                <label for="{{ reg_form.email.id_for_label }}" class="mb-2">Email</label>
+                {{ reg_form.email }}
+                {% if reg_form.email.errors %}
+                <div class="invalid-feedback d-block">
+                  {{ reg_form.email.errors }}
+                </div>
+                {% endif %}
+              </div>
+              
+              <!-- Account Type Selection with Icons -->
+              <div class="account-type-selection">
+                <div class="account-type-option">
+                  <input type="radio" name="account_type" id="buyer" value="buyer" checked>
+                  <label for="buyer">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Buyer</span>
+                    <small>I want to shop</small>
+                  </label>
+                </div>
+                <div class="account-type-option">
+                  <input type="radio" name="account_type" id="seller" value="seller">
+                  <label for="seller">
+                    <i class="fas fa-store"></i>
+                    <span>Seller</span>
+                    <small>I want to sell</small>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 2: Security -->
+            <div class="form-step" data-step="2" style="display: none;">
+              <div class="form-group mb-4">
+                <label for="{{ reg_form.password1.id_for_label }}" class="mb-2">Password</label>
+                {{ reg_form.password1 }}
+                {% if reg_form.password1.errors %}
+                <div class="invalid-feedback d-block">
+                  {{ reg_form.password1.errors }}
+                </div>
+                {% endif %}
+                {% if reg_form.password1.help_text %}
+                <small class="form-text text-muted">{{ reg_form.password1.help_text|safe }}</small>
+                {% endif %}
+              </div>
+
+              <div class="form-group mb-4">
+                <label for="{{ reg_form.password2.id_for_label }}" class="mb-2">Confirm Password</label>
+                {{ reg_form.password2 }}
+                {% if reg_form.password2.errors %}
+                <div class="invalid-feedback d-block">
+                  {{ reg_form.password2.errors }}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Step 3: Terms -->
+            <div class="form-step" data-step="3" style="display: none;">
+              <div class="terms-section">
+                <div class="terms-checkbox mb-3">
+                  <input type="checkbox" id="terms_accepted" name="terms_accepted" required>
+                  <label for="terms_accepted">
+                    I agree to the <a href="{% url 'terms-of-service' %}" target="_blank">Terms of Service</a>
+                  </label>
+                </div>
+                <div class="terms-checkbox mb-3">
+                  <input type="checkbox" id="privacy_accepted" name="privacy_accepted" required>
+                  <label for="privacy_accepted">
+                    I agree to the <a href="{% url 'terms-of-service' %}" target="_blank">Privacy Policy</a>
+                  </label>
+                </div>
+                <div class="terms-checkbox mb-4">
+                  <input type="checkbox" id="newsletter_subscription" name="newsletter_subscription">
+                  <label for="newsletter_subscription">
+                    Send me updates about deals and new features (optional)
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="form-navigation">
+              <button type="button" class="btn btn-secondary prev-step" style="display: none;">Back</button>
+              <button type="button" class="btn btn-primary next-step">Continue</button>
+              <button type="submit" class="btn btn-success submit-step" style="display: none;">Create Account</button>
+            </div>
+
+            <div class="form-divider">
+              <span>or</span>
+            </div>
+
+            <div class="text-center mt-3">
+              <p class="mb-0">Already have an account? <a href="{% url 'login' %}" class="login-link">Sign in</a></p>
+            </div>
+          </form>
+
+          <!-- Add social proof section -->
+          <div class="social-proof">
+            <div class="row">
+              <div class="col-4">
+                <div class="social-proof-stat">
+                  <div class="social-proof-number">10K+</div>
+                  <div class="social-proof-label">Active Users</div>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="social-proof-stat">
+                  <div class="social-proof-number">50K+</div>
+                  <div class="social-proof-label">Products Listed</div>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="social-proof-stat">
+                  <div class="social-proof-number">98%</div>
+                  <div class="social-proof-label">Happy Customers</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all DOM elements
+    const form = document.querySelector('#registrationForm');
+    const loadingOverlay = document.querySelector('.loading-overlay');
+    const formSteps = document.querySelectorAll('.form-step');
+    const progressSteps = document.querySelectorAll('.progress-step');
+    const nextBtn = document.querySelector('.next-step');
+    const prevBtn = document.querySelector('.prev-step');
+    const submitBtn = document.querySelector('.submit-step');
+    const radioContainers = document.querySelectorAll('.custom-radio');
+    const radioInputs = document.querySelectorAll('input[name="account_type"]');
+    let currentStep = 1;
+
+    // Function to show a specific step
+    function showStep(stepNumber) {
+        if (!formSteps.length) return;
+
+        formSteps.forEach(step => {
+            step.style.display = 'none';
+        });
+
+        progressSteps.forEach((step, index) => {
+            step.classList.toggle('active', index + 1 <= stepNumber);
+        });
+
+        const currentStepElement = document.querySelector(`.form-step[data-step="${stepNumber}"]`);
+        if (currentStepElement) {
+            currentStepElement.style.display = 'block';
+        }
+
+        // Update button visibility
+        if (prevBtn) prevBtn.style.display = stepNumber > 1 ? 'block' : 'none';
+        if (nextBtn) nextBtn.style.display = stepNumber < formSteps.length ? 'block' : 'none';
+        if (submitBtn) submitBtn.style.display = stepNumber === formSteps.length ? 'block' : 'none';
+    }
+
+    // Function to validate current step
+    function validateStep(step) {
+        const currentStepElement = document.querySelector(`.form-step[data-step="${step}"]`);
+        if (!currentStepElement) return false;
+
+        let isValid = true;
+        const inputs = currentStepElement.querySelectorAll('input[required]');
+        
+        inputs.forEach(input => {
+            if (!input.value.trim()) {
+                isValid = false;
+                input.classList.add('is-invalid');
+                toastr.error(`${input.name} is required`);
+            } else {
+                input.classList.remove('is-invalid');
+            }
+        });
+
+        // Additional validation for specific steps
+        if (step === 1) {
+            const emailInput = currentStepElement.querySelector('input[type="email"]');
+            if (emailInput && emailInput.value) {
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailPattern.test(emailInput.value)) {
+                    isValid = false;
+                    emailInput.classList.add('is-invalid');
+                    toastr.error('Please enter a valid email address');
+                }
+            }
+        } else if (step === 2) {
+            const password1 = document.querySelector('[name="password1"]');
+            const password2 = document.querySelector('[name="password2"]');
+            
+            if (password1 && password2 && password1.value !== password2.value) {
+                isValid = false;
+                toastr.error('Passwords do not match');
+            }
+        }
+
+        return isValid;
+    }
+
+    // Event listeners for navigation
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            if (validateStep(currentStep)) {
+                currentStep++;
+                showStep(currentStep);
+            }
+        });
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            currentStep--;
+            showStep(currentStep);
+        });
+    }
+
+    // Handle form submission
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!validateStep(currentStep)) {
+                return false;
+            }
+
+            loadingOverlay.style.display = 'flex';
+            this.submit();
+        });
+
+        // Form field validation
+        const inputs = form.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.value.trim() === '') {
+                    toastr.warning(`${this.name} is required`);
+                }
+            });
+        });
+    }
+
+    // Account type selection handling
+    radioInputs.forEach(radio => {
+        radio.addEventListener('change', function() {
+            radioContainers.forEach(container => container.classList.remove('active'));
+            this.closest('.custom-radio').classList.add('active');
+            
+            const accountType = this.value;
+            const message = accountType === 'seller' ? 
+                'As a seller, you can post products and manage your store' : 
+                'As a buyer, you can browse and purchase products';
+            toastr.info(message);
+        });
+    });
+
+    // Initial states
+    showStep(1);
+    const selectedRadio = document.querySelector('input[name="account_type"]:checked');
+    if (selectedRadio) {
+        selectedRadio.closest('.custom-radio').classList.add('active');
+    }
+
+    // Add styles
+    const styles = `
+        .custom-checkbox {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+        }
+
+        .custom-control-input {
+            width: 1.2rem;
+            height: 1.2rem;
+            margin-right: 0.5rem;
+        }
+
+        .terms-link {
+            color: #E08D35;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .terms-link:hover {
+            color: #b08654;
+            text-decoration: underline;
+        }
+
+        .custom-checkbox .invalid-feedback {
+            display: none;
+        }
+
+        .custom-checkbox.was-validated .invalid-feedback {
+            display: block;
+        }
+    `;
+
+    const styleSheet = document.createElement("style");
+    styleSheet.textContent = styles;
+    document.head.appendChild(styleSheet);
+});
+</script>
+{% endblock %}

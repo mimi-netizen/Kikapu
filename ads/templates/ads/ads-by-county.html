@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+
+<!-- Page Header Start -->
+<div class="page-header" style="background: url(assets/img/banner1.jpg);">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="breadcrumb-wrapper">
+          <h2 class="product-title">Ads in {{ county.name }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page Header End -->
+
+<!-- Main container Start -->
+<div class="main-container section-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 col-md-12 col-xs-12 page-sidebar">
+        <aside>
+          <!-- Categories Widget -->
+          <div class="widget categories">
+            <h4 class="widget-title">All Categories</h4>
+            <ul class="categories-list">
+              <li>
+                {% for category in category_listing %}
+                <a href="{% url 'ads:category-archive' category.slug %}">
+                  <i class="lni-folder"></i>
+                  {{ category }} <span class="category-counter">({{ category.total_ads }})</span>
+                </a>
+                {% endfor %}
+              </li>
+            </ul>
+          </div>
+          <!-- Counties Widget -->
+          <div class="widget counties">
+            <h4 class="widget-title">All Counties</h4>
+            <ul class="counties-list">
+              <li>
+                {% for county in county_listing %}
+                <a href="{% url 'ads:county-archive' county.slug %}" {% if county.slug == current_county.slug %}class="active"{% endif %}>
+                  <i class="lni-folder"></i>
+                  {{ county }} <span class="county-counter">({{ county.total_ads }})</span>
+                </a>
+                {% endfor %}
+              </li>
+            </ul>
+          </div>
+          <div class="widget">
+            <h4 class="widget-title">Advertisement</h4>
+            <div class="add-box">
+              <img class="img-fluid" src="{% static 'img/img1.jpg' %}" alt="">
+            </div>
+          </div>
+        </aside>
+      </div>
+      <div class="col-lg-8 col-md-12 col-xs-12 page-content">
+        <!-- Adds wrapper Start -->
+        <div class="adds-wrapper">
+          <div class="tab-content">
+            <div id="list-view" class="tab-pane fade active show">
+              <div class="row">
+                {% for ad_listing in ads_listing %}
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                  <div class="featured-box">
+                    <figure>
+                      <a href="{% url 'ads:ads-detail' ad_listing.id %}">
+                        {% for img in ad_listing.images.all %}
+                        {% if forloop.first %}
+                        <img class="img-fluid" src="{{ img.image.url }}" alt="">
+                        {% endif %}
+                        {% endfor %}
+                      </a>
+                    </figure>
+                    <div class="feature-content">
+                      <div class="product">
+                        <a href="{% url 'ads:category-archive' ad_listing.category.slug %}"><i class="lni-folder"></i> {{ ad_listing.category }}</a>
+                      </div>
+                      <h4><a href="{% url 'ads:ads-detail' ad_listing.id %}">{{ ad_listing.title }}</a></h4>
+                      <span>Created {{ ad_listing.date_created }}</span>
+                      <ul class="address">
+                        <li>
+                          <i class="lni-map-marker"></i> {{ ad_listing.city }}, {{ ad_listing.county }}
+                        </li>
+                        <li>
+                          <i class="lni-alarm-clock"></i> {{ ad_listing.date_created|date }}
+                        </li>
+                        <li>
+                          <i class="lni-user"></i> {{ ad_listing.author.user }}
+                        </li>
+                        <li>
+                          <i class="lni-package"></i> {{ ad_listing.condition }}
+                        </li>
+                      </ul>
+                      <div class="listing-bottom">
+                        <h3 class="price float-left">Ksh {{ ad_listing.price }}</h3>
+                        <p class="btn-verified float-right"><i class="lni-check-box"></i>
+                          Verified Ad</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+                
+                {% if not ads_listing %}
+                <div class="col-12 text-center">
+                  <p>No ads found in this county.</p>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Adds wrapper End -->
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Main container End -->
+
+{% endblock content %}

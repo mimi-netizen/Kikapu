@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="page-header" style="background: #E08D35;">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="breadcrumb-wrapper">
+          <h2 class="product-title text-white">Saved Ads</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page Header End -->
+
+<!-- Main container Start -->
+<div class="main-container section-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        {% csrf_token %}
+        {% if bookmark %}
+          <div class="row g-4">
+            {% for bookmark in bookmarks %}
+            <div class="col-6 col-md-4 col-lg-3">
+              <div class="featured-box">
+                <figure>
+                  <a href="{% url 'ads:ads-detail' bookmark.ad.id %}">
+                    {% if bookmark.ad.images.first %}
+                      <img class="img-fluid" src="{{ bookmark.ad.images.first.image.url }}" alt="{{ bookmark.ad.title }}">
+                    {% else %}
+                      <img class="img-fluid" src="{% static 'img/placeholder.png' %}" alt="No image">
+                    {% endif %}
+                  </a>
+                </figure>
+                <div class="feature-content">
+                  <div class="product-info">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <span class="category">{{ bookmark.ad.category }}</span>
+                      <button 
+                        class="btn btn-sm btn-danger bookmark-btn" 
+                        data-item-id="{{ bookmark.ad.id }}"
+                        onclick="event.preventDefault(); event.stopPropagation(); toggleBookmark(this, {{ bookmark.ad.id }})"
+                      >
+                        <i class="lni-heart-filled"></i>
+                      </button>
+                    </div>
+                    <h4 class="title"><a href="{% url 'ads:ads-detail' bookmark.ad.id %}">{{ bookmark.ad.title }}</a></h4>
+                    <span>{{ bookmark.ad.description|truncatewords:10|safe }}</span>
+                    <div class="meta-tag">
+                      <div class="location">
+                        <i class="lni-map-marker"></i> {{ bookmark.ad.city }}, {{ bookmark.ad.county }}
+                      </div>
+                      <div class="price">Ksh {{ bookmark.ad.price|intcomma }}</div>
+                    </div>
+                    <div class="saved-date text-muted mt-2" style="font-size: 12px;">
+                      Saved {{ bookmark.saved_at|naturaltime }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="text-center empty-state" style="padding: 80px 0;">
+            <div style="color: #E08D35; margin-bottom: 20px;">
+              <i class="lni-heart-filled" style="font-size: 48px;"></i>
+            </div>
+            <h2 style="font-size: 24px; margin-bottom: 10px;">No Saved Ads Yet</h2>
+            <p style="color: #666; margin-bottom: 20px;">Start saving ads you're interested in by clicking the heart icon on any ad.</p>
+            <a href="{% url 'ads:ads-listing' %}" class="btn btn-common">Browse Ads</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Main container End -->
+
+{% block extra_js %}
+<script>
+function toggleBookmark(button, adId) {
+    // Get CSRF token from the meta tag
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
+    fetch(`{% url 'ads:toggle-bookmark' 999 %}`.replace('999', adId), {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'unsaved') {
+            // Remove the entire card from the saved ads page
+            const card = button.closest('.col-6');
+            card.style.opacity = '0';
+            setTimeout(() => {
+                card.remove();
+                // If no more saved ads, show the empty state
+                if (document.querySelectorAll('.featured-box').length === 0) {
+                    location.reload();
+                }
+            }, 300);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating your saved listing. Please try again.');
+    });
+}
+</script>
+{% endblock %}
+
+{% endblock %}

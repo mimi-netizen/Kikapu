@@ -1,0 +1,900 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/listings.css' %}">
+<meta name="description" content="Browse our marketplace listings - Find great deals on vehicles, animal feeds, merchandise and more">
+{% endblock %}
+
+{% block content %}
+
+<!-- Optional: Add debug info during development -->
+{% if debug %}
+<div class="container mt-3">
+    <div class="alert alert-info">
+        <p>Total Ads: {{ ads_listing.paginator.count }}</p>
+        <p>Current Page: {{ ads_listing.number }} of {{ ads_listing.paginator.num_pages }}</p>
+        <p>Current Filters: {{ current_filters }}</p>
+    </div>
+</div>
+{% endif %}
+
+<!-- Main container Start -->
+<div class="main-container">
+  <div class="container-fluid px-0">
+
+ 
+    <!-- Hero Banner Section Start -->
+     
+<div class="hero-banner-section" style="background-image: url({% static 'images/hero-banner.jpg' %});">
+  <div class="container-fluid px-0">
+     <!-- Search Bar Start -->
+     <div class="search-bar-container py-3">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="search-wrapper">
+              <form method="GET" action="{% url 'ads:ads-listing' %}" class="search-form" id="filterForm">
+                <div class="input-group">
+                  <input 
+                    type="text" 
+                    name="search" 
+                    class="form-control search-input"
+                    placeholder="Search products..."
+                    value="{{ current_filters.search }}"
+                    aria-label="Search products"
+                  >
+                  <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary search-button" aria-label="Search">
+                      <i class="lni-search" aria-hidden="true"></i>
+                      <span class="d-none d-sm-inline">Search</span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Search Bar End -->
+    
+   
+  </div>
+</div>
+<!-- Hero Banner Section End -->
+
+
+    <!-- Search Results Message -->
+    {% if current_filters.search %}
+      <div class="row mb-4">
+        <div class="col-12">
+          <h3>Search Results for: "{{ current_filters.search }}"</h3>
+          {% if not ads_listing %}
+            <p>No results found.</p>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Featured Categories Grid -->
+<div class="container mt-4 mb-5">
+  <div class="section-header mb-4">
+    <h2>Shop by Category</h2>
+  </div>
+  <div class="row g-4">
+    <div class="col-6 col-md-3">
+      <a href="#" class="category-card">
+        <div class="category-image">
+          <img src="{% static 'images/categories/electronics.jpg' %}" alt="Electronics" class="img-fluid">
+        </div>
+        <div class="category-content">
+          <h3>Electronics</h3>
+          <p>Phones, Laptops & More</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="#" class="category-card">
+        <div class="category-image">
+          <img src="{% static 'images/categories/fashion.jpg' %}" alt="Fashion" class="img-fluid">
+        </div>
+        <div class="category-content">
+          <h3>Fashion</h3>
+          <p>Clothing, Shoes & Accessories</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="#" class="category-card">
+        <div class="category-image">
+          <img src="{% static 'images/categories/home.jpg' %}" alt="Home & Living" class="img-fluid">
+        </div>
+        <div class="category-content">
+          <h3>Home & Living</h3>
+          <p>Furniture & Decor</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="#" class="category-card">
+        <div class="category-image">
+          <img src="{% static 'images/categories/vehicles.jpg' %}" alt="Vehicles" class="img-fluid">
+        </div>
+        <div class="category-content">
+          <h3>Vehicles</h3>
+          <p>Cars, Bikes & Parts</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Product Sections -->
+<div class="container mb-5">
+  <!-- Today's Deals Section -->
+  <div class="product-section mb-4">
+    <div class="section-header d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h2 class="section-title">Today's Deals</h2>
+        <p class="section-subtitle">Great savings on popular items</p>
+      </div>
+      <a href="#" class="see-all-link">See all deals</a>
+    </div>
+    <div class="deals-scroll">
+      <div class="row flex-nowrap g-3">
+        {% for ad in ads_listing|slice:":6" %}
+        <div class="col-6 col-md-3 col-xl-2">
+          <div class="deal-card">
+            <div class="deal-badge">Save {{ ad.discount }}%</div>
+            <div class="deal-image">
+              {% if ad.images.first %}
+              <img src="{{ ad.images.first.image.url }}" alt="{{ ad.title }}" class="img-fluid">
+              {% else %}
+              <img src="{% static 'images/placeholder.jpg' %}" alt="{{ ad.title }}" class="img-fluid">
+              {% endif %}
+            </div>
+            <div class="deal-content">
+              <div class="deal-price">
+                <span class="current-price">KSh {{ ad.discounted_price|intcomma }}</span>
+                <span class="original-price">KSh {{ ad.price|intcomma }}</span>
+              </div>
+              <h3 class="deal-title">{{ ad.title|truncatechars:40 }}</h3>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Popular Categories Section -->
+  <div class="product-section mb-4">
+    <div class="section-header d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h2 class="section-title">Popular Categories</h2>
+        <p class="section-subtitle">Most visited categories this week</p>
+      </div>
+      <a href="#" class="see-all-link">See all</a>
+    </div>
+    <div class="row g-4">
+      <div class="col-6 col-md-3">
+        <a href="#" class="popular-category-card">
+          <div class="category-image">
+            <img src="{% static 'images/categories/phones.jpg' %}" alt="Phones & Tablets" class="img-fluid">
+          </div>
+          <div class="category-content">
+            <h3>Phones & Tablets</h3>
+            <p class="category-stats">Over 1000 items</p>
+            <span class="category-link">Shop now</span>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-3">
+        <a href="#" class="popular-category-card">
+          <div class="category-image">
+            <img src="{% static 'images/categories/computers.jpg' %}" alt="Computers" class="img-fluid">
+          </div>
+          <div class="category-content">
+            <h3>Computers</h3>
+            <p class="category-stats">500+ listings</p>
+            <span class="category-link">Shop now</span>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-3">
+        <a href="#" class="popular-category-card">
+          <div class="category-image">
+            <img src="{% static 'images/categories/furniture.jpg' %}" alt="Furniture" class="img-fluid">
+          </div>
+          <div class="category-content">
+            <h3>Furniture</h3>
+            <p class="category-stats">750+ items</p>
+            <span class="category-link">Shop now</span>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-3">
+        <a href="#" class="popular-category-card">
+          <div class="category-image">
+            <img src="{% static 'images/categories/cars.jpg' %}" alt="Cars" class="img-fluid">
+          </div>
+          <div class="category-content">
+            <h3>Cars</h3>
+            <p class="category-stats">200+ vehicles</p>
+            <span class="category-link">Shop now</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recently Viewed Section -->
+  <div class="product-section mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="section-title">Recently Viewed</h2>
+      <a href="#" class="see-all-link">View all</a>
+    </div>
+    <div class="row g-4 products-scroll">
+      {% for ad in ads_listing|slice:":6" %}
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="product-card">
+          <div class="product-image">
+            {% if ad.images.first %}
+            <img src="{{ ad.images.first.image.url }}" alt="{{ ad.title }}" class="img-fluid">
+            {% else %}
+            <img src="{% static 'images/placeholder.jpg' %}" alt="{{ ad.title }}" class="img-fluid">
+            {% endif %}
+          </div>
+          <div class="product-details">
+            <h3 class="product-title">{{ ad.title|truncatechars:40 }}</h3>
+            <div class="product-price">KSh {{ ad.price|intcomma }}</div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Recommended for You Section -->
+  <div class="product-section mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="section-title">Recommended for You</h2>
+      <a href="#" class="see-all-link">View all</a>
+    </div>
+    <div class="row g-4">
+      {% for ad in ads_listing|slice:":8" %}
+      <div class="col-6 col-md-3">
+        <div class="product-card">
+          <div class="product-image">
+            {% if ad.images.first %}
+            <img src="{{ ad.images.first.image.url }}" alt="{{ ad.title }}" class="img-fluid">
+            {% else %}
+            <img src="{% static 'images/placeholder.jpg' %}" alt="{{ ad.title }}" class="img-fluid">
+            {% endif %}
+          </div>
+          <div class="product-details">
+            <h3 class="product-title">{{ ad.title|truncatechars:40 }}</h3>
+            <div class="product-price">KSh {{ ad.price|intcomma }}</div>
+            <div class="product-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="far fa-star"></i>
+              <span class="rating-count">(24)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <!-- Today's Deals Section -->
+  <div class="product-section mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="section-title">Today's Deals</h2>
+      <a href="#" class="see-all-link">See all deals</a>
+    </div>
+    <div class="row g-4 products-scroll">
+      {% for ad in ads_listing|slice:":6" %}
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="product-card">
+          <div class="product-image">
+            {% if ad.images.first %}
+            <img src="{{ ad.images.first.image.url }}" alt="{{ ad.title }}" class="img-fluid">
+            {% else %}
+            <img src="{% static 'images/placeholder.jpg' %}" alt="{{ ad.title }}" class="img-fluid">
+            {% endif %}
+          </div>
+          <div class="product-details">
+            <h3 class="product-title">{{ ad.title|truncatechars:40 }}</h3>
+            <div class="product-price">KSh {{ ad.price|intcomma }}</div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  </div>
+</div>
+
+<!-- Filter Sidebar and Main Content -->
+<div class="container">
+  <div class="row">
+    <!-- Filter Sidebar -->
+    <div class="col-lg-3 col-md-4 mb-4">
+        <!-- Mobile filter toggle button -->
+        <button 
+          class="btn btn-primary d-lg-none w-100 mb-3" 
+          type="button" 
+          id="toggleFilters"
+          data-bs-toggle="collapse" 
+          data-bs-target="#filterSidebar" 
+          aria-expanded="false"
+        >
+          <i class="lni-filter-alt me-2"></i>
+          <span>Toggle Filters</span>
+          <i class="lni-chevron-down filter-toggle-icon ms-2"></i>
+        </button>
+
+        <!-- Filter content -->
+        <div class="collapse d-lg-block" id="filterSidebar">
+          <div class="card filter-card">
+            <div class="filter-header">
+              <h5><i class="lni lni-funnel"></i> Filters</h5>
+              <button type="button" class="btn btn-link btn-sm" onclick="document.getElementById('filterForm').reset();document.getElementById('filterForm').submit();">
+                <i class="fas fa-undo"></i> Reset
+              </button>
+            </div>
+            <div class="filter-body">
+              <form method="GET" action="{% url 'ads:ads-listing' %}" id="filterForm">
+                <!-- Categories -->
+                <div class="filter-section">
+                  <label class="filter-label">
+                    <i class="lni lni-grid-alt"></i> Category
+                  </label>
+                  <select name="category" class="form-select filter-select" onchange="this.form.submit()">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                      <option value="{{ category.slug }}" {% if current_filters.category == category.slug %}selected{% endif %}
+                              {% if not category.is_main %}style="padding-left: 20px;"{% endif %}>
+                        {{ category.category }} ({{ category.ads_count }})
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <!-- Location -->
+                <div class="filter-section">
+                  <label class="filter-label">
+                    <i class="lni lni-map-marker"></i> Location
+                  </label>
+                  <select name="county" id="county" class="form-select filter-select mb-3" onchange="loadCities(this.value)">
+                    <option value="">All Counties</option>
+                    {% for county in counties %}
+                      <option value="{{ county.slug }}" {% if current_filters.county == county.slug %}selected{% endif %}>
+                        {{ county.county_name }} ({{ county.ads_count }})
+                      </option>
+                    {% endfor %}
+                  </select>
+                  
+                  <select name="city" id="city" class="form-select filter-select" {% if not current_filters.county %}disabled{% endif %}>
+                    <option value="">All Cities</option>
+                    {% if cities %}
+                      {% for city in cities %}
+                        <option value="{{ city.slug }}" {% if current_filters.city == city.slug %}selected{% endif %}>
+                          {{ city.city_name }}
+                        </option>
+                      {% endfor %}
+                    {% endif %}
+                  </select>
+                </div>
+
+                <!-- Condition -->
+                <div class="filter-section">
+                  <label class="filter-label">
+                    <i class="lni lni-star"></i> Condition
+                  </label>
+                  <select name="condition" class="form-select filter-select" onchange="this.form.submit()">
+                    <option value="">Any Condition</option>
+                    {% for condition in conditions %}
+                      <option value="{{ condition.value }}" {% if current_filters.condition == condition.value %}selected{% endif %}>
+                        {{ condition.label }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <!-- Price Range -->
+                <div class="filter-section">
+                  <label class="filter-label">
+                    <i class="lni lni-coin"></i> Price Range
+                  </label>
+                  <div class="price-range">
+                    <input type="number" name="min_price" class="form-control" placeholder="Min" value="{{ current_filters.min_price }}">
+                    <span class="px-2">to</span>
+                    <input type="number" name="max_price" class="form-control" placeholder="Max" value="{{ current_filters.max_price }}">
+                  </div>
+                </div>
+                <!-- Sort By -->
+                <div class="filter-section">
+                  <label class="filter-label">
+                    <i class="lni lni-sort-alpha-asc"></i> Sort By
+                  </label>
+                  <select name="sort" class="form-select filter-select" onchange="this.form.submit()">
+                    <option value="-date_created" {% if current_filters.sort == '-date_created' %}selected{% endif %}>Newest First</option>
+                    <option value="date_created" {% if current_filters.sort == 'date_created' %}selected{% endif %}>Oldest First</option>
+                    <option value="price_low" {% if current_filters.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="price_high" {% if current_filters.sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                    <option value="-views_count" {% if current_filters.sort == '-views_count' %}selected{% endif %}>Most Viewed</option>
+                  </select>
+                </div>
+
+                <!-- Apply Filters Button -->
+                <button type="submit" class="btn btn-primary w-100 mt-3">
+                  Apply Filters
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ads Grid -->
+      <div class="col-lg-9 col-md-8">
+        <h2 class="section-title">All Listings</h2>
+        <div class="adds-wrapper">
+          <div class="products-grid" role="grid">
+            <div class="row g-3">
+              {% for ad_listing in ads_listing %}
+              <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                <!-- Optional: Add debug info during development -->
+                {% if debug %}
+                <small class="text-muted">ID: {{ ad_listing.id }} | Created: {{ ad_listing.date_created }}</small>
+                {% endif %}
+                <article class="product-card" role="gridcell">
+                  <a href="{% url 'ads:ads-detail' ad_listing.id %}" class="card-link">
+                    <div class="product-image">
+                      <img 
+                        src="{% static 'img/placeholder.png' %}" 
+                        data-src="{{ ad_listing.images.first.image.url|default:'' }}"
+                        alt="{{ ad_listing.title }}"
+                        class="img-fluid lazy"
+                        width="300"
+                        height="225"
+                        loading="lazy"
+                        onerror="this.src='{% static 'img/placeholder.png' %}'"
+                      >
+                      {% if ad_listing.is_featured %}
+                      <span class="featured-badge">Featured</span>
+                      {% endif %}
+                    </div>
+                    <div class="product-details">
+                      <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="category">{{ ad_listing.category }}</span>
+                        {% if user.is_authenticated %}
+                          <button 
+                            class="btn btn-sm {% if ad_listing in user.profile.bookmarks.all %}btn-danger{% else %}btn-outline-primary{% endif %} bookmark-btn" 
+                            data-item-id="{{ ad_listing.id }}"
+                            onclick="(function(e) { e.preventDefault(); e.stopPropagation(); toggleBookmark(this, {{ ad_listing.id }}); })(event)"
+                          >
+                            <i class="lni-heart{% if ad_listing in user.profile.bookmarks.all %}-filled{% endif %}"></i>
+                          </button>
+                        {% endif %}
+                      </div>
+                      <h3 class="title">{{ ad_listing.title|truncatechars:40 }}</h3>
+                      <div class="meta">
+                        <span class="processor">{{ ad_listing.description|truncatewords:10|safe }}</span>
+                      </div>
+                      <div class="location">
+                        <i class="lni-map-marker"></i>
+                        <span>{{ ad_listing.city }}, {{ ad_listing.county }}</span>
+                      </div>
+                      <div class="price price-small">Ksh {{ ad_listing.price|intcomma }}</div>
+                    </div>
+                  </a>
+                </article>
+              </div>
+              {% empty %}
+              <div class="col-12">
+                  <div class="alert alert-info" role="alert">
+                      <i class="lni lni-emoji-sad mr-2"></i>
+                      No ads found. {% if current_filters %}Try adjusting your filters.{% endif %}
+                  </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="text-center d-none">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+
+        <!-- Infinite Scroll Pagination -->
+        {% if ads_listing.has_other_pages %}
+        <div class="text-center mt-4" id="pagination">
+          <button 
+            class="btn btn-primary load-more"
+            data-next-page="{{ ads_listing.next_page_number }}"
+            {% if not ads_listing.has_next %}disabled{% endif %}
+          >
+            Load More
+          </button>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Main container End -->
+
+<!-- Back to Top Button -->
+<button id="backToTop" class="back-to-top" aria-label="Back to top">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<script>
+// Handle view toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const viewButtons = document.querySelectorAll('[data-view]');
+    const productsGrid = document.querySelector('.products-grid');
+
+    viewButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove active class from all buttons
+            viewButtons.forEach(btn => btn.classList.remove('active'));
+            // Add active class to clicked button
+            button.classList.add('active');
+            // Update grid view
+            if (button.dataset.view === 'list') {
+                productsGrid.classList.add('list-view');
+            } else {
+                productsGrid.classList.remove('list-view');
+            }
+        });
+    });
+});
+
+function toggleBookmark(button, adId) {
+    // Get CSRF token from meta tag
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    fetch(`/toggle-bookmark/${adId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            button.classList.toggle('btn-outline-primary');
+            button.classList.toggle('btn-danger');
+            const icon = button.querySelector('i');
+            icon.classList.toggle('lni-heart');
+            icon.classList.toggle('lni-heart-filled');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating your saved listings. Please try again.');
+    });
+}
+</script>
+
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+// Load cities when county is selected
+async function loadCities(countySlug) {
+    if (!countySlug) {
+        document.getElementById('city').innerHTML = '<option value="">All Cities</option>';
+        document.getElementById('city').disabled = true;
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/cities/${countySlug}/`);
+        const cities = await response.json();
+        
+        const citySelect = document.getElementById('city');
+        citySelect.innerHTML = '<option value="">All Cities</option>';
+        
+        cities.forEach(city => {
+            const option = document.createElement('option');
+            option.value = city.slug;
+            option.textContent = city.name;
+            citySelect.appendChild(option);
+        });
+        
+        citySelect.disabled = false;
+    } catch (error) {
+        console.error('Error loading cities:', error);
+    }
+}
+
+// Handle filter form submission and scroll position
+const filterForm = document.getElementById('filterForm');
+if (filterForm) {
+    filterForm.addEventListener('submit', function(e) {
+        const form = e.target;
+        const formData = new FormData(form);
+        
+        // Remove empty values
+        const params = new URLSearchParams();
+        for (const [key, value] of formData.entries()) {
+            if (value) params.append(key, value);
+        }
+        
+        // Save scroll position
+        sessionStorage.setItem('scrollPosition', window.pageYOffset);
+        
+        // Redirect with query parameters
+        window.location.href = `${form.action}?${params.toString()}`;
+        e.preventDefault();
+    });
+}
+
+// Toggle subcategories
+document.querySelectorAll('.toggle-subcats').forEach(button => {
+    button.addEventListener('click', function() {
+        const icon = this.querySelector('i');
+        if (icon) {
+            icon.classList.toggle('fa-chevron-down');
+            icon.classList.toggle('fa-chevron-up');
+        }
+    });
+});
+
+// Mobile filter sidebar toggle
+const toggleFilters = document.getElementById('toggleFilters');
+const filterSidebar = document.getElementById('filterSidebar');
+if (toggleFilters && filterSidebar) {
+    toggleFilters.addEventListener('click', function() {
+        filterSidebar.classList.toggle('show');
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Back to Top functionality
+    const backToTopButton = document.getElementById('backToTop');
+    
+    window.onscroll = function() {
+        if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+            backToTopButton.style.display = 'block';
+        } else {
+            backToTopButton.style.display = 'none';
+        }
+    };
+
+    backToTopButton.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+
+    // Filter sidebar functionality
+    const filterSidebar = document.getElementById('filterSidebar');
+    const filterToggle = document.querySelector('[data-bs-toggle="collapse"]');
+    
+    if (!filterSidebar || !filterToggle) return;
+
+    // Initialize Bootstrap collapse
+    const bsCollapse = new bootstrap.Collapse(filterSidebar, {
+        toggle: false
+    });
+
+    // Handle toggle click
+    filterToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        bsCollapse.toggle();
+    });
+
+    // Update aria-expanded and icon on show/hide
+    filterSidebar.addEventListener('show.bs.collapse', function () {
+        filterToggle.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+    });
+
+    filterSidebar.addEventListener('hide.bs.collapse', function () {
+        filterToggle.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+    });
+
+    // Close on outside click
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth >= 992) return;
+        
+        const isClickInside = filterSidebar.contains(e.target) || filterToggle.contains(e.target);
+        
+        if (!isClickInside && filterSidebar.classList.contains('show')) {
+            bsCollapse.hide();
+        }
+    });
+
+    // Close on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && filterSidebar.classList.contains('show')) {
+            bsCollapse.hide();
+        }
+    });
+});
+
+// Lazy loading images
+document.addEventListener("DOMContentLoaded", function() {
+    const lazyLoadImages = () => {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.dataset.src;
+                    img.classList.remove('lazy');
+                    observer.unobserve(img);
+                }
+            });
+        }, {
+            rootMargin: '50px 0px'
+        });
+
+        document.querySelectorAll('img.lazy').forEach(img => imageObserver.observe(img));
+    };
+
+    // Use native lazy loading with fallback
+    if ('loading' in HTMLImageElement.prototype) {
+        document.querySelectorAll('img.lazy').forEach(img => {
+            img.src = img.dataset.src;
+            img.classList.remove('lazy');
+        });
+    } else {
+        lazyLoadImages();
+    }
+
+    // Infinite scroll implementation
+    const loadMoreBtn = document.querySelector('.load-more');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', async function() {
+            const loading = document.getElementById('loading');
+            const nextPage = this.dataset.nextPage;
+            
+            try {
+                loading.classList.remove('d-none');
+                const response = await fetch(`?page=${nextPage}&${new URLSearchParams(window.location.search).toString()}`);
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Append new items
+                const newItems = doc.querySelector('.products-grid .row').innerHTML;
+                document.querySelector('.products-grid .row').insertAdjacentHTML('beforeend', newItems);
+                
+                // Update button state
+                const newNextPage = doc.querySelector('.load-more').dataset.nextPage;
+                this.dataset.nextPage = newNextPage;
+                
+                if (!doc.querySelector('.load-more')) {
+                    this.remove();
+                }
+                
+                // Reinitialize lazy loading for new images
+                lazyLoadImages();
+                
+            } catch (error) {
+                console.error('Error loading more items:', error);
+            } finally {
+                loading.classList.add('d-none');
+            }
+        });
+    }
+});
+
+// Debounce search input
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+const searchInput = document.querySelector('.search-input');
+if (searchInput) {
+    searchInput.addEventListener('input', debounce(function(e) {
+        // Your search logic here
+    }, 300));
+}
+
+let slideIndex = 0;
+const slides = document.getElementsByClassName("carousel-slide");
+
+function showSlides() {
+    if (!slides.length) return;
+    
+    for (let i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";
+    }
+    slideIndex++;
+    if (slideIndex > slides.length) {slideIndex = 1}
+    slides[slideIndex-1].style.display = "block";
+    setTimeout(showSlides, 5000); // Change slide every 5 seconds
+}
+
+function moveSlide(n) {
+    if (!slides.length) return;
+    
+    slideIndex += n;
+    if (slideIndex > slides.length) {slideIndex = 1}
+    if (slideIndex < 1) {slideIndex = slides.length}
+    
+    for (let i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";
+    }
+    slides[slideIndex-1].style.display = "block";
+}
+
+// Start the slideshow when the page loads
+document.addEventListener('DOMContentLoaded', showSlides);
+
+// Handle filter sidebar on mobile
+const filterToggle = document.querySelector('[data-bs-toggle="collapse"]');
+if (filterToggle) {
+  filterToggle.addEventListener('click', function() {
+    const icon = this.querySelector('i');
+    icon.classList.toggle('lni-chevron-up');
+    icon.classList.toggle('lni-chevron-down');
+  });
+}
+
+// Restore scroll position
+const savedPosition = sessionStorage.getItem('scrollPosition');
+if (savedPosition) {
+  window.scrollTo(0, savedPosition);
+  sessionStorage.removeItem('scrollPosition');
+}
+
+// Optimize image loading
+if ('loading' in HTMLImageElement.prototype) {
+  const images = document.querySelectorAll('img[loading="lazy"]');
+  images.forEach(img => {
+    if (img.dataset.src) {
+      img.src = img.dataset.src;
+    }
+  });
+} else {
+  // Fallback for browsers that don't support lazy loading
+  const script = document.createElement('script');
+  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js';
+  script.async = true;
+  document.body.appendChild(script);
+  
+  script.onload = function() {
+    const observer = lozad();
+    observer.observe();
+  };
+}
+</script>
+    </div>
+  </div>
+</div>
+{% endblock %}

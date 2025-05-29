@@ -1,0 +1,770 @@
+{% extends "base.html" %}
+{% load static %}
+{% load embed_video_tags %}
+{% load humanize %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/details.css' %}">
+{% endblock %}
+
+{% block content %}
+
+
+
+<!-- Sticky Contact Bar -->
+<div class="sticky-contact-bar d-md-none">
+  <div class="container">
+    <div class="row">
+      <div class="col-6">
+        {% if user.is_authenticated %}
+          <a href="tel:{{ ads_detail.phone }}" class="btn btn-primary btn-block">
+            <i class="lni-phone-handset"></i> Call
+          </a>
+        {% else %}
+          <button class="btn btn-primary btn-block" data-toggle="modal" data-target="#phoneLoginPromptModal">
+            <i class="lni-phone-handset"></i> Call
+          </button>
+        {% endif %}
+      </div>
+      <div class="col-6">
+        {% if user.is_authenticated %}
+          <button class="btn btn-outline-primary btn-block" data-toggle="modal" data-target="#messageModal">
+            <i class="lni-comments"></i> Message
+          </button>
+        {% else %}
+          <button class="btn btn-outline-primary btn-block" data-toggle="modal" data-target="#messageLoginPromptModal">
+            <i class="lni-comments"></i> Message
+          </button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Ads Details Start -->
+<div class="section-padding">
+  <div class="container">
+    <!-- Product Info Start -->
+    <div class="product-info row">
+      <div class="col-lg-7 col-md-12 col-xs-12 text-center">
+        <div class="details-box ads-details-wrapper">
+          {% if ads_images.count > 1 %}
+          <div class="image-gallery">
+            <div class="main-image-container">
+              <img id="mainImage" class="img-fluid main-image" src="{{ ads_images.first.image.url }}" alt="{{ ads_detail.title }}">
+              <div class="zoom-overlay">
+                <i class="lni-zoom-in"></i> Click to zoom
+              </div>
+            </div>
+            <div class="thumbnails-container mt-3">
+              {% for image in ads_images %}
+              <div class="thumbnail {% if forloop.first %}active{% endif %}" onclick="changeMainImage(this, '{{ image.image.url }}')">
+                <img src="{{ image.image.url }}" alt="Thumbnail {{ forloop.counter }}">
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        {% if ads_detail.video %}
+        <button id="video-modal" type="button" class="btn btn-common btn-reply" data-toggle="modal"
+          data-target="#basicExampleModal">
+          <i class="lni-video"></i> Play Video
+        </button>
+        {% endif %}
+
+        <!-- Video Modal -->
+        <div class="modal fade" id="basicExampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                {% video ads_detail.video 'small' %}
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Details Tabs -->
+        <div class="product-details-tabs mt-4">
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" data-toggle="tab" href="#description">Description</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" href="#specifications">Specifications</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" href="#seller-info">Seller Info</a>
+            </li>
+          </ul>
+          <div class="tab-content mt-3">
+            <div id="description" class="tab-pane active">
+              <!-- Wrap description in a custom container -->
+              <div class="ads-description">
+                {{ ads_detail.description|striptags|safe }}
+              </div>
+            </div>
+            <div id="specifications" class="tab-pane fade">
+              <ul class="specs-list">
+                <li class="spec-item"><strong>Condition:</strong> {{ ads_detail.condition }}</li>
+                {% if ads_detail.brand %}
+                    <li class="spec-item"><strong>Brand:</strong> {{ ads_detail.brand }}</li>
+                {% endif %}
+                {% if ads_detail.colour %}
+                    <li class="spec-item"><strong>Colour:</strong> {{ ads_detail.colour }}</li>
+                {% endif %}
+                
+                <!-- Size Information -->
+                {% if ads_detail.clothing_size %}
+                    <li class="spec-item"><strong>Clothing Size:</strong> 
+                        {% if ads_detail.clothing_size == 'CUSTOM' %}
+                            {{ ads_detail.custom_size }}
+                        {% else %}
+                            {{ ads_detail.get_clothing_size_display }}
+                        {% endif %}
+                    </li>
+                {% endif %}
+                {% if ads_detail.shoe_size %}
+                    <li class="spec-item"><strong>Shoe Size:</strong> 
+                        {% if ads_detail.shoe_size == 'CUSTOM' %}
+                            {{ ads_detail.custom_size }}
+                        {% else %}
+                            {{ ads_detail.get_shoe_size_display }}
+                        {% endif %}
+                    </li>
+                {% endif %}
+
+                <!-- Dimensions -->
+                <li class="spec-item"><strong>Product Dimensions:</strong>
+                    <ul class="dimensions-list">
+                        {% if ads_detail.weight %}
+                            <li><i class="fas fa-weight-hanging"></i> Weight: {{ ads_detail.weight }} kg</li>
+                        {% endif %}
+                        {% if ads_detail.length %}
+                            <li><i class="fas fa-ruler-horizontal"></i> Length: {{ ads_detail.length }} cm</li>
+                        {% endif %}
+                        {% if ads_detail.width %}
+                            <li><i class="fas fa-ruler-vertical"></i> Width: {{ ads_detail.width }} cm</li>
+                        {% endif %}
+                        {% if ads_detail.height %}
+                            <li><i class="fas fa-ruler"></i> Height: {{ ads_detail.height }} cm</li>
+                        {% endif %}
+                    </ul>
+                </li>
+
+                <!-- Category and Location -->
+                <li class="spec-item"><strong>Category:</strong> {{ ads_detail.category }}</li>
+                <li class="spec-item"><strong>Location:</strong> {{ ads_detail.city }}, {{ ads_detail.county }}</li>
+
+                <!-- Negotiation Status -->
+                <li class="spec-item"><strong>Price Negotiation:</strong> 
+                    {% if ads_detail.negotiable %}
+                        <span class="badge bg-success"><i class="fas fa-check"></i> Negotiable</span>
+                    {% else %}
+                        <span class="badge bg-danger"><i class="fas fa-times"></i> Non-negotiable</span>
+                    {% endif %}
+                </li>
+
+                <!-- Post Date -->
+                <li class="spec-item"><strong>Posted On:</strong> {{ ads_detail.date_created|date:"F j, Y" }}</li>
+              </ul>
+            </div>
+            <div id="seller-info" class="tab-pane fade">
+              <div class="seller-profile-card">
+                <div class="seller-header">
+                  <div class="seller-avatar-wrapper">
+                    {% if ads_detail.seller.profile_pic %}
+                      <img src="{{ ads_detail.seller.profile_pic.url }}" alt="{{ ads_detail.seller.user.username }}" class="seller-avatar">
+                    {% else %}
+                      <img src="{% static 'img/default-avatar.png' %}" alt="Default Avatar" class="seller-avatar">
+                    {% endif %}
+                    {% if ads_detail.seller.is_verified %}
+                      <span class="verified-badge" title="Verified Seller">
+                        <i class="fas fa-check-circle"></i>
+                      </span>
+                    {% endif %}
+                  </div>
+                  <div class="seller-info-main">
+                    <h4 class="seller-name">{{ ads_detail.seller.user.username }}</h4>
+                    <div class="seller-badges">
+                      <span class="badge badge-success"><i class="far fa-clock"></i> Member since {{ ads_detail.seller.user.date_joined|date:"F Y" }}</span>
+                      {% if ads_detail.seller.response_rate %}
+                        <span class="badge badge-info"><i class="far fa-envelope"></i> {{ ads_detail.seller.response_rate }}% Response Rate</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="seller-stats-grid">
+                  <div class="stat-item">
+                    <i class="lni-package"></i>
+                    <div class="stat-details">
+                      <h5>{{ ads_detail.seller.ads.count }}</h5>
+                      <span>Active Ads</span>
+                    </div>
+                  </div>
+                  <div class="stat-item">
+                    <i class="lni-star"></i>
+                    <div class="stat-details">
+                      <h5>{{ ads_detail.seller.average_rating|default:"New" }}</h5>
+                      <span>Rating</span>
+                    </div>
+                  </div>
+                  <div class="stat-item">
+                    <i class="lni-timer"></i>
+                    <div class="stat-details">
+                      <h5>{{ ads_detail.seller.avg_response_time|default:"N/A" }}</h5>
+                      <span>Avg Response</span>
+                    </div>
+                  </div>
+                  {% if user.is_authenticated %}
+                    <a href="{% url 'ads:seller-profile' ads_detail.seller.pk %}" class="stat-item action-item">
+                      <i class="fas fa-store"></i>
+                      <div class="stat-details">
+                        <h5>Visit</h5>
+                        <span>Store</span>
+                      </div>
+                    </a>
+                    <button class="stat-item action-item" data-toggle="modal" data-target="#messageModal">
+                      <i class="fas fa-envelope"></i>
+                      <div class="stat-details">
+                        <h5>Contact</h5>
+                        <span>Seller</span>
+                      </div>
+                    </button>
+                    <button class="stat-item action-item follow-seller-btn" data-seller-id="{{ ads_detail.seller.id }}">
+                      <i class="fas {% if request.user.profile in ads_detail.seller.followers.all %}fa-user-minus{% else %}fa-user-plus{% endif %}"></i>
+                      <div class="stat-details">
+                          <h5>{% if request.user.profile in ads_detail.seller.followers.all %}Following{% else %}Follow{% endif %}</h5>
+                          <span>Seller</span>
+                      </div>
+                    </button>
+                  {% else %}
+                    <button class="stat-item action-item" data-toggle="modal" data-target="#storeLoginPromptModal">
+                      <i class="fas fa-store"></i>
+                      <div class="stat-details">
+                        <h5>Visit</h5>
+                        <span>Store</span>
+                      </div>
+                    </button>
+                    <button class="stat-item action-item" data-toggle="modal" data-target="#messageLoginPromptModal">
+                      <i class="fas fa-envelope"></i>
+                      <div class="stat-details">
+                        <h5>Contact</h5>
+                        <span>Seller</span>
+                      </div>
+                    </button>
+                    <button class="stat-item action-item" data-toggle="modal" data-target="#sellerLoginPromptModal">
+                      <i class="fas fa-user-plus"></i>
+                      <div class="stat-details">
+                        <h5>Follow</h5>
+                        <span>Seller</span>
+                      </div>
+                    </button>
+                  {% endif %}
+                </div>
+
+                {% if ads_detail.seller.recent_reviews %}
+                <div class="recent-reviews mt-4">
+                  <h5><i class="fas fa-comments"></i> Recent Reviews</h5>
+                  <div class="reviews-list">
+                    {% for review in ads_detail.seller.recent_reviews|slice:":3" %}
+                    <div class="review-item">
+                      <div class="review-rating">
+                        {% for i in "12345" %}
+                          <i class="fas fa-star {% if forloop.counter <= review.rating %}text-warning{% else %}text-muted{% endif %}"></i>
+                        {% endfor %}
+                      </div>
+                      <p class="review-text">{{ review.comment }}</p>
+                      <small class="review-meta">By {{ review.reviewer.username }} on {{ review.created_at|date }}</small>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-5 col-md-12 col-xs-12">
+        <div class="details-box sticky-sidebar">
+          <div class="ads-details-info">
+            <h2>{{ ads_detail.title }}</h2>
+            <div class="details-meta">
+              <span><i class="lni-alarm-clock"></i> Posted: {{ ads_detail.date_created }}</span>
+            </div>
+          </div>
+          <ul class="advertisement mb-4">
+            <li>
+              <p>
+                <strong><i class="lni-user"></i> Seller:</strong> 
+                {% if user.is_authenticated %}
+                    <a href="{% url 'ads:seller-profile' ads_detail.seller.pk %}" class="seller-link">{{ ads_detail.seller.user.username }}</a>
+                    <a href="{% url 'ads:seller-archive' ads_detail.seller.pk %}" class="seller-link">(See other ads by this seller)</a>
+                {% else %}
+                    <a href="#" onclick="showSellerLoginPrompt(); return false;" class="seller-link">{{ ads_detail.seller.user.username }}</a>
+                    <a href="{% url 'ads:seller-archive' ads_detail.seller.pk %}" class="seller-link">(See other ads by this seller)</a>
+                {% endif %}
+              </p>
+            </li>
+            <li>
+              <p>
+                <strong><i class="lni-map-marker"></i> County:</strong> {{ ads_detail.county }}
+                <a class="link-small" href="{% url 'ads:county-archive' ads_detail.county.slug %}">(See other ads in this county)</a>
+              </p>
+            </li>
+            <li>
+              <p>
+                <strong><i class="lni-map"></i> City:</strong> {{ ads_detail.city }}
+                <a class="link-small" href="{% url 'ads:city-archive' ads_detail.city.slug %}">(See other ads in this city)</a>
+              </p>
+            </li>
+            <li>
+              <p>
+                <strong><i class="lni-folder"></i> Category:</strong> {{ ads_detail.category }}
+                <a class="link-small" href="{% url 'ads:category-archive' ads_detail.category.slug %}">(See other ads in this category)</a>
+              </p>
+            </li>
+            <li>
+              <p>
+                <strong><i class="fas fa-money-check-alt"></i> Price:</strong> Ksh {{ ads_detail.price|intcomma }}
+              </p>
+            </li>
+            
+          </ul>
+          <div class="ads-btn mb-4">
+            {% if user.is_authenticated %}
+              <a href="tel:{{ ads_detail.phone }}" class="btn btn-common">
+                <i class="lni-phone-handset"></i>{{ ads_detail.phone }}
+              </a>
+            {% else %}
+              <button class="btn btn-common" data-toggle="modal" data-target="#phoneLoginPromptModal">
+                <i class="lni-phone-handset"></i> View Phone Number
+              </button>
+            {% endif %}
+            {% if user.is_authenticated %}
+              <button class="btn btn-common" data-toggle="modal" data-target="#messageModal">
+                <i class="lni-comments"></i> Send Message
+              </button>
+            {% else %}
+              <button class="btn btn-common" data-toggle="modal" data-target="#messageLoginPromptModal">
+                <i class="lni-comments"></i> Send Message
+              </button>
+            {% endif %}
+          </div>
+
+          <!-- Safety Tips -->
+          <div class="safety-tips mt-4">
+            <h5><i class="lni-shield"></i> Safety Tips</h5>
+            <ul>
+              <li>Meet in a public place</li>
+              <li>Check the item before paying</li>
+              <li>Never pay in advance</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Product Info End -->
+  </div>
+</div>
+<!-- Ads Details End -->
+
+<!-- More Like This Section -->
+<section class="featured section-padding">
+  <div class="container">
+    <h1 class="section-title">More Like This</h1>
+    <div class="row" id="related-ads-container">
+      {% include "ads/partials/related-ad-card.html" with related_ads=related_ads|slice:":6" %}
+    </div>
+    
+    {% if related_ads.count > 6 %}
+      <div class="text-center mt-4">
+        <button id="load-more-btn" class="btn btn-common" data-page="1" data-total="{{ related_ads.count }}">
+          Load More Ads
+        </button>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% block extra_css %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.3/viewer.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.3/viewer.min.js"></script>
+{% endblock %}
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded');
+    
+    // Handle all images
+    const images = document.querySelectorAll('.single-image, .carousel-image');
+    images.forEach((img, index) => {
+        console.log(`Processing image ${index}:`, img.src);
+        
+        // Force display properties
+        img.style.display = 'block';
+        img.style.visibility = 'visible';
+        img.style.opacity = '1';
+        
+        // Load event
+        img.addEventListener('load', function() {
+            console.log(`Image ${index} loaded successfully`);
+            img.style.display = 'block';
+        });
+        
+        // Error event
+        img.addEventListener('error', function() {
+            console.error(`Image ${index} failed to load:`, img.src);
+        });
+    });
+
+    // Initialize carousel if it exists
+    const carousel = document.getElementById('carousel-example-1z');
+    if (carousel) {
+        $(carousel).carousel({
+            interval: 3000,
+            cycle: true
+        });
+    }
+
+    // Initialize image zoom
+    const mainImage = document.getElementById('mainImage');
+    if (mainImage) {
+        const viewer = new Viewer(mainImage, {
+            inline: false,
+            viewed() {
+                viewer.zoomTo(1);
+            },
+            toolbar: {
+                zoomIn: 4,
+                zoomOut: 4,
+                oneToOne: 4,
+                reset: 4,
+                prev: 0,
+                play: 0,
+                next: 0,
+                rotateLeft: 4,
+                rotateRight: 4,
+                flipHorizontal: 4,
+                flipVertical: 4,
+            },
+            title: false,
+            tooltip: false,
+            movable: true,
+            zoomable: true,
+            rotatable: true,
+            scalable: true,
+            transition: true,
+        });
+
+        mainImage.addEventListener('click', function() {
+            viewer.show();
+        });
+    }
+});
+
+function showSellerLoginPrompt() {
+    $('#sellerLoginPromptModal').modal('show');
+}
+
+// Add some fun animation when modal opens
+$('#sellerLoginPromptModal').on('show.bs.modal', function () {
+    setTimeout(() => {
+        $(this).find('.modal-content').addClass('animate__animated animate__zoomIn');
+    }, 150);
+});
+
+// Remove animation classes when modal closes
+$('#sellerLoginPromptModal').on('hide.bs.modal', function () {
+    $(this).find('.modal-content').removeClass('animate__animated animate__zoomIn');
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Load More functionality
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const container = document.getElementById('related-ads-container');
+    const adsPerPage = 6;
+    
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+            const page = parseInt(this.dataset.page);
+            const total = parseInt(this.dataset.total);
+            const start = page * adsPerPage;
+            const end = start + adsPerPage;
+            
+            fetch(`/ads/get-more-ads/{{ ads_detail.id }}/?start=${start}&end=${end}`)
+                .then(response => response.json())
+                .then(data => {
+                    container.insertAdjacentHTML('beforeend', data.html);
+                    this.dataset.page = page + 1;
+                    if (end >= total) {
+                        this.style.display = 'none';
+                    }
+                    // Reinitialize save buttons for new content
+                    initializeSaveButtons();
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    }
+
+    // Save Ad functionality
+    function initializeSaveButtons() {
+        document.querySelectorAll('.bookmark-btn').forEach(btn => {
+            if (!btn.dataset.initialized) {
+                btn.addEventListener('click', function() {
+                    const adId = this.dataset.adId;
+                    fetch(`/ads/toggle-save/${adId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.saved) {
+                            this.classList.add('saved');
+                            this.style.color = '#E08D35';
+                        } else {
+                            this.classList.remove('saved');
+                            this.style.color = '';
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+                btn.dataset.initialized = 'true';
+            }
+        });
+    }
+
+    // Initialize save buttons on page load
+    initializeSaveButtons();
+});
+
+// Add this to your existing script
+$('#messageLoginPromptModal').on('show.bs.modal', function () {
+    setTimeout(() => {
+        $(this).find('.modal-content').addClass('animate__animated animate__zoomIn');
+    }, 150);
+});
+
+$('#messageLoginPromptModal').on('hide.bs.modal', function () {
+    $(this).find('.modal-content').removeClass('animate__animated animate__zoomIn');
+});
+
+$('#phoneLoginPromptModal').on('show.bs.modal', function () {
+    setTimeout(() => {
+        $(this).find('.modal-content').addClass('animate__animated animate__zoomIn');
+    }, 150);
+});
+
+$('#phoneLoginPromptModal').on('hide.bs.modal', function () {
+    $(this).find('.modal-content').removeClass('animate__animated animate__zoomIn');
+});
+
+// Add new JavaScript
+function changeMainImage(thumbnail, imageUrl) {
+  document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
+  thumbnail.classList.add('active');
+  document.getElementById('mainImage').src = imageUrl;
+}
+
+// Initialize image zoom
+document.getElementById('mainImage')?.addEventListener('click', function() {
+  const viewer = new Viewer(this, {
+    inline: false,
+    viewed() {
+      viewer.zoomTo(1);
+    },
+  });
+  viewer.show();
+});
+
+// Sticky sidebar
+const sidebar = document.querySelector('.sticky-sidebar');
+if (sidebar) {
+  const stickyObserver = new IntersectionObserver(
+    ([e]) => e.target.classList.toggle('is-sticky', e.intersectionRatio < 1),
+    { threshold: [1] }
+  );
+  stickyObserver.observe(sidebar);
+}
+
+// Add modal initialization for store login prompt
+$('#storeLoginPromptModal').on('show.bs.modal', function () {
+    setTimeout(() => {
+        $(this).find('.modal-content').addClass('animate__animated animate__zoomIn');
+    }, 150);
+});
+
+$('#storeLoginPromptModal').on('hide.bs.modal', function () {
+    $(this).find('.modal-content').removeClass('animate__animated animate__zoomIn');
+});
+
+// Follow functionality
+document.querySelector('.follow-seller-btn')?.addEventListener('click', function() {
+    const sellerId = this.dataset.sellerId;
+    fetch(`/profiles/toggle-follow/${sellerId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Update button text and icon
+            const icon = this.querySelector('i');
+            const textSpan = this.querySelector('.stat-details h5');
+            
+            if (data.is_following) {
+                icon.classList.replace('fa-user-plus', 'fa-user-minus');
+                textSpan.textContent = 'Following';
+            } else {
+                icon.classList.replace('fa-user-minus', 'fa-user-plus');
+                textSpan.textContent = 'Follow';
+            }
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+</script>
+
+<!-- Message Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="messageModalLabel">Send Message to {{ ads_detail.seller.user.username }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="POST" action="{% url 'ads:send-message' ads_detail.id %}">
+        {% csrf_token %}
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="message">Your Message</label>
+            <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-common">Send Message</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Seller Login Prompt Modal -->
+<div class="modal fade" id="sellerLoginPromptModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-body text-center p-5">
+        <div class="animate__animated animate__bounceIn">
+          <div class="display-1 mb-3">👋</div>
+          <h3 class="mb-4">Meet the Seller! ✨</h3>
+          <p class="mb-4">Want to see more about this amazing seller? Join our community! 🌟</p>
+          <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg animate__animated animate__pulse animate__infinite">
+              <i class="fas fa-sign-in-alt me-2"></i> Login
+            </a>
+            <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg">
+              <i class="fas fa-user-plus me-2"></i> Register
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Message Login Prompt Modal -->
+<div class="modal fade" id="messageLoginPromptModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-body text-center p-5">
+        <div class="animate__animated animate__bounceIn">
+          <div class="display-1 mb-3">💌</div>
+          <h3 class="mb-4">Want to Message the Seller?</h3>
+          <p class="mb-4">To send messages to sellers, you'll need to be part of our community! Join us today and start connecting with sellers.</p>
+          <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary btn-lg animate__animated animate__pulse animate__infinite">
+              <i class="fas fa-sign-in-alt me-2"></i> Login
+            </a>
+            <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg">
+              <i class="fas fa-user-plus me-2"></i> Register
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Phone Login Prompt Modal -->
+<div class="modal fade" id="phoneLoginPromptModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-body text-center p-5">
+        <div class="animate__animated animate__bounceIn">
+          <div class="display-1 mb-3">📱</div>
+          <h3 class="mb-4">Want to Contact the Seller?</h3>
+          <p class="mb-4">To view seller contact information, please log in or create an account. It's quick and easy!</p>
+          <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary btn-lg animate__animated animate__pulse animate__infinite">
+              <i class="fas fa-sign-in-alt me-2"></i> Login
+            </a>
+            <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg">
+              <i class="fas fa-user-plus me-2"></i> Register
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Store Login Prompt Modal -->
+<div class="modal fade" id="storeLoginPromptModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-body text-center p-5">
+        <div class="animate__animated animate__bounceIn">
+          <div class="display-1 mb-3">🏪</div>
+          <h3 class="mb-4">Want to Visit the Store?</h3>
+          <p class="mb-4">Log in to view this seller's complete store and all their listings!</p>
+          <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'login' %}?next={% url 'ads:seller-profile' ads_detail.seller.pk %}" class="btn btn-primary btn-lg animate__animated animate__pulse animate__infinite">
+              <i class="fas fa-sign-in-alt me-2"></i> Login
+            </a>
+            <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg">
+              <i class="fas fa-user-plus me-2"></i> Register
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
