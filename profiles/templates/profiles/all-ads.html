@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+<link rel="stylesheet" href="{% static 'css/listings.css' %}">
+{% endblock %}
+
 {% block content %}
 <!-- Page Header Start -->
 <div class="page-header" style="background: url({% static 'img/banner1.jpg' %});">

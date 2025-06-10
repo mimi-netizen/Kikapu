@@ -63,6 +63,61 @@
 <div class="hero-banner-section">
   <div class="container-fluid px-0">
 
+    <!-- Categories & Quick Links -->
+    <div class="quick-links animate__animated animate__fadeInUp">
+      <!-- All Categories Dropdown moved from below -->
+      <div class="all-categories-dropdown">
+        <button class="all-categories-btn" onclick="toggleCategoriesDropdown()">
+          <i class="fas fa-bars me-2"></i>
+          All Categories
+          <i class="fas fa-chevron-down ms-2"></i>
+        </button>
+        <div class="all-categories-content" id="categoriesDropdown">
+          {% for main_category in main_categories %}
+          <div class="all-category-item">
+            <div class="all-category-main">
+              <div class="all-category-icon">
+                <i class="fas {{ main_category.icon }}"></i>
+              </div>
+              <span>{{ main_category.category }}</span>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="all-subcategories-menu">
+              <div class="all-subcategories-header">
+                <i class="all-categories-back fas fa-chevron-left"></i>
+                <span>{{ main_category.category }}</span>
+              </div>
+              <div class="all-subcategories-list">
+                {% for subcategory in main_category.subcategories %}
+                <a href="{% url 'ads:category-archive' subcategory.slug %}" class="all-subcategory-item">
+                  <span>{{ subcategory.name }}</span>
+                  <span class="all-subcategory-count">({{ subcategory.count }})</span>
+                </a>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Existing Quick Links -->
+      <a href="{% url 'ads:ads-listing' %}" class="quick-link">
+        <i class="fas fa-fire"></i> Trending
+      </a>
+      <a href="{% url 'ads:ads-listing' %}" class="quick-link">
+        <i class="fas fa-clock"></i> Just Added
+      </a>
+      <a href="{% url 'ads:ads-listing' %}?sort=price_low" class="quick-link">
+        <i class="fas fa-tags"></i> Best Deals
+      </a>
+      <a href="{% url 'ads:ads-listing' %}?sort=price_low" class="quick-link">
+        <i class="fas fa-tags"></i> Top Rated
+      </a> 
+      <a href="{% url 'profiles:sellers' %}?verified=true" class="quick-link">
+        <i class="fas fa-check-circle"></i> Verified Sellers
+      </a>
+    </div>
   
    
   </div>
@@ -98,15 +153,15 @@
       <div class="col-lg-12"> 
         <!-- Today's Deals Section -->
         <div class="container py-3">
-          <div class="section-header">
+          <!-- <div class="section-header">
             <h2 class="section-title">Today's Deals</h2>
-          </div>
+          </div> -->
           
           <div class="deals-grid-container">
             <!-- Bundle Deals Grid -->
             <div class="deals-grid">
               <div class="grid-header">
-                <h3>Bestsellers</h3>
+                <h3>Bundle Deals</h3>
                 <div class="grid-tag">Top price & quality picks</div>
               </div>
               <div class="grid-content">
@@ -129,7 +184,7 @@
             <!-- Featured Deals Grid -->
             <div class="deals-grid">
               <div class="grid-header">
-                <h3>SuperDeals</h3>
+                <h3>Super Deals</h3>
                 <div class="grid-tag">Up to 70% off</div>
               </div>
               <div class="grid-content">
@@ -152,7 +207,7 @@
             <!-- Negotiable Deals Grid -->
             <div class="deals-grid">
               <div class="grid-header">
-                <h3>Big Save</h3>
+                <h3>Negotiable Deals</h3>
                 <div class="grid-tag">500+ Brands</div>
               </div>
               <div class="grid-content">
@@ -173,28 +228,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Popular Category Section 
-        <div class="container py-3">
-          <div class="section-header">
-            <h2 class="section-title">Popular Categories</h2>
-            <a href="#" class="see-all">See All <i class="fas fa-chevron-right"></i></a>
-          </div>
-          
-          <div class="categories-grid">
-            {% for category in popular_categories %}
-            <div class="category-wrapper">
-              <a href="{% url 'ads:category-detail' category.slug %}" class="category-card">
-                <div class="category-inner" style="background-color: {{ category.bg_color }}">
-                  <img src="{{ category.icon.url }}" alt="{{ category.name }}" class="category-icon">
-                  <div class="category-name">{{ category.name }}</div>
-                  <div class="item-count">{{ category.item_count }} items</div>
-                </div>
-              </a>
-            </div>
-            {% endfor %}
-          </div>
-        </div> -->
 
         <!-- Shop by Category Section -->
   <div class="popular-categories mb-4">
@@ -271,58 +304,7 @@
   </div>
 
 
-        <!-- Categories and Deals Header Section -->
-        <section class="all-categories-header section-padding">
-          <div class="container">
-            <div class="row align-items-center">
-              <!-- Categories Dropdown -->
-              <div class="col-lg-4">
-                <div class="all-categories-dropdown">
-                  <button class="all-categories-btn" onclick="toggleCategoriesDropdown()">
-                    <i class="fas fa-bars me-2"></i>
-                    All Categories
-                    <i class="fas fa-chevron-down ms-2"></i>
-                  </button>
-                  <div class="all-categories-content" id="categoriesDropdown">
-                    {% for main_category in main_categories %}
-                    <div class="all-category-item">
-                      <div class="all-category-main">
-                        <div class="all-category-icon">
-                          <i class="fas {{ main_category.icon }}"></i>
-                        </div>
-                        <span>{{ main_category.category }}</span>
-                        <i class="fas fa-chevron-right"></i>
-                      </div>
-                      <div class="all-subcategories-menu">
-                        <div class="all-subcategories-header">
-                          <i class="all-categories-back fas fa-chevron-left"></i>
-                          <span>{{ main_category.category }}</span>
-                        </div>
-                        <div class="all-subcategories-list">
-                          {% for subcategory in main_category.subcategories %}
-                          <a href="{% url 'ads:category-archive' subcategory.slug %}" class="all-subcategory-item">
-                            <span>{{ subcategory.name }}</span>
-                            <span class="all-subcategory-count">({{ subcategory.count }})</span>
-                          </a>
-                          {% endfor %}
-                        </div>
-                      </div>
-                    </div>
-                    {% endfor %}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-      </div>
-    </div>
-  </div>
-</div>
-<!-- End of main-content-wrapper -->
-
-<!-- Featured Ads Section -->
+        <!-- Featured Ads Section -->
           <section id="featured-items" class="section-padding">
             <div class="container">
 
@@ -662,21 +644,7 @@
   </div>
 </div>
 
-<!-- Quick Links -->
-        <div class="quick-links animate__animated animate__fadeInUp">
-          <a href="{% url 'ads:ads-listing' %}" class="quick-link">
-            <i class="fas fa-fire"></i> Trending
-          </a>
-          <a href="{% url 'ads:ads-listing' %}" class="quick-link">
-            <i class="fas fa-clock"></i> Just Added
-          </a>
-          <a href="{% url 'ads:ads-listing' %}?sort=price_low" class="quick-link">
-            <i class="fas fa-tags"></i> Best Deals
-          </a>
-          <a href="{% url 'profiles:sellers' %}?verified=true" class="quick-link">
-            <i class="fas fa-check-circle"></i> Verified Sellers
-          </a>
-        </div>
+
         
         
 

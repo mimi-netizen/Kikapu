@@ -3,6 +3,11 @@
 {% load humanize %}
 {% block content %}
 
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+<link rel="stylesheet" href="{% static 'css/listings.css' %}">
+{% endblock %}
+
 <!-- Page Header Start -->
 <div class="page-header" style="background: url(assets/img/banner1.jpg);">
   <div class="container">

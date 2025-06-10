@@ -3,6 +3,11 @@
 {% load humanize %}
 {% load ad_filters %}
 
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+<link rel="stylesheet" href="{% static 'css/listings.css' %}">
+{% endblock %}
+
 {% block content %}
 <!-- Seller Profile Section Start -->
 <section class="seller-profile section-padding">

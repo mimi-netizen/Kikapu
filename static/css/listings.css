@@ -196,17 +196,18 @@
 
 /* Hero Banner Section */
 .hero-banner-section {
-    background-color: #000;
+    /*background-color: #000;
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
+    background-repeat: no-repeat;*/
     position: relative;
     padding: 0;
     margin-bottom: 2rem;
     /*min-height: 500px;*/
     display: flex;
     align-items: center;
-    /*margin: 70px 0;*/
+    margin: 75px 0px 0px 0px;
+    font-size: smaller;
 }
 
 .hero-banner-section::before {
@@ -839,7 +840,7 @@
     box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
   }
 
-  .search-wrapper {
+  /*.search-wrapper {
     border-radius: 12px;
     padding: 15px;
     box-shadow: 0 2px 15px rgba(78, 83, 99, 0.08);
@@ -995,7 +996,7 @@
     .search-button {
       height: 36px;
       padding: 0 15px;
-    }
+    } 
 
     .btn-image-search {
       width: 100%;
@@ -1010,7 +1011,7 @@
     .btn-image-search i {
       font-size: 18px;
     }
-  }
+  } */
 
   .btn-outline-primary {
     border-color: #E08D35;

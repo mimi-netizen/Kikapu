@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
 {% load humanize %}
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+<link rel="stylesheet" href="{% static 'css/listings.css' %}">
+{% endblock %}
 {% block content %}
 
 <!-- Seller Listings Section Start -->
