@@ -46,7 +46,7 @@ def home(request):
     # Get deals for the three grids
     bundle_deals = Ads.objects.filter(is_bundle=True).order_by('-date_created')[:2]
     featured_deals = Ads.objects.filter(is_featured=True).order_by('-date_created')[:2]
-    negotiable_deals = Ads.objects.filter(negotiable=True).order_by('-date_created')[:2]
+    negotiable_deals = Ads.objects.filter(negotiable='yes').order_by('-date_created')[:2]
     
     # Get popular categories
     popular_categories = PopularCategory.objects.all()[:14]

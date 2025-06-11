@@ -632,15 +632,17 @@ def ads_by_city(request, city_slug):
 
     return render(request, 'ads/city-archive.html', context)
 
-def get_cities(request, county_slug):
+def get_cities(request, county_id):
     try:
-        cities = City.objects.filter(county__slug=county_slug).values('id', 'city_name', 'slug')
+        cities = City.objects.filter(county_id=county_id).values('id', 'city_name', 'slug')
         cities_list = list(cities)
         # Transform the data to match expected format
         for city in cities_list:
             city['name'] = city.pop('city_name')
+        print(f"County ID: {county_id}, Cities found: {len(cities_list)}")  # Debug log to server console
         return JsonResponse(cities_list, safe=False)
     except Exception as e:
+        print(f"Error in get_cities for county_id {county_id}: {str(e)}")  # Debug log to server console
         return JsonResponse({'error': str(e)}, status=400)
 
 def ads_author_archive(request, pk):

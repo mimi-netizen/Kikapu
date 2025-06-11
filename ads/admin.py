@@ -27,14 +27,17 @@ class AdsAdmin(admin.ModelAdmin):
         'city', 
         'date_created', 
         'is_featured',
-        'is_sold'
+        'is_sold',
+        'is_bundle',
+        'negotiable',
+        'is_active'
     )
     
     list_display_links = ('ad_id', 'title')
-    list_editable = ['is_featured', 'is_sold']
+    list_editable = ['is_featured', 'is_sold', 'is_bundle', 'negotiable', 'is_active']
     search_fields = ('title', 'price', 'county__county_name', 'city__city_name', 'category', 'seller__user__username')
     search_help_text = 'Search by title, price, county, city, category or seller'
-    list_filter = ('price', 'date_created', 'county', 'city', 'is_featured', 'is_sold', 'category')
+    list_filter = ('price', 'date_created', 'county', 'city', 'is_featured', 'is_sold', 'category', 'is_bundle', 'negotiable', 'is_active')
     list_per_page = 20
 
     inlines = [AdsImagesInline]

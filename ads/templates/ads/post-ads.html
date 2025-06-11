@@ -358,30 +358,71 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // City population
+    // Dynamic loading of cities based on county selection - Consolidated Version
     const countySelect = document.getElementById('id_county');
     const citySelect = document.getElementById('id_city');
     
-    countySelect.addEventListener('change', function() {
-        const countyId = this.value;
-        citySelect.innerHTML = '<option value="">Select City</option>';
-
-        if (countyId) {
-            // Remove 'ads/' from the beginning of the URL
-            fetch(`/api/cities/${countyId}/`)
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.json();
-                })
+    if (countySelect && citySelect) {
+        countySelect.addEventListener('change', function() {
+            const countyId = this.value;
+            // Try to get slug from data attribute if available
+            const selectedOption = this.options[this.selectedIndex];
+            const countySlug = selectedOption.getAttribute('data-slug') || countyId;
+            console.log('County value being used:', countyId, 'Slug if available:', countySlug);
+            citySelect.innerHTML = '<option value="">Select City</option>';
+            
+            if (countyId) {
+                fetch(`/api/cities/${countySlug}/`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Cities data:', data);
+                        // Handle different response formats
+                        const citiesArray = Array.isArray(data) ? data : data.cities || [];
+                        if (citiesArray.length > 0) {
+                            citiesArray.forEach(city => {
+                                const option = document.createElement('option');
+                                option.value = city.id;
+                                option.textContent = city.name;
+                                citySelect.appendChild(option);
+                            });
+                            citySelect.disabled = false;
+                        } else {
+                            console.warn('No cities found in response', data);
+                        }
+                    })
+                    .catch(error => console.error('Error loading cities:', error));
+            } else {
+                citySelect.disabled = true;
+            }
+        });
+        
+        // If county is already selected (e.g., in edit form), load its cities
+        if (countySelect.value) {
+            const countyId = countySelect.value;
+            const selectedOption = countySelect.options[countySelect.selectedIndex];
+            const countySlug = selectedOption.getAttribute('data-slug') || countyId;
+            console.log('Initial County value being used:', countyId, 'Slug if available:', countySlug);
+            fetch(`/api/cities/${countySlug}/`)
+                .then(response => response.json())
                 .then(data => {
-                    console.log('Cities:', data);
-                    data.forEach(city => {
-                        citySelect.add(new Option(city.name, city.id));
-                    });
+                    citySelect.innerHTML = '<option value="">Select City</option>';
+                    const citiesArray = Array.isArray(data) ? data : data.cities || [];
+                    if (citiesArray.length > 0) {
+                        citiesArray.forEach(city => {
+                            const option = document.createElement('option');
+                            option.value = city.id;
+                            option.textContent = city.name;
+                            citySelect.appendChild(option);
+                        });
+                        citySelect.disabled = false;
+                    }
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => console.error('Error loading initial cities:', error));
         }
-    });
+    }
 
     // CKEditor initialization with error handling
     if (typeof CKEDITOR !== 'undefined') {

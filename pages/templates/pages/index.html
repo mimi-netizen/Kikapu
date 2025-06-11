@@ -167,7 +167,7 @@
               <div class="grid-content">
                 {% for deal in bundle_deals %}
                 <div class="deal-card">
-                  <img src="{{ deal.get_main_image.url }}" alt="{{ deal.title }}">
+                  <img src="{{ deal.images.first.image.url }}" alt="{{ deal.title }}">
                   <div class="deal-info">
                     <h4 class="deal-title">{{ deal.title }}</h4>
                     <div class="deal-price">KES{{ deal.price|floatformat:2 }}</div>
@@ -190,7 +190,7 @@
               <div class="grid-content">
                 {% for deal in featured_deals %}
                 <div class="deal-card">
-                  <img src="{{ deal.get_first_image }}" alt="{{ deal.title }}" class="deal-img">
+                  <img src="{{ deal.images.first.image.url }}" alt="{{ deal.title }}" class="deal-img">
                   <div class="deal-info">
                     <h4 class="deal-title">{{ deal.title }}</h4>
                     <div class="deal-price">KES{{ deal.price|floatformat:2 }}</div>
@@ -213,7 +213,7 @@
               <div class="grid-content">
                 {% for deal in negotiable_deals %}
                 <div class="deal-card">
-                  <img src="{{ deal.get_first_image }}" alt="{{ deal.title }}" class="deal-img">
+                  <img src="{{ deal.images.first.image.url }}" alt="{{ deal.title }}" class="deal-img">
                   <div class="deal-info">
                     <h4 class="deal-title">{{ deal.title }}</h4>
                     <div class="deal-price">KES{{ deal.price|floatformat:2 }}</div>
