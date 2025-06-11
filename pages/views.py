@@ -95,7 +95,63 @@ def home(request):
 
     # Get active bottom banners
     bottom_banners = AdsBottomBanner.objects.filter(is_active=True).order_by('-created_at')
-
+    
+    # Get listings from followed sellers for authenticated users
+    followed_listings = []
+    if request.user.is_authenticated:
+        try:
+            user_profile = request.user.profile
+            followed_sellers = user_profile.following.all()
+            if followed_sellers:
+                followed_listings = Ads.objects.filter(
+                    seller__in=followed_sellers,
+                    is_active=True
+                ).exclude(
+                    category__category__in=excluded_categories
+                ).select_related(
+                    'seller', 
+                    'category', 
+                    'city', 
+                    'county'
+                ).prefetch_related('images').order_by('-date_created')[:6]
+        except AttributeError:
+            # In case user has no profile
+            followed_listings = []
+    
+    # Get recommended ads (for all users, with personalization for authenticated users)
+    recommended_ads = []
+    if request.user.is_authenticated:
+        # For authenticated users, try to personalize based on followed sellers
+        try:
+            user_profile = request.user.profile
+            followed_sellers = user_profile.following.all()
+            if followed_sellers:
+                recommended_ads = Ads.objects.filter(
+                    seller__in=followed_sellers,
+                    is_active=True
+                ).exclude(
+                    category__category__in=excluded_categories
+                ).select_related(
+                    'seller', 
+                    'category', 
+                    'city', 
+                    'county'
+                ).prefetch_related('images').order_by('-date_created')[:6]
+        except AttributeError:
+            # In case user has no profile
+            recommended_ads = []
+    if not recommended_ads:  # Fallback if no personalized recommendations or user not authenticated
+        recommended_ads = Ads.objects.filter(
+            is_active=True
+        ).exclude(
+            category__category__in=excluded_categories
+        ).select_related(
+            'seller', 
+            'category', 
+            'city', 
+            'county'
+        ).prefetch_related('images').order_by('-views')[:6]  # Order by popularity
+    
     # Get top rated sellers
     top_rated_sellers = Profile.objects.filter(
         is_seller=True  # First, ensure we only get sellers
@@ -117,6 +173,8 @@ def home(request):
         'featured_deals': featured_deals,
         'negotiable_deals': negotiable_deals,
         'popular_categories': popular_categories,
+        'followed_listings': followed_listings,
+        'recommended_ads': recommended_ads,
     }
     
     return render(request, 'pages/index.html', context)
