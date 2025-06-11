@@ -3934,3 +3934,16 @@ figure img, .image-wrapper img {
   font-size: 12px;
 }
 
+/* Category Promotions Images */
+.category-promotion img {
+  max-height: 200px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .category-promotion img {
+    max-height: 150px;
+  }
+}

@@ -291,11 +291,11 @@
         <div class="promotion-section">
           <a href="#" class="promotion-card">
             <div class="promotion-content">
-              <h3>Your fashion choice</h3>
+              <h3>Your Furniture</h3>
               <button class="shop-now-btn">Shop now</button>
             </div>
             <div class="promotion-image">
-              <img src="{% static 'images/categories/home-garden.jpg' %}" alt="Fashion Collection">
+              <img src="{% static 'images/categories/home-garden.jpg' %}" alt="Fashion Collection" class="img-fluid category-promotion">
             </div>
           </a>
         </div>
@@ -487,26 +487,26 @@
           <div class="container">
             <div class="row g-4">
               <div class="col-12 col-md-6">
-                <div class="promo-card" style="background: linear-gradient(45deg, #FFE5BC, #FFF);">
-                  <div class="promo-content">
+                <div class="promo-card" style="background: linear-gradient(45deg, #FFE5BC, #FFF); display: flex; justify-content: space-between;">
+                  <div class="promo-content" style="margin: 10px;">
                     <h3>Electronics Sale</h3>
                     <p>Up to 40% off on selected items</p>
                     <a href="{% url 'ads:category-archive' 'electronics' %}" class="btn btn-primary">Shop Now</a>
                   </div>
-                  <div class="promo-image">
-                    <img src="{% static 'images/electronics.jpg' %}" alt="Electronics Sale">
+                  <div class="category-promotion">
+                    <img src="{% static 'images/electronics.jpg' %}" alt="Electronics Sale" class="img-fluid">
                   </div>
                 </div>
               </div>
               <div class="col-12 col-md-6">
-                <div class="promo-card" style="background: linear-gradient(45deg, #E3F2FD, #FFF);">
-                  <div class="promo-content">
+                <div class="promo-card" style="background: linear-gradient(45deg, #E3F2FD, #FFF); display: flex; justify-content: space-between;">
+                  <div class="promo-content" style="margin: 10px;">
                     <h3>Fashion Deals</h3>
                     <p>New arrivals starting at Ksh 999</p>
                     <a href="{% url 'ads:category-archive' 'womens-fashion' %}" class="btn btn-primary">Shop Now</a>
                   </div>
-                  <div class="promo-image">
-                    <img src="{% static 'images/fashion.jpeg' %}" alt="Fashion Deals">
+                  <div class="category-promotion">
+                    <img src="{% static 'images/fashion.jpeg' %}" alt="Fashion Deals" class="img-fluid">
                   </div>
                 </div>
               </div>
