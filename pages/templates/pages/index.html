@@ -17,6 +17,9 @@
 <!-- Add index.js -->
 <script src="{% static 'js/index.js' %}"></script>
 
+<!-- Add bottom-carousel.js -->
+<script src="{% static 'js/bottom-carousel.js' %}"></script>
+
 <!-- Back to Top Button -->
 <button id="back-to-top" class="back-to-top" aria-label="Back to top">
   <i class="fas fa-arrow-up"></i>
@@ -298,6 +301,14 @@
               <img src="{% static 'images/categories/home-garden.jpg' %}" alt="Fashion Collection" class="img-fluid category-promotion">
             </div>
           </a>
+          <!-- <a href="#" class="popular-category-card">
+            <div class="popular-category-label">
+              <h3>Home & Garden</h3>
+            </div>
+            <div class="promotion-image">
+              <img src="{% static 'images/categories/home-garden.jpg' %}" alt="Home & Garden" class="img-fluid category-promotion">
+            </div>
+          </a> -->
         </div>
       
     </div>
@@ -657,7 +668,11 @@
         <div class="bottom-carousel-container" style="position: relative;">
           <div class="bottom-carousel-slides">
             {% for banner in bottom_banners %}
+            {% if forloop.first %}
+            <div class="bottom-carousel-slide active" style="display: block;">
+            {% else %}
             <div class="bottom-carousel-slide" style="display: none;">
+            {% endif %}
               {% if banner.link %}
               <a href="{{ banner.link }}" class="banner-link">
               {% endif %}
