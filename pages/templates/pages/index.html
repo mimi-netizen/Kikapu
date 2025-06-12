@@ -169,17 +169,19 @@
               </div>
               <div class="grid-content">
                 {% for deal in bundle_deals %}
-                <div class="deal-card">
-                  <img src="{{ deal.images.first.image.url }}" alt="{{ deal.title }}">
-                  <div class="deal-info">
-                    <h4 class="deal-title">{{ deal.title }}</h4>
-                    <div class="deal-price">KES{{ deal.price|floatformat:2 }}</div>
-                    {% if deal.original_price %}
-                    <div class="original-price">KES{{ deal.original_price|floatformat:2 }}</div>
-                    <div class="discount">{{ deal.get_discount_percentage }}% OFF</div>
-                    {% endif %}
+                <a href="{% url 'ads:ads-detail' deal.id %}" class="deal-card-link">
+                  <div class="deal-card">
+                    <img src="{{ deal.images.first.image.url }}" alt="{{ deal.title }}">
+                    <div class="deal-info">
+                      <h4 class="deal-title">{{ deal.title }}</h4>
+                      <div class="deal-price">KES{{ deal.price|floatformat:2 }}</div>
+                      {% if deal.original_price %}
+                      <div class="original-price">KES{{ deal.original_price|floatformat:2 }}</div>
+                      <div class="discount">{{ deal.get_discount_percentage }}% OFF</div>
+                      {% endif %}
+                    </div>
                   </div>
-                </div>
+                </a>
                 {% endfor %}
               </div>
             </div>
@@ -192,17 +194,19 @@
               </div>
               <div class="grid-content">
                 {% for deal in featured_deals %}
-                <div class="deal-card">
-                  <img src="{{ deal.images.first.image.url }}" alt="{{ deal.title }}" class="deal-img">
-                  <div class="deal-info">
-                    <h4 class="deal-title">{{ deal.title }}</h4>
-                    <div class="deal-price">KES{{ deal.price|floatformat:2 }}</div>
-                    {% if deal.original_price %}
-                    <div class="original-price">KES{{ deal.original_price|floatformat:2 }}</div>
-                    <div class="discount">{{ deal.get_discount_percentage }}% OFF</div>
-                    {% endif %}
+                <a href="{% url 'ads:ads-detail' deal.id %}" class="deal-card-link">
+                  <div class="deal-card">
+                    <img src="{{ deal.images.first.image.url }}" alt="{{ deal.title }}" class="deal-img">
+                    <div class="deal-info">
+                      <h4 class="deal-title">{{ deal.title }}</h4>
+                      <div class="deal-price">KES{{ deal.price|floatformat:2 }}</div>
+                      {% if deal.original_price %}
+                      <div class="original-price">KES{{ deal.original_price|floatformat:2 }}</div>
+                      <div class="discount">{{ deal.get_discount_percentage }}% OFF</div>
+                      {% endif %}
+                    </div>
                   </div>
-                </div>
+                </a>
                 {% endfor %}
               </div>
             </div>
@@ -215,17 +219,19 @@
               </div>
               <div class="grid-content">
                 {% for deal in negotiable_deals %}
-                <div class="deal-card">
-                  <img src="{{ deal.images.first.image.url }}" alt="{{ deal.title }}" class="deal-img">
-                  <div class="deal-info">
-                    <h4 class="deal-title">{{ deal.title }}</h4>
-                    <div class="deal-price">KES{{ deal.price|floatformat:2 }}</div>
-                    {% if deal.original_price %}
-                    <div class="original-price">KES{{ deal.original_price|floatformat:2 }}</div>
-                    <div class="discount">{{ deal.get_discount_percentage }}% OFF</div>
-                    {% endif %}
+                <a href="{% url 'ads:ads-detail' deal.id %}" class="deal-card-link">
+                  <div class="deal-card">
+                    <img src="{{ deal.images.first.image.url }}" alt="{{ deal.title }}" class="deal-img">
+                    <div class="deal-info">
+                      <h4 class="deal-title">{{ deal.title }}</h4>
+                      <div class="deal-price">KES{{ deal.price|floatformat:2 }}</div>
+                      {% if deal.original_price %}
+                      <div class="original-price">KES{{ deal.original_price|floatformat:2 }}</div>
+                      <div class="discount">{{ deal.get_discount_percentage }}% OFF</div>
+                      {% endif %}
+                    </div>
                   </div>
-                </div>
+                </a>
                 {% endfor %}
               </div>
             </div>
@@ -531,7 +537,7 @@
                   <div class="promo-content" style="margin: 10px;">
                     <h3>Fashion Deals</h3>
                     <p>New arrivals starting at Ksh 999</p>
-                    <a href="{% url 'ads:category-archive' 'womens-fashion' %}" class="btn btn-primary">Shop Now</a>
+                    <a href="{% url 'ads:category-archive' 'fashion' %}" class="btn btn-primary">Shop Now</a>
                   </div>
                   <div class="category-promotion">
                     <img src="{% static 'images/fashion.jpeg' %}" alt="Fashion Deals" class="img-fluid">

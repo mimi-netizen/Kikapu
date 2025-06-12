@@ -25,10 +25,6 @@
 <div class="main-container">
   <div class="container-fluid px-0">
 
- 
-   
-
-
     <!-- Search Results Message -->
     {% if current_filters.search %}
       <div class="row mb-4">
@@ -41,277 +37,223 @@
       </div>
     {% endif %}
 
-    <!-- Featured Categories Grid -->
-<div class="container mt-4 mb-5">
-  <div class="section-header mb-4">
-    <h2>Shop by Category</h2>
-  </div>
-  <div class="row g-4">
-    <div class="col-6 col-md-3">
-      <a href="#" class="category-card">
-        <div class="category-image">
-          <img src="{% static 'images/categories/electronics.jpg' %}" alt="Electronics" class="img-fluid">
-        </div>
-        <div class="category-content">
-          <h3>Electronics</h3>
-          <p>Phones, Laptops & More</p>
-        </div>
-      </a>
-    </div>
-    <div class="col-6 col-md-3">
-      <a href="#" class="category-card">
-        <div class="category-image">
-          <img src="{% static 'images/categories/fashion.jpg' %}" alt="Fashion" class="img-fluid">
-        </div>
-        <div class="category-content">
-          <h3>Fashion</h3>
-          <p>Clothing, Shoes & Accessories</p>
-        </div>
-      </a>
-    </div>
-    <div class="col-6 col-md-3">
-      <a href="#" class="category-card">
-        <div class="category-image">
-          <img src="{% static 'images/categories/home.jpg' %}" alt="Home & Living" class="img-fluid">
-        </div>
-        <div class="category-content">
-          <h3>Home & Living</h3>
-          <p>Furniture & Decor</p>
-        </div>
-      </a>
-    </div>
-    <div class="col-6 col-md-3">
-      <a href="#" class="category-card">
-        <div class="category-image">
-          <img src="{% static 'images/categories/vehicles.jpg' %}" alt="Vehicles" class="img-fluid">
-        </div>
-        <div class="category-content">
-          <h3>Vehicles</h3>
-          <p>Cars, Bikes & Parts</p>
-        </div>
-      </a>
-    </div>
-  </div>
-</div>
 
-  
+    <!-- Filter Sidebar and Main Content -->
+    <div class="container-fluid px-0" style="margin-top: 70px;">
+      <div class="row gx-0">
+        <!-- Filter Sidebar -->
+        <div class="col-lg-3 col-md-4 mb-4">
+            <!-- Mobile filter toggle button -->
+            <button 
+              class="btn btn-primary d-lg-none w-100 mb-3" 
+              type="button" 
+              id="toggleFilters"
+              data-bs-toggle="collapse" 
+              data-bs-target="#filterSidebar" 
+              aria-expanded="false"
+            >
+              <i class="lni-filter-alt me-2"></i>
+              <span>Toggle Filters</span>
+              <i class="lni-chevron-down filter-toggle-icon ms-2"></i>
+            </button>
 
-  </div>
-</div>
+            <!-- Filter content -->
+            <div class="collapse d-lg-block" id="filterSidebar">
+              <div class="card filter-card">
+                <div class="filter-header">
+                  <h5><i class="lni lni-funnel"></i> Filters</h5>
+                  <button type="button" class="btn btn-link btn-sm" onclick="document.getElementById('filterForm').reset();document.getElementById('filterForm').submit();">
+                    <i class="fas fa-undo"></i> Reset
+                  </button>
+                </div>
+                <div class="filter-body">
+                  <form method="GET" action="{% url 'ads:ads-listing' %}" id="filterForm">
+                    <!-- Categories (Jumia-style) -->
+                    <div class="filter-section filter-section-category mb-4 p-3 bg-white rounded shadow-sm">
+                      <div class="d-flex align-items-center mb-2">
+                        <span class="filter-icon bg-light rounded-circle d-flex align-items-center justify-content-center me-2" style="width:32px;height:32px;"><i class="lni lni-grid-alt text-warning"></i></span>
+                        <span class="fw-bold text-uppercase small text-secondary">Category</span>
+                      </div>
+                      <select name="category" class="form-select filter-select mb-2" onchange="this.form.submit()">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                          <option value="{{ category.slug }}" {% if current_filters.category == category.slug %}selected{% endif %}
+                                  {% if not category.is_main %}style="padding-left: 20px;"{% endif %}>
+                            {{ category.category }} ({{ category.ads_count }})
+                          </option>
+                        {% endfor %}
+                      </select>
+                    </div>
 
-<!-- Filter Sidebar and Main Content -->
-<div class="container">
-  <div class="row">
-    <!-- Filter Sidebar -->
-    <div class="col-lg-3 col-md-4 mb-4">
-        <!-- Mobile filter toggle button -->
-        <button 
-          class="btn btn-primary d-lg-none w-100 mb-3" 
-          type="button" 
-          id="toggleFilters"
-          data-bs-toggle="collapse" 
-          data-bs-target="#filterSidebar" 
-          aria-expanded="false"
-        >
-          <i class="lni-filter-alt me-2"></i>
-          <span>Toggle Filters</span>
-          <i class="lni-chevron-down filter-toggle-icon ms-2"></i>
-        </button>
+                    <!-- Location -->
+                    <div class="filter-section">
+                      <label class="filter-label">
+                        <i class="lni lni-map-marker"></i> Location
+                      </label>
+                      <select name="county" id="county" class="form-select filter-select mb-3" onchange="loadCities(this.value)">
+                        <option value="">All Counties</option>
+                        {% for county in counties %}
+                          <option value="{{ county.slug }}" {% if current_filters.county == county.slug %}selected{% endif %}>
+                            {{ county.county_name }} ({{ county.ads_count }})
+                          </option>
+                        {% endfor %}
+                      </select>
+                      
+                      <select name="city" id="city" class="form-select filter-select" {% if not current_filters.county %}disabled{% endif %}>
+                        <option value="">All Cities</option>
+                        {% if cities %}
+                          {% for city in cities %}
+                            <option value="{{ city.slug }}" {% if current_filters.city == city.slug %}selected{% endif %}>
+                              {{ city.city_name }}
+                            </option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
 
-        <!-- Filter content -->
-        <div class="collapse d-lg-block" id="filterSidebar">
-          <div class="card filter-card">
-            <div class="filter-header">
-              <h5><i class="lni lni-funnel"></i> Filters</h5>
-              <button type="button" class="btn btn-link btn-sm" onclick="document.getElementById('filterForm').reset();document.getElementById('filterForm').submit();">
-                <i class="fas fa-undo"></i> Reset
+                    <!-- Condition -->
+                    <div class="filter-section">
+                      <label class="filter-label">
+                        <i class="lni lni-star"></i> Condition
+                      </label>
+                      <select name="condition" class="form-select filter-select" onchange="this.form.submit()">
+                        <option value="">Any Condition</option>
+                        {% for condition in conditions %}
+                          <option value="{{ condition.value }}" {% if current_filters.condition == condition.value %}selected{% endif %}>
+                            {{ condition.label }}
+                          </option>
+                        {% endfor %}
+                      </select>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="filter-section">
+                      <label class="filter-label">
+                        <i class="lni lni-coin"></i> Price Range
+                      </label>
+                      <div class="price-range">
+                        <input type="number" name="min_price" class="form-control" placeholder="Min" value="{{ current_filters.min_price }}">
+                        <span class="px-2">to</span>
+                        <input type="number" name="max_price" class="form-control" placeholder="Max" value="{{ current_filters.max_price }}">
+                      </div>
+                    </div>
+                    <!-- Sort By -->
+                    <div class="filter-section">
+                      <label class="filter-label">
+                        <i class="lni lni-sort-alpha-asc"></i> Sort By
+                      </label>
+                      <select name="sort" class="form-select filter-select" onchange="this.form.submit()">
+                        <option value="-date_created" {% if current_filters.sort == '-date_created' %}selected{% endif %}>Newest First</option>
+                        <option value="date_created" {% if current_filters.sort == 'date_created' %}selected{% endif %}>Oldest First</option>
+                        <option value="price_low" {% if current_filters.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="price_high" {% if current_filters.sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="-views_count" {% if current_filters.sort == '-views_count' %}selected{% endif %}>Most Viewed</option>
+                      </select>
+                    </div>
+
+                    <!-- Apply Filters Button -->
+                    <button type="submit" class="btn btn-primary w-100 mt-3">
+                      Apply Filters
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ads Grid -->
+          <div class="col-lg-9 col-md-8">
+            <h2 class="section-title">All Listings</h2>
+            <div class="adds-wrapper">
+              <div class="products-grid" role="grid">
+                <div class="row g-3">
+                  {% for ad_listing in ads_listing %}
+                  <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                    <!-- Optional: Add debug info during development -->
+                    {% if debug %}
+                    <small class="text-muted">ID: {{ ad_listing.id }} | Created: {{ ad_listing.date_created }}</small>
+                    {% endif %}
+                    <article class="product-card" role="gridcell">
+                      <a href="{% url 'ads:ads-detail' ad_listing.id %}" class="card-link">
+                        <div class="product-image">
+                          <img 
+                            src="{% static 'img/placeholder.png' %}" 
+                            data-src="{{ ad_listing.images.first.image.url|default:'' }}"
+                            alt="{{ ad_listing.title }}"
+                            class="img-fluid lazy"
+                            width="300"
+                            height="225"
+                            loading="lazy"
+                            onerror="this.src='{% static 'img/placeholder.png' %}'"
+                          >
+                          {% if ad_listing.is_featured %}
+                          <span class="featured-badge">Featured</span>
+                          {% endif %}
+                        </div>
+                        <div class="product-details">
+                          <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="category">{{ ad_listing.category }}</span>
+                            {% if user.is_authenticated %}
+                              <button 
+                                class="btn btn-sm {% if ad_listing in user.profile.bookmarks.all %}btn-danger{% else %}btn-outline-primary{% endif %} bookmark-btn" 
+                                data-item-id="{{ ad_listing.id }}"
+                                onclick="(function(e) { e.preventDefault(); e.stopPropagation(); toggleBookmark(this, {{ ad_listing.id }}); })(event)"
+                              >
+                                <i class="lni-heart{% if ad_listing in user.profile.bookmarks.all %}-filled{% endif %}"></i>
+                              </button>
+                            {% endif %}
+                          </div>
+                          <h3 class="title">{{ ad_listing.title|truncatechars:40 }}</h3>
+                          <div class="meta">
+                            <span class="processor">{{ ad_listing.description|truncatewords:10|safe }}</span>
+                          </div>
+                          <div class="location">
+                            <i class="lni-map-marker"></i>
+                            <span>{{ ad_listing.city }}, {{ ad_listing.county }}</span>
+                          </div>
+                          <div class="price price-small">Ksh {{ ad_listing.price|intcomma }}</div>
+                        </div>
+                      </a>
+                    </article>
+                  </div>
+                  {% empty %}
+                  <div class="col-12">
+                      <div class="alert alert-info" role="alert">
+                          <i class="lni lni-emoji-sad mr-2"></i>
+                          No ads found. {% if current_filters %}Try adjusting your filters.{% endif %}
+                      </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading" class="text-center d-none">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+
+            <!-- Infinite Scroll Pagination -->
+            {% if ads_listing.has_other_pages %}
+            <div class="text-center mt-4" id="pagination">
+              <button 
+                class="btn btn-primary load-more"
+                data-next-page="{{ ads_listing.next_page_number }}"
+                {% if not ads_listing.has_next %}disabled{% endif %}
+              >
+                Load More
               </button>
             </div>
-            <div class="filter-body">
-              <form method="GET" action="{% url 'ads:ads-listing' %}" id="filterForm">
-                <!-- Categories -->
-                <div class="filter-section">
-                  <label class="filter-label">
-                    <i class="lni lni-grid-alt"></i> Category
-                  </label>
-                  <select name="category" class="form-select filter-select" onchange="this.form.submit()">
-                    <option value="">All Categories</option>
-                    {% for category in categories %}
-                      <option value="{{ category.slug }}" {% if current_filters.category == category.slug %}selected{% endif %}
-                              {% if not category.is_main %}style="padding-left: 20px;"{% endif %}>
-                        {{ category.category }} ({{ category.ads_count }})
-                      </option>
-                    {% endfor %}
-                  </select>
-                </div>
-
-                <!-- Location -->
-                <div class="filter-section">
-                  <label class="filter-label">
-                    <i class="lni lni-map-marker"></i> Location
-                  </label>
-                  <select name="county" id="county" class="form-select filter-select mb-3" onchange="loadCities(this.value)">
-                    <option value="">All Counties</option>
-                    {% for county in counties %}
-                      <option value="{{ county.slug }}" {% if current_filters.county == county.slug %}selected{% endif %}>
-                        {{ county.county_name }} ({{ county.ads_count }})
-                      </option>
-                    {% endfor %}
-                  </select>
-                  
-                  <select name="city" id="city" class="form-select filter-select" {% if not current_filters.county %}disabled{% endif %}>
-                    <option value="">All Cities</option>
-                    {% if cities %}
-                      {% for city in cities %}
-                        <option value="{{ city.slug }}" {% if current_filters.city == city.slug %}selected{% endif %}>
-                          {{ city.city_name }}
-                        </option>
-                      {% endfor %}
-                    {% endif %}
-                  </select>
-                </div>
-
-                <!-- Condition -->
-                <div class="filter-section">
-                  <label class="filter-label">
-                    <i class="lni lni-star"></i> Condition
-                  </label>
-                  <select name="condition" class="form-select filter-select" onchange="this.form.submit()">
-                    <option value="">Any Condition</option>
-                    {% for condition in conditions %}
-                      <option value="{{ condition.value }}" {% if current_filters.condition == condition.value %}selected{% endif %}>
-                        {{ condition.label }}
-                      </option>
-                    {% endfor %}
-                  </select>
-                </div>
-
-                <!-- Price Range -->
-                <div class="filter-section">
-                  <label class="filter-label">
-                    <i class="lni lni-coin"></i> Price Range
-                  </label>
-                  <div class="price-range">
-                    <input type="number" name="min_price" class="form-control" placeholder="Min" value="{{ current_filters.min_price }}">
-                    <span class="px-2">to</span>
-                    <input type="number" name="max_price" class="form-control" placeholder="Max" value="{{ current_filters.max_price }}">
-                  </div>
-                </div>
-                <!-- Sort By -->
-                <div class="filter-section">
-                  <label class="filter-label">
-                    <i class="lni lni-sort-alpha-asc"></i> Sort By
-                  </label>
-                  <select name="sort" class="form-select filter-select" onchange="this.form.submit()">
-                    <option value="-date_created" {% if current_filters.sort == '-date_created' %}selected{% endif %}>Newest First</option>
-                    <option value="date_created" {% if current_filters.sort == 'date_created' %}selected{% endif %}>Oldest First</option>
-                    <option value="price_low" {% if current_filters.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
-                    <option value="price_high" {% if current_filters.sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
-                    <option value="-views_count" {% if current_filters.sort == '-views_count' %}selected{% endif %}>Most Viewed</option>
-                  </select>
-                </div>
-
-                <!-- Apply Filters Button -->
-                <button type="submit" class="btn btn-primary w-100 mt-3">
-                  Apply Filters
-                </button>
-              </form>
-            </div>
+            {% endif %}
           </div>
         </div>
-      </div>
-
-      <!-- Ads Grid -->
-      <div class="col-lg-9 col-md-8">
-        <h2 class="section-title">All Listings</h2>
-        <div class="adds-wrapper">
-          <div class="products-grid" role="grid">
-            <div class="row g-3">
-              {% for ad_listing in ads_listing %}
-              <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
-                <!-- Optional: Add debug info during development -->
-                {% if debug %}
-                <small class="text-muted">ID: {{ ad_listing.id }} | Created: {{ ad_listing.date_created }}</small>
-                {% endif %}
-                <article class="product-card" role="gridcell">
-                  <a href="{% url 'ads:ads-detail' ad_listing.id %}" class="card-link">
-                    <div class="product-image">
-                      <img 
-                        src="{% static 'img/placeholder.png' %}" 
-                        data-src="{{ ad_listing.images.first.image.url|default:'' }}"
-                        alt="{{ ad_listing.title }}"
-                        class="img-fluid lazy"
-                        width="300"
-                        height="225"
-                        loading="lazy"
-                        onerror="this.src='{% static 'img/placeholder.png' %}'"
-                      >
-                      {% if ad_listing.is_featured %}
-                      <span class="featured-badge">Featured</span>
-                      {% endif %}
-                    </div>
-                    <div class="product-details">
-                      <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="category">{{ ad_listing.category }}</span>
-                        {% if user.is_authenticated %}
-                          <button 
-                            class="btn btn-sm {% if ad_listing in user.profile.bookmarks.all %}btn-danger{% else %}btn-outline-primary{% endif %} bookmark-btn" 
-                            data-item-id="{{ ad_listing.id }}"
-                            onclick="(function(e) { e.preventDefault(); e.stopPropagation(); toggleBookmark(this, {{ ad_listing.id }}); })(event)"
-                          >
-                            <i class="lni-heart{% if ad_listing in user.profile.bookmarks.all %}-filled{% endif %}"></i>
-                          </button>
-                        {% endif %}
-                      </div>
-                      <h3 class="title">{{ ad_listing.title|truncatechars:40 }}</h3>
-                      <div class="meta">
-                        <span class="processor">{{ ad_listing.description|truncatewords:10|safe }}</span>
-                      </div>
-                      <div class="location">
-                        <i class="lni-map-marker"></i>
-                        <span>{{ ad_listing.city }}, {{ ad_listing.county }}</span>
-                      </div>
-                      <div class="price price-small">Ksh {{ ad_listing.price|intcomma }}</div>
-                    </div>
-                  </a>
-                </article>
-              </div>
-              {% empty %}
-              <div class="col-12">
-                  <div class="alert alert-info" role="alert">
-                      <i class="lni lni-emoji-sad mr-2"></i>
-                      No ads found. {% if current_filters %}Try adjusting your filters.{% endif %}
-                  </div>
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-
-        <!-- Loading State -->
-        <div id="loading" class="text-center d-none">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
-        </div>
-
-        <!-- Infinite Scroll Pagination -->
-        {% if ads_listing.has_other_pages %}
-        <div class="text-center mt-4" id="pagination">
-          <button 
-            class="btn btn-primary load-more"
-            data-next-page="{{ ads_listing.next_page_number }}"
-            {% if not ads_listing.has_next %}disabled{% endif %}
-          >
-            Load More
-          </button>
-        </div>
-        {% endif %}
       </div>
     </div>
   </div>
 </div>
-<!-- Main container End -->
+
 
 <!-- Back to Top Button -->
 <button id="backToTop" class="back-to-top" aria-label="Back to top">
