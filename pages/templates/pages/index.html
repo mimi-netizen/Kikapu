@@ -70,7 +70,7 @@
     <div class="quick-links animate__animated animate__fadeInUp">
       <!-- All Categories Dropdown moved from below -->
       <div class="all-categories-dropdown">
-        <button class="all-categories-btn" onclick="toggleCategoriesDropdown()">
+        <button class="all-categories-btn">
           <i class="fas fa-bars me-2"></i>
           All Categories
           <i class="fas fa-chevron-down ms-2"></i>
@@ -503,7 +503,7 @@
                 <h2 class="section-title">Listings from Sellers You Follow</h2>
               </div>
               <div class="no-listings-message">
-                <p>Please <a href="{% url 'account_login' %}">log in</a> to see listings from sellers you follow.</p>
+                <p>Please <a href="{% url 'login' %}">log in</a> to see listings from sellers you follow.</p>
               </div>
             </div>
           </section>

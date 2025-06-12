@@ -8,7 +8,7 @@ from django.http import JsonResponse
 from ads.forms import PostAdsForm, AdsEditForm
 from ads.models import (Ads, HeroBanner, AdsImages, County, City, Category, 
     AdsTopBanner, AdsRightBanner, AdsBottomBanner, Bookmark, AdPriceHistory, 
-    DraftAd, TodayDeal, PopularCategory)
+    DraftAd, TodayDeal, PopularCategory, AdInteraction)
 from profiles.models import Profile
 from ads.models import FeaturedSlot
 from datetime import datetime, timedelta
@@ -121,13 +121,15 @@ def home(request):
     # Get recommended ads (for all users, with personalization for authenticated users)
     recommended_ads = []
     if request.user.is_authenticated:
-        # For authenticated users, try to personalize based on followed sellers
+        # First, try to personalize based on user interactions (views, likes, contacts)
         try:
-            user_profile = request.user.profile
-            followed_sellers = user_profile.following.all()
-            if followed_sellers:
+            interacted_categories = Category.objects.filter(
+                ads__interactions__user=request.user,
+                ads__interactions__interaction_type__in=['view', 'like', 'contact']
+            ).distinct()[:3]  # Limit to top 3 categories of interest based on interactions
+            if interacted_categories:
                 recommended_ads = Ads.objects.filter(
-                    seller__in=followed_sellers,
+                    category__in=interacted_categories,
                     is_active=True
                 ).exclude(
                     category__category__in=excluded_categories
@@ -138,8 +140,29 @@ def home(request):
                     'county'
                 ).prefetch_related('images').order_by('-date_created')[:6]
         except AttributeError:
-            # In case user has no profile
-            recommended_ads = []
+            # In case interactions aren't set up yet or user has no profile
+            pass
+        
+        # If no recommendations from interactions, fall back to followed sellers
+        if not recommended_ads:
+            try:
+                user_profile = request.user.profile
+                followed_sellers = user_profile.following.all()
+                if followed_sellers:
+                    recommended_ads = Ads.objects.filter(
+                        seller__in=followed_sellers,
+                        is_active=True
+                    ).exclude(
+                        category__category__in=excluded_categories
+                    ).select_related(
+                        'seller', 
+                        'category', 
+                        'city', 
+                        'county'
+                    ).prefetch_related('images').order_by('-date_created')[:6]
+            except AttributeError:
+                # In case user has no profile
+                recommended_ads = []
     if not recommended_ads:  # Fallback if no personalized recommendations or user not authenticated
         recommended_ads = Ads.objects.filter(
             is_active=True
@@ -150,7 +173,7 @@ def home(request):
             'category', 
             'city', 
             'county'
-        ).prefetch_related('images').order_by('-views')[:6]  # Order by popularity
+        ).prefetch_related('images').order_by('-views_count')[:6]  # Order by popularity using correct field name
     
     # Get top rated sellers
     top_rated_sellers = Profile.objects.filter(

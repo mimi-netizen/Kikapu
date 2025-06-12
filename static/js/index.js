@@ -1,5 +1,8 @@
-// Main document ready function
+// Log to confirm script is running
+console.log('index.js script loaded');
+
 document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM fully loaded, initializing all components');
   initBackToTop();
   initCategoriesDropdown();
   initCarousels();
@@ -8,6 +11,26 @@ document.addEventListener('DOMContentLoaded', function() {
   initDealCategories();
   initStickyElements();
   initGooglePlaces();
+
+  // Debug: Check if clicks are being captured on the quick links container
+  const quickLinksContainer = document.querySelector('.quick-links');
+  if (quickLinksContainer) {
+    quickLinksContainer.addEventListener('click', function(e) {
+      console.log('Click detected on quick links container', e.target, 'class:', e.target.className, 'tag:', e.target.tagName);
+    }, true);
+    console.log('Click listener added to quick links container for debugging');
+    // Check computed style for potential click-blocking properties
+    const computedStyle = window.getComputedStyle(quickLinksContainer);
+    console.log('Quick links container computed style - pointer-events:', computedStyle.pointerEvents, 'user-select:', computedStyle.userSelect, 'z-index:', computedStyle.zIndex);
+  } else {
+    console.error('Quick links container not found for click debugging');
+  }
+
+  // Debug: Add a global click listener to check if any clicks are registered on the page
+  document.addEventListener('click', function(e) {
+    console.log('Global click detected on document', e.target, 'at coordinates:', e.clientX, e.clientY);
+  }, true);
+  console.log('Global click listener added to document for debugging');
 });
 
 // Back to Top functionality
@@ -33,32 +56,37 @@ function initBackToTop() {
 
 // Categories Dropdown functionality
 function initCategoriesDropdown() {
-  const categoriesDropdown = document.getElementById('categoriesDropdown');
-  const mainCategoryItems = document.querySelectorAll('.all-category-main');
-  const backButtons = document.querySelectorAll('.all-categories-back');
-  let isDropdownOpen = false;
-
-  if (categoriesDropdown) {
-    // Toggle dropdown
-    window.toggleCategoriesDropdown = function() {
-      isDropdownOpen = !isDropdownOpen;
-      categoriesDropdown.classList.toggle('show');
-      document.querySelectorAll('.all-subcategories-menu').forEach(menu => {
-        menu.style.display = 'none';
-      });
-    }
-
+  console.log('Initializing Categories Dropdown');
+  const dropdownBtn = document.querySelector('.all-categories-btn');
+  const dropdownContent = document.querySelector('.all-categories-content');
+  
+  if (dropdownBtn && dropdownContent) {
+    console.log('Dropdown elements found:', dropdownBtn, dropdownContent);
+    // Remove any existing inline onclick handler to prevent conflicts
+    dropdownBtn.removeAttribute('onclick');
+    // Set button type to prevent form submission if inside a form
+    dropdownBtn.setAttribute('type', 'button');
+    // Remove any existing event listeners to avoid duplicates
+    const clone = dropdownBtn.cloneNode(true);
+    dropdownBtn.parentNode.replaceChild(clone, dropdownBtn);
+    const newDropdownBtn = document.querySelector('.all-categories-btn');
+    // Add our event listener with stopImmediatePropagation to override other handlers
+    newDropdownBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      console.log('Dropdown button clicked - aggressive handler', e.target, 'class:', e.target.className, 'tag:', e.target.tagName);
+      dropdownContent.classList.toggle('show');
+    }, true);
+    console.log('Aggressive click event listener attached to dropdown button');
+    
     // Close dropdown when clicking outside
-    document.addEventListener('click', function(event) {
-      const isClickInside = event.target.closest('.all-categories-dropdown');
-      if (!isClickInside && isDropdownOpen) {
-        toggleCategoriesDropdown();
+    document.addEventListener('click', function(e) {
+      if (!newDropdownBtn.contains(e.target) && !dropdownContent.contains(e.target)) {
+        dropdownContent.classList.remove('show');
       }
     });
-
-    initCategoryInteractions(mainCategoryItems);
-    initBackButtons(backButtons);
-    initWindowResize(mainCategoryItems);
+  } else {
+    console.error('Dropdown elements not found - Button:', dropdownBtn, 'Content:', dropdownContent);
   }
 }
 

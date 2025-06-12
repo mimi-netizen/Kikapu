@@ -557,7 +557,7 @@ class City(models.Model):
         ('Machakos', 'Machakos'), ('Athi River', 'Athi River'), ('Mwala', 'Mwala'), ('Kathiani', 'Kathiani'),
         ('Makueni', 'Makueni'), ('Makindu', 'Makueni'), ('Sultan Hamud', 'Makueni'), ('Kibwezi', 'Makueni'),
         ('Meru', 'Meru'), ('Maua', 'Meru'), ('Nkubu', 'Meru'), ('Timau', 'Meru'),
-        ('Tharaka-Nithi', 'Tharaka-Nithi'), ('Marimanti', 'Marimanti'), ('Gatunga', 'Gatunga'), ('Magutuni', 'Magutuni'),
+        ('Tharaka-Nithi', 'Tharaka-Nithi'), ('Marimanti', 'Tharaka-Nithi'), ('Gatunga', 'Gatunga'), ('Magutuni', 'Magutuni'),
         
         # North Eastern Region
         ('Garissa', 'Garissa'), ('Dadaab', 'Dadaab'), ('Fafi', 'Fafi'), ('Liboi', 'Liboi'),
@@ -569,7 +569,7 @@ class City(models.Model):
         # Central Region
         ('Kiambu', 'Kiambu'), ('Thika', 'Thika'), ('Ruiru', 'Ruiru'), ('Kikuyu', 'Kikuyu'),
         ("Muranga", "Muranga"), ('Kenol', 'Kenol'), ('Maragua', 'Maragua'), ('Kangema', 'Kangema'),
-        ('Kirinyaga', 'Kirinyaga'), ('Kerugoya', 'Kerugoya'), ('Sagana', 'Sagana'), ('Wanguru', 'Wanguru'), 
+        ('Kirinyaga', 'Kirinyaga'), ('Kerugoya', 'Kirinyaga'), ('Sagana', 'Sagana'), ('Wanguru', 'Wanguru'), 
         ('Baricho', 'Baricho'),
         ('Nyandarua', 'Nyandarua'), ('Ol Kalou', 'Ol Kalou'), ('Ndaragwa', 'Ndaragwa'), ('Njabini', 'Njabini'), 
         ('Engineer', 'Engineer'),
@@ -1393,3 +1393,26 @@ class AdDraft(models.Model):
         if isinstance(self.content, dict):
             self.content = json.dumps(self.content)
         super().save(*args, **kwargs)
+
+class AdInteraction(models.Model):
+    INTERACTION_TYPES = (
+        ('view', 'View'),
+        ('like', 'Like'),
+        ('contact', 'Contact'),
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ad_interactions')
+    ad = models.ForeignKey(Ads, on_delete=models.CASCADE, related_name='interactions')
+    interaction_type = models.CharField(max_length=20, choices=INTERACTION_TYPES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('user', 'ad', 'interaction_type')
+        indexes = [
+            models.Index(fields=['user', 'interaction_type']),
+            models.Index(fields=['ad', 'interaction_type']),
+            models.Index(fields=['created_at']),
+        ]
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.user.username} {self.interaction_type}d {self.ad.title} on {self.created_at.strftime('%Y-%m-%d')}"

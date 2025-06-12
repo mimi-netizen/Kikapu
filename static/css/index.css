@@ -25,7 +25,7 @@
 }
 
 .all-categories-btn:hover {
-  background-color: #e63e3e;
+  background-color: #FFF1E6;
 }
 
 .all-categories-content {
@@ -142,6 +142,20 @@
 .all-subcategory-count {
   font-size: 0.8rem;
   color: #999;
+}
+
+/* Ensure quick links section and buttons are interactive */
+.quick-links {
+  pointer-events: auto !important;
+  z-index: 1000 !important;
+  position: relative;
+}
+
+.quick-links button,
+.quick-links .all-categories-btn,
+.quick-links .all-categories-dropdown {
+  pointer-events: auto !important;
+  z-index: 1001 !important;
 }
 
 /* Header Styles 
