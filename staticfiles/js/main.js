@@ -284,6 +284,16 @@
     }
   });
 
+    // Mobile Filter Toggle for Ads Listing
+    var $toggleFilters = $('#toggleFilters');
+    var $filterSidebar = $('#filterSidebar');
+    if ($toggleFilters.length && $filterSidebar.length) {
+      $toggleFilters.on('click', function(e) {
+        e.preventDefault();
+        $filterSidebar.collapse('toggle');
+      });
+    }
+
   });      
 
 }(jQuery));

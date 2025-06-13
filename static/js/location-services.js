@@ -1,4 +1,3 @@
-
 class LocationService {
     constructor() {
         this.locationInput = document.querySelector('.location-autocomplete');

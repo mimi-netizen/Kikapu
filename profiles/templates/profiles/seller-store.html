@@ -5,18 +5,15 @@
 {% block extrahead %}
 <link rel="stylesheet" href="{% static 'css/index.css' %}">
 <link rel="stylesheet" href="{% static 'css/listings.css' %}">
-{% endblock %}
-
-{% block extrahead %}
 <link rel="stylesheet" href="{% static 'css/seller-store.css' %}">
 {% endblock %}
 
 
 {% block content %}
-<div class="container-fluid py-5" style="margin-top: 80px;">
+<div class="container-fluid px-0 py-5" style="margin-top: 80px;">
     <!-- Store Header -->
     <div class="container mb-5">
-        <div class="row">
+        <div class="row gx-0">
             <div class="col-md-4 text-center">
                 {% if seller.profile_pic %}
                     <img src="{{ seller.profile_pic.url }}" alt="{{ seller.store_name }}" 
@@ -121,11 +118,11 @@
                                     All Categories
                                 </a>
                                 {% for category in all_categories %}
-                                    <a href="?category={{ category.slug }}{% if search_query %}&search={{ search_query }}{% endif %}" 
-                                       class="nav-link {% if current_category == category.slug %}active{% endif %}">
-                                        {{ category.category_name }} ({{ category.ad_set.count }})
-                                    </a>
-                                {% endfor %}
+    <a href="?category={{ category.slug }}{% if search_query %}&search={{ search_query }}{% endif %}"
+       class="nav-link {% if current_category == category.slug %}active{% endif %}">
+        {{ category.category }} <span class="badge bg-secondary">{{ category.ad_set.count }}</span>
+    </a>
+{% endfor %}
                             </div>
                         </form>
                     </div>

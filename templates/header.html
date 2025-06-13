@@ -3,12 +3,12 @@
 
 
 <!-- Header Area wrapper Starts -->
-<header id="header-wrap">
+<header id="header-wrap" class="container-fluid px-0">
   <!-- Navbar Start -->
   <nav class="navbar navbar-expand-lg fixed-top scrolling-navbar" style="z-index: 1030;">
-    <div class="container">
+    <div class="container-fluid px-0">
       <!-- Reduce padding in header elements -->
-      <div class="navbar-header d-flex align-items-center w-100" style="padding: 0;">
+      <div class="navbar-header" style="padding: 0;">
         <button
           class="navbar-toggler"
           type="button"
@@ -21,7 +21,14 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="mobile-search-bar flex-grow-1 ms-2 d-block d-lg-none" style="background:#fff;">
+
+        <a href="{% url 'home' %}" class="navbar-brand d-none d-lg-block"
+           ><img src="{% static 'images/lgo.png' %}" alt="" style="max-height: 25px; width: auto;"
+         /></a>
+      </div>
+      <div class="collapse navbar-collapse" id="main-navbar">
+        <!-- Mobile search bar inside menu -->
+        <div class="mobile-search-bar px-3 py-2 d-block d-lg-none" style="background:#fff;">
           <form method="GET" action="{% url 'ads:ads-listing' %}" class="w-100">
             <div class="input-group">
               <input 
@@ -39,11 +46,6 @@
             </div>
           </form>
         </div>
-        <a href="{% url 'home' %}" class="navbar-brand d-none d-lg-block"
-           ><img src="{% static 'images/lgo.png' %}" alt="" style="max-height: 25px; width: auto;"
-         /></a>
-      </div>
-      <div class="collapse navbar-collapse" id="main-navbar">
         <!-- Search Bar Start -->
         <div class="header-search-wrapper">
           <form method="GET" action="{% url 'ads:ads-listing' %}" class="search-form" id="filterForm">

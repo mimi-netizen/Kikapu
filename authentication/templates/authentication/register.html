@@ -35,8 +35,8 @@
 </nav> -->
 
 <section class="section-padding auth-section">
-  <div class="container">
-    <div class="row justify-content-center">
+  <div class="container-fluid px-0" style="margin-top: 70px;">
+    <div class="row gx-0 justify-content-center">
       <div class="col-lg-7 col-md-9">
         <div class="registration-container position-relative">
           <!-- Loading overlay -->
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const nextBtn = document.querySelector('.next-step');
     const prevBtn = document.querySelector('.prev-step');
     const submitBtn = document.querySelector('.submit-step');
-    const radioContainers = document.querySelectorAll('.custom-radio');
+    const radioContainers = document.querySelectorAll('.account-type-option');
     const radioInputs = document.querySelectorAll('input[name="account_type"]');
     let currentStep = 1;
 
@@ -357,7 +357,7 @@ document.addEventListener('DOMContentLoaded', function() {
     radioInputs.forEach(radio => {
         radio.addEventListener('change', function() {
             radioContainers.forEach(container => container.classList.remove('active'));
-            this.closest('.custom-radio').classList.add('active');
+            this.closest('.account-type-option').classList.add('active');
             
             const accountType = this.value;
             const message = accountType === 'seller' ? 
@@ -371,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function() {
     showStep(1);
     const selectedRadio = document.querySelector('input[name="account_type"]:checked');
     if (selectedRadio) {
-        selectedRadio.closest('.custom-radio').classList.add('active');
+        selectedRadio.closest('.account-type-option').classList.add('active');
     }
 
     // Add styles

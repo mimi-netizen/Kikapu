@@ -48,8 +48,8 @@
               class="btn btn-primary d-lg-none w-100 mb-3" 
               type="button" 
               id="toggleFilters"
-              data-bs-toggle="collapse" 
-              data-bs-target="#filterSidebar" 
+              data-toggle="collapse" 
+              data-target="#filterSidebar" 
               aria-expanded="false"
             >
               <i class="lni-filter-alt me-2"></i>
@@ -60,8 +60,12 @@
             <!-- Filter content -->
             <div class="collapse d-lg-block" id="filterSidebar">
               <div class="card filter-card">
-                <div class="filter-header">
-                  <h5><i class="lni lni-funnel"></i> Filters</h5>
+                <div class="filter-header d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0"><i class="lni lni-funnel"></i> Filters</h5>
+                  <!-- X close button for mobile -->
+                  <button type="button" class="btn btn-link text-dark p-0 ms-2 d-block d-lg-none" style="font-size:1.5rem;line-height:1;" data-toggle="collapse" data-target="#filterSidebar" aria-label="Close filters">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
                   <button type="button" class="btn btn-link btn-sm" onclick="document.getElementById('filterForm').reset();document.getElementById('filterForm').submit();">
                     <i class="fas fa-undo"></i> Reset
                   </button>

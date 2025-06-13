@@ -151,11 +151,11 @@
 <!-- Create a wrapper after the hero area -->
 <div class="main-content-wrapper">
   <div class="container-fluid px-0"> 
-    <div class="row g-0"> 
+    <div class="row gx-0"> 
       <!-- Main Content Column -->
       <div class="col-lg-12"> 
         <!-- Today's Deals Section -->
-        <div class="container py-3">
+        <div class="container-fluid px-0 py-3">
           <!-- <div class="section-header">
             <h2 class="section-title">Today's Deals</h2>
           </div> -->
@@ -239,13 +239,13 @@
         </div>
 
         <!-- Shop by Category Section -->
-  <div class="popular-categories mb-4">
-    <div class="section-header">
+  <div class="popular-categories container-fluid px-0 mb-4">
+    <div class="section-header container-fluid px-0">
       <h2 class="section-title">Popular Categories</h2>
     </div>
-    <div class="popular-categories-layout">
+    <div class="popular-categories-layout container-fluid px-0">
         <!-- Left Grid - Categories -->
-        <div class="popular-categories-slider">
+        <div class="popular-categories-slider container-fluid px-0">
           <a href="{% url 'ads:category-archive' 'home-services' %}" class="popular-category-card">
             <div class="popular-category-label">
               <h3>Home & Garden</h3>
@@ -297,7 +297,7 @@
         </div>
 
         <!-- Right Grid - Featured Promotion -->
-        <div class="promotion-section">
+        <div class="promotion-section container-fluid px-0">
           <a href="{% url 'ads:category-archive' 'living-room-furniture' %}" class="promotion-card">
             <div class="promotion-content">
               <h3>Your Furniture</h3>
@@ -323,7 +323,7 @@
 
         <!-- Featured Ads Section -->
           <section id="featured-items" class="section-padding">
-            <div class="container">
+            <div class="container-fluid px-0">
 
                
               <div class="section-header">
@@ -365,7 +365,7 @@
 
 <!-- Latest Ads Section -->
           <section id="recent-items" class="section-padding">
-            <div class="container">
+            <div class="container-fluid px-0">
               <div class="section-header">
                 <h2 class="section-title">Latest Listings</h2>
                 <a href="{% url 'ads:ads-listing' %}" class="view-all">View All <i class="fas fa-chevron-right"></i></a>
@@ -413,7 +413,7 @@
           <!-- Recently Viewed Section -->
           {% if recently_viewed_ads %}
           <section id="recently-viewed" class="section-padding">
-            <div class="container">
+            <div class="container-fluid px-0">
               <div class="section-header">
                 <h2 class="section-title">Recently Viewed</h2>
               </div>
@@ -454,7 +454,7 @@
           <!-- Listings from Sellers You Follow -->
           {% if user.is_authenticated %}
           <section class="followed-listings section-padding">
-            <div class="container">
+            <div class="container-fluid px-0">
               <div class="section-header">
                 <h2 class="section-title">Listings from Sellers You Follow</h2>
                 <a href="{% url 'profiles:following-list' %}" class="view-all">View All Sellers <i class="fas fa-chevron-right"></i></a>
@@ -504,7 +504,7 @@
           </section>
           {% else %}
           <section class="followed-listings section-padding">
-            <div class="container">
+            <div class="container-fluid px-0">
               <div class="section-header">
                 <h2 class="section-title">Listings from Sellers You Follow</h2>
               </div>
@@ -518,7 +518,7 @@
         
         <!-- Category Promotions -->
         <section class="category-promotions section-padding">
-          <div class="container">
+          <div class="container-fluid px-0">
             <div class="row g-4">
               <div class="col-12 col-md-6">
                 <div class="promo-card" style="background: linear-gradient(45deg, #FFE5BC, #FFF); display: flex; justify-content: space-between;">
@@ -551,7 +551,7 @@
         <!-- Rest of the content sections -->
         <!-- Top Rated Sellers -->
         <section class="top-sellers section-padding">
-          <div class="container">
+          <div class="container-fluid px-0">
             <div class="section-header">
               <h2 class="section-title">Top Rated Sellers</h2>
               <a href="{% url 'profiles:sellers' %}" class="view-all">View All Sellers <i class="fas fa-chevron-right"></i></a>
@@ -596,7 +596,7 @@
 
 <!-- Recommended Products -->
         <section class="recommendations section-padding">
-          <div class="container">
+          <div class="container-fluid px-0">
             <div class="section-header">
               <h2 class="section-title">Recommended For You</h2>
               <a href="{% url 'ads:ads-listing' %}?recommended=true" class="view-all">View All <i class="fas fa-chevron-right"></i></a>
@@ -634,7 +634,7 @@
 
 <!-- Trust Indicators -->
 <div class="trust-indicators py-4">
-  <div class="container">
+  <div class="container-fluid px-0">
     <div class="row g-4">
       <div class="col-md-3 col-sm-6">
         <div class="trust-item">
@@ -690,8 +690,8 @@
 
 <!-- Advertisement Bottom Banner Area Start -->
 <section class="section-padding">
-  <div class="container">
-    <div class="row">
+  <div class="container-fluid px-0">
+    <div class="row gx-4">
       <div class="col-md-12">
         <h3 class="section-title">Advertisement</h3>
         <div class="bottom-carousel-container" style="position: relative;">

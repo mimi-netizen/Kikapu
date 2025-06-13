@@ -2690,7 +2690,8 @@ a.back-to-top:hover, a.back-to-top:focus {
 
 .sidebar-box .user .usercontent {
   overflow: hidden;
-  padding: 45px 0 12px 15px;
+  padding: 45px 0 0 15px;
+  margin-top: 70px;
 }
 
 .sidebar-box .user .usercontent h3 {
@@ -4418,7 +4419,7 @@ textarea {
 
 footer .footer-Content {
   background-color: #0E2729;
-  padding: 60px 0;
+  /*padding: 60px 0;*/
   color: #b7c3c8;
 }
 

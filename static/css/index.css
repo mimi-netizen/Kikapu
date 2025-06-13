@@ -16,9 +16,17 @@
     display: none !important;
   }
 }
+
+@media (min-width: 768px) {
+  .navbar-header {
+    display: block;
+    align-items: unset;
+    width: auto;
+  }
+}
 .navbar-header .navbar-toggler {
   flex-shrink: 0;
-}
+} 
 
 /* All Categories Dropdown Styles */
 .all-categories-header {
@@ -189,7 +197,7 @@ header {
 .popular-categories {
   position: relative;
   padding: 24px 0 0;
-  max-width: 1200px;
+/*max-width: 1200px;*/
   margin: 0 auto;
 }
 
@@ -827,7 +835,7 @@ header {
   position: relative;
   border-radius: 8px;
   overflow: hidden;
-  padding-top: 75%; /* 4:3 aspect ratio */
+  /* padding-top: 75%; 4:3 aspect ratio */
 }
 
 .featured-box, .listing-card {
@@ -869,9 +877,10 @@ header {
 figure, .image-wrapper {
   position: relative;
   width: 100%;
-  padding-top: 100%; /* Changed from 75% to 100% for 1:1 aspect ratio */
+  padding-top: 100%;  /* Changed from 75% to 100% for 1:1 aspect ratio */
   margin-bottom: 8px;
 }
+
 
 figure img, .image-wrapper img {
   position: absolute;
@@ -1422,8 +1431,8 @@ figure img, .image-wrapper img {
 
 .seller-avatar {
   position: relative;
-  width: 80px;
-  height: 80px;
+  /*width: 80px;
+  height: 80px;*/
   margin: 0 auto 12px;
 }
 
@@ -3622,6 +3631,7 @@ figure img, .image-wrapper img {
 /* Main Content Layout */
 .main-content-wrapper {
   padding: 0;
+  margin-left: 15px;
   position: relative;
   display: flex;
   /**min-height: 100vh;*/
@@ -3630,7 +3640,7 @@ figure img, .image-wrapper img {
 }
 
 .main-content-wrapper .container-fluid {
-  display: flex;
+  /*display: flex;*/
   width: 100%;
   padding-top: 10px; /* Add small padding to top of main content */
 }
@@ -4053,3 +4063,4 @@ figure img, .image-wrapper img {
   /*height: auto; */
   object-fit: cover; /* Ensure images scale properly within their container */
 }
+
