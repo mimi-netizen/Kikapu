@@ -98,8 +98,8 @@
     </div>
 
     <!-- Store Content -->
-    <div class="container">
-        <div class="row">
+    <div class="container-fluid px-0">
+        <div class="row gx-0">
             <!-- Filters Sidebar -->
             <div class="col-md-3">
                 <div class="card mb-4">
@@ -118,11 +118,11 @@
                                     All Categories
                                 </a>
                                 {% for category in all_categories %}
-    <a href="?category={{ category.slug }}{% if search_query %}&search={{ search_query }}{% endif %}"
-       class="nav-link {% if current_category == category.slug %}active{% endif %}">
-        {{ category.category }} <span class="badge bg-secondary">{{ category.ad_set.count }}</span>
-    </a>
-{% endfor %}
+                                <a href="?category={{ category.slug }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                                   class="nav-link {% if current_category == category.slug %}active{% endif %}">
+                                    {{ category.category }} <span class="badge bg-secondary">{{ category.ad_set.count }}</span>
+                                </a>
+                                {% endfor %}
                             </div>
                         </form>
                     </div>

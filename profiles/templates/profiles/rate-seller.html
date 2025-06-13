@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-star"></i> Rate Seller: {{ seller.store_name|default:seller.user.username }}</h4>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <div class="form-group text-center mb-4">
+                            <label class="font-weight-bold mb-2">Your Rating</label>
+                            <div id="star-rating" class="mb-2">
+                                {% for i in "54321" %}
+                                    <input type="radio" class="d-none" name="rating" id="star{{ i }}" value="{{ i }}">
+                                    <label for="star{{ i }}" class="star" style="font-size:2rem; color: #ccc; cursor:pointer;">
+                                        <i class="fas fa-star"></i>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="comment">Comment (optional)</label>
+                            <textarea class="form-control" id="comment" name="comment" rows="3" maxlength="500" placeholder="Share your experience..."></textarea>
+                        </div>
+                        <div class="form-group mt-4 text-center">
+                            <button type="submit" class="btn btn-success px-5">Submit Rating</button>
+                            <a href="{% url 'profiles:seller-profile' seller.id %}" class="btn btn-secondary ml-2">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #star-rating .star {
+        transition: color 0.2s;
+    }
+    #star-rating input:checked ~ label,
+    #star-rating label:hover,
+    #star-rating label:hover ~ label {
+        color: #E08D35 !important;
+    }
+    #star-rating input:checked + label {
+        color: #E08D35 !important;
+    }
+</style>
+
+<script>
+// Star rating highlight (Bootstrap 4 compatible, no jQuery needed)
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('#star-rating .star');
+    const radios = document.querySelectorAll('#star-rating input[type="radio"]');
+    stars.forEach((star, idx) => {
+        star.addEventListener('mouseenter', function() {
+            for (let i = 0; i <= idx; i++) stars[i].style.color = '#E08D35';
+        });
+        star.addEventListener('mouseleave', function() {
+            stars.forEach((s, j) => {
+                if (!radios[j].checked) s.style.color = '#ccc';
+            });
+        });
+        star.addEventListener('click', function() {
+            radios[idx].checked = true;
+            stars.forEach((s, j) => {
+                s.style.color = j <= idx ? '#E08D35' : '#ccc';
+            });
+        });
+    });
+    // If editing, show checked star
+    radios.forEach((radio, idx) => {
+        if (radio.checked) {
+            for (let i = 0; i <= idx; i++) stars[i].style.color = '#E08D35';
+        }
+    });
+});
+</script>
+{% endblock %}

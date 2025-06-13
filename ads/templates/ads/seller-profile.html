@@ -21,7 +21,7 @@
       <div class="store-banner-overlay"></div>
     </div>
 
-    <div class="row">
+    <div class="row gx-0">
       <!-- Seller Information -->
       <div class="col-lg-3">
         <div class="seller-info card">
@@ -121,7 +121,7 @@
       <!-- Seller's Ads -->
       <div class="col-lg-9">
         <!-- Add Search and Categories Section -->
-        <div class="search-categories mb-4">
+        <div class="search-categories mb-4" style="margin-right: 15px;">
           <div class="card">
             <div class="card-body">
               <!-- Search Bar -->
@@ -184,8 +184,8 @@
         <div class="row">
           {% if seller_ads %}
           {% for ad in seller_ads %}
-            <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3">
-              <div class="featured-box">
+            <div class="col-xs-6 col-sm-6 col-md-2 col-lg-2" style="margin: 5px;">
+              <div class="featured-box" style="padding: 0px;">
                 <figure>
                   <div class="icon">
                     {% if user.is_authenticated %}
@@ -203,7 +203,7 @@
                     {% endif %}
                   </a>
                 </figure>
-                <div class="feature-content">
+                <div class="feature-content" style="padding: 12px;">
                   <div class="product">
                     <a href="{% url 'ads:category-archive' ad.category.slug %}">{{ ad.category }}</a>
                   </div>
@@ -216,7 +216,7 @@
                     </span>
                   </div>
                   <div class="dsc" style="font-size: 12px; margin: 6px 0; color: #666;">
-                    {{ ad.description|truncatewords:10 }}
+                    {{ ad.description|striptags|truncatewords:15 }}
                   </div>
                   <div class="price-box">
                     <h5 class="price" style="font-size: 14px; color: #E08D35;">

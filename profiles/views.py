@@ -302,24 +302,25 @@ def seller_profile(request, pk):
     return render(request, 'profiles/seller-profile.html', context)
 
 @login_required
+@login_required
 def rate_seller(request, seller_id):
     seller = get_object_or_404(Profile, id=seller_id)
-    
+
     if request.method == 'POST':
         try:
             rating = int(request.POST.get('rating', 0))
             comment = request.POST.get('comment', '').strip()
-            
+
             # Validate rating
             if rating < 1 or rating > 5:
                 messages.error(request, "Invalid rating. Please select 1-5 stars.")
-                return redirect('profiles:seller-profile', pk=seller_id)
-            
+                return redirect('profiles:rate-seller', seller_id=seller_id)
+
             # Prevent self-rating
             if seller.user == request.user:
                 messages.error(request, "You cannot rate yourself.")
                 return redirect('profiles:seller-profile', pk=seller_id)
-            
+
             # Create the review
             Review.objects.create(
                 seller=seller,
@@ -327,15 +328,19 @@ def rate_seller(request, seller_id):
                 rating=rating,
                 comment=comment
             )
-            
+
             messages.success(request, "Thank you for your review!")
-            
+
         except ValueError:
             messages.error(request, "Invalid rating value.")
         except Exception as e:
             messages.error(request, str(e))
-            
-    return redirect('profiles:seller-profile', pk=seller_id)
+
+        return redirect('profiles:seller-profile', pk=seller_id)
+
+    # Handle GET: show the form
+    return render(request, 'profiles/rate-seller.html', {'seller': seller})
+
 
 @login_required
 def seller_store(request, pk):

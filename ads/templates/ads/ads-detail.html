@@ -387,9 +387,9 @@
 
 <!-- More Like This Section -->
 <section class="featured section-padding">
-  <div class="container">
+  <div class="container-fluid px-0">
     <h1 class="section-title">More Like This</h1>
-    <div class="row" id="related-ads-container">
+    <div class="row gx-0" id="related-ads-container" style="justify-content: center;">
       {% include "ads/partials/related-ad-card.html" with related_ads=related_ads|slice:":6" %}
     </div>
     
