@@ -1,3 +1,33 @@
+/* Mobile search bar and hamburger alignment */
+.navbar-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.mobile-search-bar {
+  min-width: 0;
+  flex: 1 1 0%;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: none;
+}
+@media (min-width: 992px) {
+  .mobile-search-bar {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .navbar-header {
+    display: block;
+    align-items: unset;
+    width: auto;
+  }
+}
+.navbar-header .navbar-toggler {
+  flex-shrink: 0;
+} 
+
 /* All Categories Dropdown Styles */
 .all-categories-header {
   background-color: #fff;
@@ -7,15 +37,15 @@
 
 .all-categories-dropdown {
   position: relative;
-  width: 100%;
+  /*width: 100%;*/
 }
 
 .all-categories-btn {
   display: flex;
   align-items: center;
   padding: 0.75rem 1rem;
-  background-color: #ff4b4b;
-  color: white;
+  /*background-color: #ff4b4b;
+  color: white;*/
   border: none;
   border-radius: 4px;
   font-size: 1rem;
@@ -25,7 +55,7 @@
 }
 
 .all-categories-btn:hover {
-  background-color: #e63e3e;
+  background-color: #FFF1E6;
 }
 
 .all-categories-content {
@@ -144,12 +174,126 @@
   color: #999;
 }
 
+/* Ensure quick links section and buttons are interactive */
+.quick-links {
+  pointer-events: auto !important;
+  z-index: 1000 !important;
+  position: relative;
+}
+
+.quick-links button,
+.quick-links .all-categories-btn,
+.quick-links .all-categories-dropdown {
+  pointer-events: auto !important;
+  z-index: 1001 !important;
+}
+
+/* Header Styles 
+header {
+  background-color: #F8F7F3;
+} */
+
 /* Popular Categories Styles - Keep existing styles */
 .popular-categories {
   position: relative;
   padding: 24px 0 0;
-  max-width: 1200px;
+/*max-width: 1200px;*/
   margin: 0 auto;
+}
+
+/* Shop by Category Layout */
+.popular-categories {
+  padding: 2rem 0;
+}
+
+.popular-categories-layout {
+  display: flex;
+  gap: 24px;
+  padding: 0 15px;
+  margin: 0 auto;
+  min-height: 400px;
+  max-width: 1200px;
+}
+
+.popular-categories-slider {
+  flex: 2; /* Takes up 2/3 of the space */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  height: 100%;
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.promotion-section {
+  flex: 1; /* Takes up 1/3 of the space */
+  /*height: 100%;*/
+  background: #f8f9fa;
+  border-radius: 8px;
+  overflow: hidden;
+  min-height: 400px;
+}
+
+.promotion-card {
+  display: block;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.promotion-content {
+  position: relative;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.9);
+  height: 100%;
+}
+
+.promotion-content h3 {
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.promotion-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.promotion-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.shop-now-btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  max-width: fit-content;
+}
+
+.shop-now-btn:hover {
+  background: var(--primary-dark);
 }
 
 .popular-category-card {
@@ -188,6 +332,28 @@
   font-weight: 400;
   color: #333;
   line-height: 1.2;
+}
+
+/* Responsive Styles for Popular Categories Layout */
+@media (max-width: 992px) {
+  .popular-categories-layout {
+    grid-template-columns: 1fr; /* Stack vertically on mobile */
+    gap: 16px;
+  }
+  
+  .popular-categories-slider {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .popular-categories-slider {
+    grid-template-columns: 1fr;
+  }
+  
+  .promotion-content h3 {
+    font-size: 1.25rem;
+  }
 }
 
 /* Responsive Styles */
@@ -471,7 +637,7 @@
 
 .deals-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 1.5rem;
   margin-top: 2rem;
 }
@@ -486,6 +652,7 @@
 
 .deal-card:hover {
   transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .deal-image {
@@ -498,7 +665,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 200px;
   object-fit: cover;
 }
 
@@ -507,7 +674,7 @@
   top: 10px;
   left: 10px;
   background: #e94444;
-  color: #fff;
+  color: white;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 0.875rem;
@@ -560,14 +727,14 @@
   }
   
   .deals-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.25rem;
   }
 }
 
 /* Hero Banner Styles */
 .hero-banner-section {
-  background-image: url('../images/hero-banner.jpg');
+  /*background-image: url('../images/hero-banner.jpg'); */
   background-size: cover;
   background-position: center;
 }
@@ -668,7 +835,7 @@
   position: relative;
   border-radius: 8px;
   overflow: hidden;
-  padding-top: 75%; /* 4:3 aspect ratio */
+  /* padding-top: 75%; 4:3 aspect ratio */
 }
 
 .featured-box, .listing-card {
@@ -710,9 +877,10 @@
 figure, .image-wrapper {
   position: relative;
   width: 100%;
-  padding-top: 100%; /* Changed from 75% to 100% for 1:1 aspect ratio */
+  padding-top: 100%;  /* Changed from 75% to 100% for 1:1 aspect ratio */
   margin-bottom: 8px;
 }
+
 
 figure img, .image-wrapper img {
   position: absolute;
@@ -764,6 +932,10 @@ figure img, .image-wrapper img {
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+.listing-info {
+  padding: 8px;
 }
 
 .feature-content h4, 
@@ -1259,8 +1431,8 @@ figure img, .image-wrapper img {
 
 .seller-avatar {
   position: relative;
-  width: 80px;
-  height: 80px;
+  /*width: 80px;
+  height: 80px;*/
   margin: 0 auto 12px;
 }
 
@@ -2066,20 +2238,11 @@ figure img, .image-wrapper img {
 }
 
 .flash-deal-card .current-price {
-  color: var(--primary-color);
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 13px;
 }
 
 .flash-deal-card .original-price {
-  text-decoration: line-through;
-  color: #999;
-  font-size: 14px;
-  margin-right: 8px;
-}
-
-.flash-deal-card .deal-progress {
-  margin-top: 8px;
+  font-size: 12px;
 }
 
 /* Progress bar styles */
@@ -2633,14 +2796,6 @@ figure img, .image-wrapper img {
   background: white;
 }
 
-.recommendations .feature-content,
-.followed-listings .listing-info {
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
 .recommendations figure,
 .followed-listings .image-wrapper {
   position: relative;
@@ -2681,7 +2836,7 @@ figure img, .image-wrapper img {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 25px 0 15px;
+  /*margin: 25px 0 15px;*/
 }
 
 .section-title {
@@ -2701,7 +2856,7 @@ figure img, .image-wrapper img {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  margin-top: 20px;
+  /*margin-top: 20px;*/
 }
 
 .deals-grid {
@@ -2755,7 +2910,7 @@ figure img, .image-wrapper img {
 
 .deal-img {
   width: 100%;
-  height: 200px;
+  height: 280px;
   object-fit: cover;
 }
 
@@ -2819,11 +2974,15 @@ figure img, .image-wrapper img {
 }
 
 .deal-card {
-  min-width: 160px;
+  background-color: white;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  position: relative;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+  padding-bottom: 1.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .hot-badge {
@@ -2841,9 +3000,9 @@ figure img, .image-wrapper img {
 .deal-img {
   height: 140px;
   width: 100%;
-  object-fit: contain;
+  /*object-fit: contain;
   background: var(--light-bg);
-  padding: 10px;
+  padding: 10px;*/
 }
 
 .deal-discount {
@@ -3472,15 +3631,16 @@ figure img, .image-wrapper img {
 /* Main Content Layout */
 .main-content-wrapper {
   padding: 0;
+  margin-left: 15px;
   position: relative;
   display: flex;
   /**min-height: 100vh;*/
-  overflow-x: hidden; /* Prevent horizontal scrolling */
+  /*overflow-x: hidden; /* Prevent horizontal scrolling */
   width: 100%;
 }
 
 .main-content-wrapper .container-fluid {
-  display: flex;
+  /*display: flex;*/
   width: 100%;
   padding-top: 10px; /* Add small padding to top of main content */
 }
@@ -3772,258 +3932,6 @@ figure img, .image-wrapper img {
   right: 30px;
   width: 50px;
   height: 50px;
-  background: var(--primary-color);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-  border: none;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  z-index: 999;
-}
-
-.back-to-top.visible {
-  opacity: 1;
-  visibility: visible;
-}
-
-.back-to-top:hover {
-  background: var(--secondary-color);
-  transform: translateY(-5px);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-}
-
-@media (max-width: 767px) {
-  .back-to-top {
-    bottom: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-  }
-}
-
-/* Promotion Cards Styles */
-.category-promotions {
-  padding: 40px 0;
-}
-
-.search-container {
-  background: white;
-  border-radius: 12px;
-  padding: 25px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-  position: relative;
-  z-index: 10;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.search-container:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 35px rgba(0,0,0,0.2);
-}
-
-.promo-card {
-  display: flex;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  height: 250px;
-  position: relative;
-}
-
-.promo-content {
-  flex: 1;
-  padding: 30px;
-  z-index: 2;
-  position: relative;
-}
-
-.promo-content h3 {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  color: #333;
-}
-
-.promo-content p {
-  margin-bottom: 20px;
-  color: #666;
-}
-
-.promo-image {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 50%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.promo-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  transition: transform 0.3s ease;
-}
-
-.promo-card:hover .promo-image img {
-  transform: scale(1.05);
-}
-
-@media (max-width: 767px) {
-  .promo-card {
-    height: 200px;
-    margin-bottom: 20px;
-  }
-  
-  .promo-content {
-    padding: 20px;
-  }
-  
-  .promo-content h3 {
-    font-size: 20px;
-  }
-}
-
-/* Category Dropdown Styles */
-.main-category {
-  position: relative;
-  z-index: 5; /* Higher default z-index */
-  display: flex;
-  align-items: center;
-  padding: 10px 15px;
-  background: white;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  border: 1px solid #eee;
-  margin-bottom: 5px;
-}
-
-.main-category:hover {
-  background-color: #f8f9fa;
-  border-color: var(--primary-color);
-  z-index: 10000; /* Higher z-index on hover to ensure dropdown is visible */
-  position: relative; /* Reinforce position */
-}
-
-.subcategories-dropdown {
-  display: none;
-  position: fixed; /* Change to fixed positioning */
-  min-width: 200px;
-  max-width: 250px;
-  background: white;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-  border-radius: 8px;
-  padding: 10px 0;
-  z-index: 99999; /* Very high z-index */
-  overflow-y: auto;
-  max-height: 300px;
-}
-
-.main-category:hover .subcategories-dropdown {
-  display: block;
-  pointer-events: auto; /* Ensures the dropdown is interactive */
-}
-
-.subcategory-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 15px;
-  color: #333;
-  text-decoration: none;
-  transition: background-color 0.2s;
-  font-size: 13px;
-}
-
-.subcategory-item:hover {
-  background-color: #f5f5f5;
-  color: var(--primary-color);
-}
-
-.subcategory-count {
-  font-size: 11px;
-  color: #666;
-}
-
-/* Remove any mobile-specific display logic */
-@media (min-width: 992px) {
-  .categories-container {
-    position: relative;
-    padding: 0;
-  }
-
-  .sticky-sidebar {
-    display: block;
-  }
-}
-
-/* Category item display controlled by JavaScript */
-.categories-slider .category-item {
-  /* Display controlled by JavaScript pagination */
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-@media (max-width: 991px) {
-  .categories-wrapper {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-
-  .category-item {
-    width: 100%;
-    margin: 0;
-  }
-
-  .category-card {
-    height: 100%;
-  }
-}
-
-/* Mobile styles for subcategories */
-@media (max-width: 991px) {
-  .subcategories-dropdown {
-    left: auto;
-    right: 0;
-    top: 100%;
-    max-width: 100%;
-    width: 100%;
-    position: static;
-    box-shadow: none;
-    border-top: 1px solid #eee;
-    border-radius: 0;
-    margin-top: 10px;
-    display: none;
-  }
-  
-  .main-category.active .subcategories-dropdown {
-    display: block;
-  }
-  
-  .category-item {
-    width: 100%;
-    overflow: visible;
-  }
-  
-  .sticky-sidebar {
-    overflow-x: hidden;
-  }
-}
-
-/* Back to Top Button */
-.back-to-top {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 40px;
-  height: 40px;
   background-color: var(--primary-color);
   color: white;
   border: none;
@@ -4051,5 +3959,108 @@ figure img, .image-wrapper img {
 
 .back-to-top i {
   font-size: 20px;
+}
+
+
+/* Hero Banner Styles */
+#hero-area {
+  background-image: url('../images/hero-banner.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-banner h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.hero-banner p {
+  font-size: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.hero-banner .btn-primary {
+  padding: 0.5rem 1.5rem;
+  font-size: 12px;
+}
+
+/* Category Promotions Images */
+.category-promotion img {
+  max-height: 200px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .category-promotion img {
+    max-height: 150px;
+  }
+}
+
+/* Bottom Banner Advertisement */
+.bottom-carousel-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.bottom-carousel-slides {
+  width: 100%;
+}
+
+.bottom-carousel-slide {
+  width: 100%;
+}
+
+.bottom-banner-img {
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.carousel-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  border-radius: 50%;
+}
+
+.carousel-button.prev {
+  left: 10px;
+}
+
+.carousel-button.next {
+  right: 10px;
+}
+
+/* Styles for clickable deal cards */
+.deal-card-link {
+  color: inherit;
+  text-decoration: none;
+  display: inherit; /* Changed from block to inherit to maintain grid layout */
+}
+
+.deal-card-link:hover .deal-card {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Additional styles to ensure images stay within grid */
+.deal-card {
+  overflow: hidden; /* Prevent content from overflowing */
+}
+
+.deal-card img {
+  width: 100%;
+  /*height: auto; */
+  object-fit: cover; /* Ensure images scale properly within their container */
 }
 
