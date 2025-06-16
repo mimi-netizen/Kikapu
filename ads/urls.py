@@ -25,6 +25,7 @@ urlpatterns = [
     path('ads/get-more-ads/<int:ad_id>/', views.get_more_ads, name='get-more-ads'),
     path('post-featured-ad/', views.post_featured_ad, name='post-featured-ad'),
     path('api/cities/<int:county_id>/', views.get_cities, name='get_cities'),
+    path('api/cities/<slug:county_slug>/', views.get_cities_by_slug, name='get_cities_by_slug'),
     path('featured-slots/', views.check_featured_slots, name='check-featured-slots'),
     path('delete/<int:pk>/', views.delete_ad, name='ads-delete'),
     path('my-ads/', views.my_ads, name='my-ads'),

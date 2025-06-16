@@ -25,7 +25,7 @@
 <div class="main-container">
   <div class="container-fluid px-0">
 
-    <!-- Search Results Message -->
+    <!-- Search Results Message 
     {% if current_filters.search %}
       <div class="row mb-4">
         <div class="col-12">
@@ -35,7 +35,7 @@
           {% endif %}
         </div>
       </div>
-    {% endif %}
+    {% endif %} -->
 
 
     <!-- Filter Sidebar and Main Content -->
@@ -287,6 +287,11 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function toggleBookmark(button, adId) {
+    // Defensive: Ensure button exists
+    if (!button) {
+        console.error('toggleBookmark: button is undefined');
+        return;
+    }
     // Get CSRF token from meta tag
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     
@@ -307,11 +312,8 @@ function toggleBookmark(button, adId) {
     })
     .then(data => {
         if (data.status === 'success') {
-            button.classList.toggle('btn-outline-primary');
-            button.classList.toggle('btn-danger');
-            const icon = button.querySelector('i');
-            icon.classList.toggle('lni-heart');
-            icon.classList.toggle('lni-heart-filled');
+            // Refresh the page to reflect the new bookmark state
+            window.location.reload();
         }
     })
     .catch(error => {
@@ -319,6 +321,55 @@ function toggleBookmark(button, adId) {
         alert('An error occurred while updating your saved listings. Please try again.');
     });
 }
+
+
+// --- Back to Top Button ---
+// Add this at the end of the body, just before </body>
+// <button id="backToTopBtn" title="Back to top">&#8679;</button>
+// Add this script at the end of the file or in a script block
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Create Back to Top button if it doesn't exist
+    if (!document.getElementById('backToTopBtn')) {
+        const btn = document.createElement('button');
+        btn.id = 'backToTopBtn';
+        btn.title = 'Back to top';
+        btn.innerHTML = '&#8679;';
+        document.body.appendChild(btn);
+    }
+    const backToTopBtn = document.getElementById('backToTopBtn');
+    backToTopBtn.style.position = 'fixed';
+    backToTopBtn.style.bottom = '40px';
+    backToTopBtn.style.right = '40px';
+    backToTopBtn.style.display = 'none';
+    backToTopBtn.style.background = '#E08D35';
+    backToTopBtn.style.color = '#fff';
+    backToTopBtn.style.border = 'none';
+    backToTopBtn.style.borderRadius = '50%';
+    backToTopBtn.style.width = '48px';
+    backToTopBtn.style.height = '48px';
+    backToTopBtn.style.fontSize = '2rem';
+    backToTopBtn.style.cursor = 'pointer';
+    backToTopBtn.style.zIndex = '9999';
+    backToTopBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+    backToTopBtn.addEventListener('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 300) {
+            backToTopBtn.style.display = 'block';
+        } else {
+            backToTopBtn.style.display = 'none';
+        }
+    });
+});
+
+/* Optionally, add this to your CSS for hover effect:
+#backToTopBtn:hover {
+    background: #236267;
+}
+*/
+
 </script>
 
 {% endblock %}
@@ -335,8 +386,10 @@ async function loadCities(countySlug) {
     }
 
     try {
-        const response = await fetch(`/api/cities/${countySlug}/`);
+        const response = await fetch(`/api/cities/${countySlug}`);
+        console.log('I am hit')
         const cities = await response.json();
+        console.log(cities)
         
         const citySelect = document.getElementById('city');
         citySelect.innerHTML = '<option value="">All Cities</option>';

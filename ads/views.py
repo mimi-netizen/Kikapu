@@ -189,11 +189,13 @@ def ads_listing(request):
         'ads_listing': ads_listing,
         'categories': categories,
         'counties': counties,
+        'cities': cities,  # Pass cities to template for dropdown population
         'search_query': search_query,  # Add this to context
         'current_filters': {
             'sort': sort,
             'category': category,
             'county': county,
+            'city': city,
             'search': search_query,  # Add this to current_filters
         }
     }
@@ -645,6 +647,19 @@ def get_cities(request, county_id):
         print(f"Error in get_cities for county_id {county_id}: {str(e)}")  # Debug log to server console
         return JsonResponse({'error': str(e)}, status=400)
 
+def get_cities_by_slug(request, county_slug):
+    try:
+        county = County.objects.get(slug=county_slug)
+        cities = City.objects.filter(county=county).values('id', 'city_name', 'slug')
+        cities_list = list(cities)
+        for city in cities_list:
+            city['name'] = city.pop('city_name')
+        return JsonResponse(cities_list, safe=False)
+    except County.DoesNotExist:
+        return JsonResponse({'error': 'County not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
 def ads_author_archive(request, pk):
     seller = get_object_or_404(Profile, pk=pk)
     ads_by_author = Ads.objects.filter(seller=seller)
@@ -717,21 +732,21 @@ def toggle_bookmark(request, ad_id):
         
     try:
         ad = get_object_or_404(Ads, id=ad_id)
-        bookmark = Bookmark.objects.filter(user=request.user, ad=ad).first()
-        
+        profile = getattr(request.user, 'profile', None)
+        if not profile:
+            return JsonResponse({'error': 'User profile not found.'}, status=400)
+        bookmark = Bookmark.objects.filter(profile=profile, ad=ad).first()
+
         if bookmark:
-            # Ad was already saved, so unsave it
             bookmark.delete()
-            return JsonResponse({'status': 'unsaved'})
+            return JsonResponse({'status': 'success', 'action': 'unsaved'})
         else:
-            # Save the ad
-            Bookmark.objects.create(user=request.user, ad=ad)
-            return JsonResponse({'status': 'saved'})
-            
+            Bookmark.objects.create(profile=profile, ad=ad)
+            return JsonResponse({'status': 'success', 'action': 'saved'})
+
     except Ads.DoesNotExist:
         return JsonResponse({'error': 'Ad not found'}, status=404)
     except Exception as e:
-        # Log the error for debugging
         print(f"Error in toggle_bookmark: {str(e)}")
         return JsonResponse({'error': 'An error occurred while saving the listing'}, status=500)
 
