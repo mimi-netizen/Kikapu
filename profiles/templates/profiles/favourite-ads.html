@@ -92,9 +92,9 @@ Page Header End -->
                           <a class="btn-action btn-view" href="{% url 'ads:ads-detail' ad.id %}">
                             <i class="lni-eye"></i>
                           </a>
-                          <a class="btn-action btn-delete bookmark-toggle" href="#" data-ad-id="{{ ad.id }}">
-                            <i class="lni-trash"></i>
-                          </a>
+                          <a class="btn-action btn-delete bookmark-toggle" href="#" data-ad-id="{{ ad.id }}" data-bs-toggle="modal" data-bs-target="#deleteFavoriteModal">
+                             <i class="lni-trash"></i>
+                           </a>
                         </div>
                       </td>
                     </tr>

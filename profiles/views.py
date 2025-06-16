@@ -1,5 +1,7 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from ads.models import Ads, Bookmark
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http import JsonResponse
@@ -438,3 +440,33 @@ def following_list(request):
     }
     
     return render(request, 'profiles/following_list.html', context)
+
+
+@login_required
+def delete_favorite_ad(request, ad_id):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method.'}, status=405)
+    try:
+        ad = get_object_or_404(Ads, id=ad_id)
+        bookmark = Bookmark.objects.filter(profile=request.user.profile, ad=ad)
+        if bookmark.exists():
+            bookmark.delete()
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'success'})
+            else:
+                from django.contrib import messages
+                messages.success(request, 'Ad removed from favorites.')
+        else:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'not_found'}, status=404)
+            else:
+                from django.contrib import messages
+                messages.error(request, 'Ad not found in your favorites.')
+        return redirect('profiles:profile-favorite-ads')
+    except Exception as e:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'error': str(e)}, status=400)
+        else:
+            from django.contrib import messages
+            messages.error(request, 'An error occurred while removing the ad.')
+            return redirect('profiles:profile-favorite-ads')

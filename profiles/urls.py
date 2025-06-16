@@ -5,6 +5,7 @@ app_name = 'profiles'
 
 urlpatterns = [
     path('dashboard/', views.profile_dashboard, name='dashboard'),
+    path('favorite-ads/delete/<int:ad_id>/', views.delete_favorite_ad, name='delete-favorite-ad'),
     path('profile-settings/', views.profile_settings, name='profile-settings'),
     path('my-ads/', views.my_ads, name='profile-my-ads'),  # Make sure this matches the template
     path('favorite-ads/', views.profile_favorite_ads, name='profile-favorite-ads'),
