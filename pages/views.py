@@ -180,7 +180,7 @@ def home(request):
         is_seller=True  # First, ensure we only get sellers
     ).annotate(
         avg_rating=Avg('received_reviews__rating'),
-        ads_count=Count('ads', filter=Q(ads__is_active=True))
+        ads_count=Count('ads', filter=Q(ads__is_active=True), distinct=True)
     ).filter(
         ads_count__gt=0  # Only include sellers with active ads
     ).order_by('-avg_rating', '-ads_count')[:6]

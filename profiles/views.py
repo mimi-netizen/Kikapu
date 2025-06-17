@@ -260,13 +260,13 @@ def sellers_list(request):
     # Base queryset with annotations
     sellers = Profile.objects.filter(is_seller=True).annotate(
         avg_rating=Avg('received_reviews__rating'),
-        reviews_count=Count('received_reviews'),
-        ads_count=Count('ads'),
-        num_followers=Count('followers'),  # Changed to num_followers
+        reviews_count=Count('received_reviews', distinct=True),
+        ads_count=Count('ads', distinct=True),
+        num_followers=Count('followers', distinct=True),  # Changed to num_followers
         activity_score=ExpressionWrapper(
-            (Count('ads') * 0.4) + 
+            (Count('ads', distinct=True) * 0.4) + 
             (Avg('received_reviews__rating', default=0) * 0.3) + 
-            (Count('followers') * 0.3),
+            (Count('followers', distinct=True) * 0.3),
             output_field=FloatField()
         )
     )
