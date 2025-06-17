@@ -8,16 +8,65 @@
 <link rel="stylesheet" href="{% static 'css/listings.css' %}">
 {% endblock %}
 
+{% block extra_css %}
+<style>
+.store-banner {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.store-banner-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.5));
+}
+
+.seller-info {
+  margin-top: -50px;
+  position: relative;
+  z-index: 1;
+  border: none;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+#backToTopBtn {
+  display: none;
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  z-index: 9999;
+  background: #E08D35;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  font-size: 24px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#backToTopBtn:hover {
+  background: #b96a1e;
+}
+
+.bookmarked {
+  color: #f2a654 !important;
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<!-- Seller Profile Section Start -->
+<!-- Seller Profile Section -->
 <section class="seller-profile section-padding">
   <div class="container-fluid px-0">
     <!-- Store Banner -->
-    {% if seller.store_banner %}
-    <div class="store-banner mb-4" style="height: 200px; background: url('{{ seller.store_banner.url }}') center/contain no-repeat;">
-    {% else %}
-    <div class="store-banner mb-4" style="height: 200px; background: #f8f9fa;">
-    {% endif %}
+    <div class="store-banner mb-4" style="height: 200px; background: {% if seller.store_banner %}url('{{ seller.store_banner.url }}') center/contain no-repeat{% else %}#f8f9fa{% endif %};">
       <div class="store-banner-overlay"></div>
     </div>
 
@@ -28,17 +77,15 @@
           <div class="card-body text-center">
             <!-- Store Logo/Profile Picture -->
             <div class="seller-avatar mb-3">
-              {% if seller.store_logo %}
-                <img src="{{ seller.store_logo.url }}" alt="{{ seller.store_name }}" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
-              {% else %}
-                <img src="{{ seller.profile_pic.url }}" alt="{{ seller.user.username }}" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
-              {% endif %}
+              <img src="{% if seller.store_logo %}{{ seller.store_logo.url }}{% else %}{{ seller.profile_pic.url }}{% endif %}" 
+                   alt="{{ seller.store_name|default:seller.user.username }}" 
+                   class="img-fluid rounded-circle" 
+                   style="width: 150px; height: 150px; object-fit: cover;">
             </div>
             
             <!-- Store/Seller Name -->
             <h3>{{ seller.store_name|default:seller.user.username }}</h3>
             
-            <!-- Store Description -->
             {% if seller.store_description %}
             <p class="text-muted mb-3">{{ seller.store_description }}</p>
             {% endif %}
@@ -47,7 +94,10 @@
             <div class="seller-stats mb-3">
               <div class="row text-center">
                 <div class="col">
-                  <h5>{{ seller.average_rating|floatformat:1 }}</h5>
+                  <h5 style="display: flex; align-items: center; gap: 8px;">
+                    {{ seller.average_rating|floatformat:1 }}
+                    <a href="{% url 'profiles:seller-ratings' seller.id %}" class="btn btn-link btn-sm p-0" style="font-size: 0.9em; color: #E08D35; text-decoration: underline;">View All Ratings</a>
+                  </h5>
                   <small class="text-muted">Rating</small>
                 </div>
                 <div class="col">
@@ -61,7 +111,6 @@
               </div>
             </div>
 
-            <!-- Business Hours -->
             {% if seller.business_hours %}
             <div class="business-hours mb-3">
               <h6><i class="fas fa-clock"></i> Business Hours</h6>
@@ -76,20 +125,21 @@
                 <i class="fas fa-map-marker-alt"></i> {{ seller.location }}
               </li>
               {% endif %}
+              
               {% if seller.phone_number %}
               <li class="mb-2">
                 <i class="fas fa-phone"></i> 
                 <a href="tel:{{ seller.phone_number }}">{{ seller.phone_number }}</a>
               </li>
               {% endif %}
+              
               {% if seller.whatsapp_number %}
               <li class="mb-2">
                 <i class="fab fa-whatsapp text-success"></i> 
-                <a href="https://wa.me/{{ seller.whatsapp_number }}" target="_blank">
-                  WhatsApp
-                </a>
+                <a href="https://wa.me/{{ seller.whatsapp_number }}" target="_blank">WhatsApp</a>
               </li>
               {% endif %}
+              
               <li class="mb-2">
                 <i class="fas fa-envelope"></i> 
                 <a href="mailto:{{ seller.user.email }}">{{ seller.user.email }}</a>
@@ -98,21 +148,30 @@
 
             <!-- Action Buttons -->
             {% if request.user.is_authenticated and request.user.id != seller.user.id %}
-              <div class="action-buttons mt-3">
-                <button id="followBtn" class="btn btn-outline-primary btn-block mb-2" 
-                        data-seller-id="{{ seller.id }}"
-                        data-following="{% if request.user.profile in seller.followers.all %}true{% else %}false{% endif %}">
-                  <i class="fas {% if request.user.profile in seller.followers.all %}fa-user-minus{% else %}fa-user-plus{% endif %}"></i>
-                  <span>{% if request.user.profile in seller.followers.all %}Unfollow{% else %}Follow{% endif %}</span>
-                  <span class="followers-count">({{ seller.followers_count }})</span>
-                </button>
-                <a href="{% url 'profiles:rate_seller' seller.id %}" class="btn btn-primary btn-block mb-2">
-                  <i class="fas fa-star"></i> Rate Seller
-                </a>
-                <button class="btn btn-outline-primary btn-block" data-toggle="modal" data-target="#messageSellerModal">
-                  <i class="fas fa-envelope"></i> Message Seller
-                </button>
-              </div>
+            <div class="action-buttons mt-3">
+              <!-- Follow Button -->
+              <button id="followBtn" 
+                      class="btn btn-outline-primary btn-block mb-2" 
+                      data-seller-id="{{ seller.id }}"
+                      data-following="{% if request.user.profile in seller.followers.all %}true{% else %}false{% endif %}">
+                <i class="fas {% if request.user.profile in seller.followers.all %}fa-user-minus{% else %}fa-user-plus{% endif %}"></i>
+                <span>{% if request.user.profile in seller.followers.all %}Unfollow{% else %}Follow{% endif %}</span>
+                <span class="followers-count">({{ seller.followers_count }})</span>
+              </button>
+
+              <!-- Rate Seller Button -->
+              <!-- <a href="{% url 'profiles:rate_seller' seller.id %}" class="btn btn-primary btn-block mb-2">
+                <i class="fas fa-star"></i> Rate Seller
+              </a> -->
+              <button type="button" class="btn btn-primary btn-block mb-2" data-toggle="modal" data-target="#rateSellerModal">
+                <i class="fas fa-star me-1"></i> Rate Seller
+            </button>
+
+              <!-- Message Seller Button -->
+              <button class="btn btn-outline-primary btn-block" data-toggle="modal" data-target="#messageModal">
+                <i class="fas fa-envelope"></i> Message Seller
+            </button>
+            </div>
             {% endif %}
           </div>
         </div>
@@ -120,14 +179,17 @@
 
       <!-- Seller's Ads -->
       <div class="col-lg-9">
-        <!-- Add Search and Categories Section -->
+        <!-- Search and Categories -->
         <div class="search-categories mb-4" style="margin-right: 15px;">
           <div class="card">
             <div class="card-body">
               <!-- Search Bar -->
               <form method="GET" action="{% url 'ads:seller-profile' seller.pk %}" class="mb-4">
                 <div class="input-group">
-                  <input type="text" name="search" class="form-control" placeholder="Search in {{ seller.store_name|default:seller.user.username }}'s store..." 
+                  <input type="text" 
+                         name="search" 
+                         class="form-control" 
+                         placeholder="Search in {{ seller.store_name|default:seller.user.username }}'s store..." 
                          value="{{ request.GET.search|default:'' }}">
                   <div class="input-group-append">
                     <button class="btn btn-primary" type="submit">
@@ -141,7 +203,6 @@
               <div class="seller-categories">
                 <h5 class="mb-3">Categories</h5>
                 <div class="row">
-                  <!-- Show all categories first -->
                   <div class="col-md-3 mb-2">
                     <a href="{% url 'ads:seller-profile' seller.pk %}" 
                        class="btn btn-outline-secondary btn-sm btn-block text-left {% if not request.GET.category %}active{% endif %}">
@@ -149,7 +210,7 @@
                       <span class="badge badge-primary float-right">{{ seller_ads.count }}</span>
                     </a>
                   </div>
-                  <!-- Then show categories that have ads -->
+                  
                   {% for category in categories %}
                     {% with count=seller_ads|filter_by_category:category|length %}
                     {% if count > 0 %}
@@ -183,50 +244,55 @@
         <!-- Ads Grid -->
         <div class="row">
           {% if seller_ads %}
-          {% for ad in seller_ads %}
-            <div class="col-xs-6 col-sm-6 col-md-2 col-lg-2" style="margin: 5px;">
-              <div class="featured-box" style="padding: 0px;">
-                <figure>
-                  <div class="icon">
-                    {% if user.is_authenticated %}
-                      <span class="bg-green">
-                        <i class="lni-heart bookmark-btn" data-item-id="{{ ad.id }}" style="cursor: pointer;"></i>
+            {% for ad in seller_ads %}
+              <div class="col-xs-6 col-sm-6 col-md-2 col-lg-2" style="margin: 5px;">
+                <div class="featured-box" style="padding: 0px;">
+                  <figure>
+                    <div class="icon">
+                      {% if user.is_authenticated %}
+                        <span class="bg-green">
+                          <i class="lni-heart bookmark-btn" 
+   data-ad-id="{{ ad.id }}" 
+   style="cursor: pointer;" 
+   onclick="(function(e) { e.preventDefault(); e.stopPropagation(); toggleBookmark(this, '{{ ad.id }}'); })(event)"></i>
+                        </span>
+                      {% endif %}
+                    </div>
+                    <a href="{% url 'ads:ads-detail' ad.id %}">
+                      {% if ad.images.first %}
+                        <img class="img-fluid" 
+                             src="{{ ad.images.first.image.url }}" 
+                             alt="{{ ad.title }}"
+                             onerror="this.onerror=null; this.src='{% static 'img/placeholder.png' %}';">
+                      {% else %}
+                        <img class="img-fluid" src="{% static 'img/placeholder.png' %}" alt="No image">
+                      {% endif %}
+                    </a>
+                  </figure>
+                  <div class="feature-content" style="padding: 12px;">
+                    <div class="product">
+                      <a href="{% url 'ads:category-archive' ad.category.slug %}">{{ ad.category }}</a>
+                    </div>
+                    <h4 style="font-size: 11px; margin-bottom: 6px;">
+                      <a href="{% url 'ads:ads-detail' ad.id %}">{{ ad.title|truncatechars:40 }}</a>
+                    </h4>
+                    <div class="meta-tag">
+                      <span>
+                        <i class="lni-map-marker"></i> {{ ad.county }}, {{ ad.city }}
                       </span>
-                    {% endif %}
-                  </div>
-                  <a href="{% url 'ads:ads-detail' ad.id %}">
-                    {% if ad.images.first %}
-                      <img class="img-fluid" src="{{ ad.images.first.image.url }}" alt="{{ ad.title }}"
-                           onerror="this.onerror=null; this.src='{% static 'img/placeholder.png' %}';">
-                    {% else %}
-                      <img class="img-fluid" src="{% static 'img/placeholder.png' %}" alt="No image">
-                    {% endif %}
-                  </a>
-                </figure>
-                <div class="feature-content" style="padding: 12px;">
-                  <div class="product">
-                    <a href="{% url 'ads:category-archive' ad.category.slug %}">{{ ad.category }}</a>
-                  </div>
-                  <h4 style="font-size: 11px; margin-bottom: 6px;">
-                    <a href="{% url 'ads:ads-detail' ad.id %}">{{ ad.title|truncatechars:40 }}</a>
-                  </h4>
-                  <div class="meta-tag">
-                    <span>
-                      <i class="lni-map-marker"></i> {{ ad.county }}, {{ ad.city }}
-                    </span>
-                  </div>
-                  <div class="dsc" style="font-size: 12px; margin: 6px 0; color: #666;">
-                    {{ ad.description|striptags|truncatewords:15 }}
-                  </div>
-                  <div class="price-box">
-                    <h5 class="price" style="font-size: 14px; color: #E08D35;">
-                      Ksh {{ ad.price|intcomma }}
-                    </h5>
+                    </div>
+                    <div class="dsc" style="font-size: 12px; margin: 6px 0; color: #666;">
+                      {{ ad.description|striptags|truncatewords:15 }}
+                    </div>
+                    <div class="price-box">
+                      <h5 class="price" style="font-size: 14px; color: #E08D35;">
+                        Ksh {{ ad.price|intcomma }}
+                      </h5>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          {% endfor %}
+            {% endfor %}
           {% else %}
             <div class="col-lg-12">
               <h4 class="text-center">No ads found</h4>
@@ -238,60 +304,128 @@
   </div>
 </section>
 
-<!-- Add some CSS -->
-{% block extra_css %}
-<style>
-.store-banner {
-  position: relative;
-  border-radius: 8px;
-  overflow: hidden;
-}
-.store-banner-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 50%;
-  background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.5));
-}
-.seller-info {
-  margin-top: -50px;
-  position: relative;
-  z-index: 1;
-  border: none;
-  box-shadow: 0 0 20px rgba(0,0,0,0.1);
-}
-</style>
+<!-- Back to Top Button -->
+<button id="backToTopBtn" title="Back to Top">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+
+<!-- Rate Seller Modal -->
+<div class="modal fade" id="rateSellerModal" tabindex="-1" role="dialog" aria-labelledby="rateSellerModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="rateSellerModalLabel">Rate {{ seller.store_name|default:seller.user.username }}</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <form action="{% url 'profiles:rate_seller' seller.id %}" method="POST">
+              {% csrf_token %}
+              <div class="modal-body">
+                  <div class="mb-3">
+                      <label class="form-label">Rating</label>
+                      <div class="star-rating">
+                          <input type="radio" name="rating" value="1" id="rate1" required>
+                          <label for="rate1">★</label>
+                          <input type="radio" name="rating" value="2" id="rate2">
+                          <label for="rate2">★</label>
+                          <input type="radio" name="rating" value="3" id="rate3">
+                          <label for="rate3">★</label>
+                          <input type="radio" name="rating" value="4" id="rate4">
+                          <label for="rate4">★</label>
+                          <input type="radio" name="rating" value="5" id="rate5">
+                          <label for="rate5">★</label>
+                      </div>
+                  </div>
+                  <div class="mb-3">
+                      <label for="comment" class="form-label">Comment</label>
+                      <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Submit Rating</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+
+
+<!-- Message Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="messageModalLabel">Send Message to {{ seller.user.username }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="POST" action="{% url 'ads:send-message-to-seller' seller.user.id %}">
+        {% csrf_token %}
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="message">Your Message</label>
+            <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Send Message</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Message Login Prompt Modal -->
+<div class="modal fade" id="messageLoginPromptModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-body text-center p-5">
+        <div class="animate__animated animate__bounceIn">
+          <div class="display-1 mb-3">💌</div>
+          <h3 class="mb-4">Want to Message the Seller?</h3>
+          <p class="mb-4">To send messages to sellers, you'll need to be part of our community! Join us today and start connecting with sellers.</p>
+          <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary btn-lg animate__animated animate__pulse animate__infinite">
+              <i class="fas fa-sign-in-alt me-2"></i> Login
+            </a>
+            <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg">
+              <i class="fas fa-user-plus me-2"></i> Register
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+// Event listener for document ready
 document.addEventListener('DOMContentLoaded', function() {
+    // Follow button functionality
     const followBtn = document.getElementById('followBtn');
     if (followBtn) {
         followBtn.addEventListener('click', function() {
             const sellerId = this.dataset.sellerId;
-            const url = "{% url 'profiles:toggle-follow' seller.id %}";  // Update this line
-            console.log('Sending request to:', url);  // Debug line
-            
+            const url = "{% url 'profiles:toggle-follow' seller.id %}";
             fetch(url, {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': '{{ csrf_token }}',
                 },
             })
-            .then(response => {
-                console.log('Response status:', response.status);  // Debug line
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                console.log('Response data:', data);  // Debug line
                 if (data.status === 'success') {
-                    // Update button text and icon
                     const icon = this.querySelector('i');
                     const text = this.querySelector('span');
                     const count = this.querySelector('.followers-count');
-                    
                     if (data.is_following) {
                         icon.classList.replace('fa-user-plus', 'fa-user-minus');
                         text.textContent = 'Unfollow';
@@ -305,39 +439,129 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => console.error('Error:', error));
         });
     }
+
+    // Back to Top button functionality
+    const backToTopBtn = document.getElementById('backToTopBtn');
+    if (backToTopBtn) {
+        window.addEventListener('scroll', function() {
+            backToTopBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
+        });
+        
+        backToTopBtn.addEventListener('click', function() {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        });
+    }
 });
 
-// Add this to your existing extra_js block
-function initializeSaveButtons() {
-    document.querySelectorAll('.bookmark-btn').forEach(btn => {
-        if (!btn.dataset.initialized) {
-            btn.addEventListener('click', function() {
-                const adId = this.dataset.adId;
-                fetch(`/ads/toggle-save/${adId}/`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}',
-                    },
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.saved) {
-                        this.classList.add('saved');
-                        this.style.color = '#E08D35';
-                    } else {
-                        this.classList.remove('saved');
-                        this.style.color = '';
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            });
-            btn.dataset.initialized = 'true';
+// Bookmark toggle functionality
+function toggleBookmark(button, adId) {
+    // Defensive: Ensure button exists
+    if (!button) {
+        console.error('toggleBookmark: button is undefined');
+        return;
+    }
+    // Get CSRF token from meta tag
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    fetch(`/toggle-bookmark/${adId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
         }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            // Safely re-select the icon using the ad ID
+            var icon = document.querySelector('.bookmark-btn[data-ad-id="' + adId + '"]');
+            if (icon) {
+                if (typeof data.is_bookmarked !== 'undefined') {
+                    if (data.is_bookmarked) {
+                        icon.classList.add('bookmarked');
+                    } else {
+                        icon.classList.remove('bookmarked');
+                    }
+                } else {
+                    icon.classList.toggle('bookmarked');
+                }
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating your saved listings. Please try again.');
     });
 }
 
-// Initialize save buttons on page load
-initializeSaveButtons();
+
+// Modal handlers
+$(document).ready(function() {
+    $('.btn[data-toggle="modal"]').click(function() {
+        var targetModal = $($(this).data('target'));
+        targetModal.modal('show');
+    });
+
+    // Handle rate seller form submission
+    $('#rateSellerModal form').on('submit', function(e) {
+        e.preventDefault();
+        
+        if (!$('input[name="rating"]:checked').val()) {
+            alert('Please select a rating');
+            return;
+        }
+
+        var form = $(this);
+        var url = form.attr('action');
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                $('#rateSellerModal').modal('hide');
+                location.reload();
+            },
+            error: function(xhr, errmsg, err) {
+                alert('An error occurred. Please try again.');
+            }
+        });
+    });
+
+    // Handle message form submission
+    $('#messageModal form').on('submit', function(e) {
+        e.preventDefault();
+        
+        var form = $(this);
+        var url = form.attr('action');
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                $('#messageModal').modal('hide');
+                form[0].reset();
+                alert('Message sent successfully!');
+            },
+            error: function(xhr, errmsg, err) {
+                alert('An error occurred. Please try again.');
+            }
+        });
+    });
+});
 </script>
 {% endblock %}
-{% endblock content %}

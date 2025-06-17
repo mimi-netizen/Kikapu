@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+<link rel="stylesheet" href="{% static 'css/listings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h2 class="mb-4">All Ratings for {{ seller.store_name|default:seller.user.username }}</h2>
+  <a href="{% url 'profiles:seller-profile' seller.id %}" class="btn btn-secondary mb-3">&larr; Back to Seller Profile</a>
+  {% if ratings %}
+    <div class="list-group">
+      {% for review in ratings %}
+        <div class="list-group-item mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+              <strong>{{ review.reviewer.user.username }}</strong>
+              <span class="text-muted ml-2">{{ review.created_at|naturaltime }}</span>
+            </div>
+            <div>
+              <span class="badge badge-warning" style="font-size:1em;">&#9733; {{ review.rating }}/5</span>
+            </div>
+          </div>
+          <div>{{ review.comment|linebreaks }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No ratings found for this seller yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -63,7 +63,7 @@ class PopularCategory(models.Model):
 # Messages Model   
 class Conversation(models.Model):
     participants = models.ManyToManyField(User, related_name='conversations')
-    ad = models.ForeignKey('Ads', on_delete=models.CASCADE, related_name='conversations')
+    ad = models.ForeignKey('Ads', on_delete=models.CASCADE, related_name='conversations', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     last_message_time = models.DateTimeField(null=True, blank=True)
@@ -121,19 +121,16 @@ class Conversation(models.Model):
         return messages_updated
 
     @classmethod
-    def get_or_create_conversation(cls, user1, user2, ad):
-        conversation = cls.objects.filter(
-            participants=user1
-        ).filter(
-            participants=user2
-        ).filter(
-            ad=ad
-        ).first()
-        
+    def get_or_create_conversation(cls, user1, user2, ad=None):
+        query = cls.objects.filter(participants=user1).filter(participants=user2)
+        if ad is not None:
+            query = query.filter(ad=ad)
+        else:
+            query = query.filter(ad__isnull=True)
+        conversation = query.first()
         if not conversation:
             conversation = cls.objects.create(ad=ad)
             conversation.participants.add(user1, user2)
-        
         return conversation
 
     def get_other_participant(self, user):
@@ -179,7 +176,7 @@ class Message(models.Model):
     )
     sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
-    ad = models.ForeignKey('Ads', on_delete=models.CASCADE, related_name='messages')
+    ad = models.ForeignKey('Ads', on_delete=models.CASCADE, related_name='messages', null=True, blank=True)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)

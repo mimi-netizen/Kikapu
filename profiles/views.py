@@ -304,7 +304,6 @@ def seller_profile(request, pk):
     return render(request, 'profiles/seller-profile.html', context)
 
 @login_required
-@login_required
 def rate_seller(request, seller_id):
     seller = get_object_or_404(Profile, id=seller_id)
 
@@ -342,6 +341,15 @@ def rate_seller(request, seller_id):
 
     # Handle GET: show the form
     return render(request, 'profiles/rate-seller.html', {'seller': seller})
+
+@login_required
+def seller_ratings(request, pk):
+    seller = get_object_or_404(Profile, pk=pk, is_seller=True)
+    ratings = seller.received_reviews.select_related('reviewer').order_by('-created_at')
+    return render(request, 'profiles/seller_ratings.html', {
+        'seller': seller,
+        'ratings': ratings,
+    })
 
 
 @login_required
@@ -440,6 +448,42 @@ def following_list(request):
     }
     
     return render(request, 'profiles/following_list.html', context)
+
+
+@login_required
+def toggle_bookmark(request, ad_id):
+    """Toggle save/unsave an ad"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
+        
+    try:
+        ad = get_object_or_404(Ads, id=ad_id)
+        profile = getattr(request.user, 'profile', None)
+        if not profile:
+            return JsonResponse({'error': 'User profile not found.'}, status=400)
+        bookmark = Bookmark.objects.filter(profile=profile, ad=ad).first()
+
+        if bookmark:
+            bookmark.delete()
+            return JsonResponse({'status': 'success', 'action': 'unsaved'})
+        else:
+            Bookmark.objects.create(profile=profile, ad=ad)
+            return JsonResponse({'status': 'success', 'action': 'saved'})
+
+    except Ads.DoesNotExist:
+        return JsonResponse({'error': 'Ad not found'}, status=404)
+    except Exception as e:
+        print(f"Error in toggle_bookmark: {str(e)}")
+        return JsonResponse({'error': 'An error occurred while saving the listing'}, status=500)
+
+@login_required
+def bookmarks(request):
+    """View saved ads"""
+    bookmarks = Bookmark.objects.filter(user=request.user).select_related('ad')
+    context = {
+        'bookmarks': bookmarks,
+    }
+    return render(request, 'ads/bookmarks.html', context)
 
 
 @login_required

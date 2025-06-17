@@ -9,7 +9,13 @@
 {% block content %}
 <div class="container-fluid px-0">
     <div class="mb-4">
-        <h2 class="text-xl font-bold">{{ conversation.ad.title }}</h2>
+        <h2 class="text-xl font-bold">
+    {% if conversation.ad %}
+        {{ conversation.ad.title }}
+    {% else %}
+        General Inquiry
+    {% endif %}
+</h2>
         <p class="text-gray-600">Conversation with {{ other_participant.username }}</p>
     </div>
 
@@ -24,7 +30,9 @@
         {% endfor %}
     </div>
 
-    <form id="message-form" method="post" action="{% url 'ads:send_message' conversation.ad.id %}" class="mt-4">
+    <form id="message-form" method="post" 
+    action="{% if conversation.ad %}{% url 'ads:send_message' conversation.ad.id %}{% else %}{% url 'ads:send-message-to-seller' other_user.id %}{% endif %}" 
+    class="mt-4">
         {% csrf_token %}
         <div class="flex space-x-2">
             <textarea 

@@ -33,4 +33,5 @@ urlpatterns = [
     path('api/auto-save-draft/', views.auto_save_draft, name='auto-save-draft'),
     path('featured-ad/check/<int:ad_id>/', views.check_featured_status, name='check-featured-status'),
     path('get-subcategories/', views.get_subcategories, name='get-subcategories'),
+    path('send-message-to-seller/<int:seller_id>/', views.send_message_to_seller, name='send-message-to-seller'),
 ]

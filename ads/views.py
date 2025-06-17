@@ -338,8 +338,8 @@ def conversation_detail(request, conversation_id):
         return JsonResponse({
             'id': conversation.id,
             'ad': {
-                'id': conversation.ad.id,
-                'title': conversation.ad.title,
+                'id': conversation.ad.id if conversation.ad else None,
+                'title': conversation.ad.title if conversation.ad else 'General Inquiry',
             },
             'other_user': {
                 'username': conversation.get_other_participant(request.user).username,
@@ -739,10 +739,10 @@ def toggle_bookmark(request, ad_id):
 
         if bookmark:
             bookmark.delete()
-            return JsonResponse({'status': 'success', 'action': 'unsaved'})
+            return JsonResponse({'status': 'success', 'action': 'unsaved', 'is_bookmarked': False})
         else:
             Bookmark.objects.create(profile=profile, ad=ad)
-            return JsonResponse({'status': 'success', 'action': 'saved'})
+            return JsonResponse({'status': 'success', 'action': 'saved', 'is_bookmarked': True})
 
     except Ads.DoesNotExist:
         return JsonResponse({'error': 'Ad not found'}, status=404)
@@ -1032,3 +1032,36 @@ def get_subcategories(request):
         return JsonResponse({'error': 'Category not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+
+
+@login_required
+def send_message_to_seller(request, seller_id):
+    if request.method != 'POST':
+        return redirect('profiles:seller-profile', seller_id)
+
+    seller_profile = get_object_or_404(Profile, user__id=seller_id)
+    receiver = seller_profile.user
+    content = request.POST.get('message')
+
+    conversation = Conversation.get_or_create_conversation(request.user, receiver, ad=None)
+    message = Message.objects.create(
+        conversation=conversation,
+        sender=request.user,
+        receiver=receiver,
+        content=content,
+        is_read=False
+    )
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'status': 'success',
+            'message': {
+                'id': message.id,
+                'content': message.content,
+                'created_at': message.created_at.isoformat(),
+                'sender_username': message.sender.username
+            }
+        })
+
+    messages.success(request, 'Message sent successfully!')
+    return redirect('ads:seller-profile', seller_id)
