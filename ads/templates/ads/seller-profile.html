@@ -58,6 +58,15 @@
 .bookmarked {
   color: #f2a654 !important;
 }
+
+/* Ensure category button text is visible */
+.btn-outline-secondary {
+  color: #6c757d !important; /* Bootstrap default text color for outline-secondary */
+}
+.btn-outline-secondary:hover,
+.btn-outline-secondary.active {
+  color: white !important; /* Text color when button is hovered or active */
+}
 </style>
 {% endblock %}
 
@@ -217,7 +226,7 @@
                     <div class="col-md-3 mb-2">
                       <a href="?category={{ category.slug }}" 
                          class="btn btn-outline-secondary btn-sm btn-block text-left {% if request.GET.category == category.slug %}active{% endif %}">
-                        {{ category.name }}
+                        {{ category.name|default:category.slug }}
                         <span class="badge badge-primary float-right">{{ count }}</span>
                       </a>
                     </div>
