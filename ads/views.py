@@ -38,6 +38,7 @@ from django.core.exceptions import ValidationError
 import json
 from django.urls import reverse
 from django.utils import timezone
+from django.db import models  # Add this line
 
 # @cache_page(60 * 15)  # Remove or reduce cache time for testing
 def ads_listing(request):
@@ -290,34 +291,27 @@ def send_message(request, ad_id):
 
 @login_required
 def inbox(request):
-    conversations = (
-        Conversation.objects.filter(participants=request.user)
-        .select_related('ad', 'ad__seller')
-        .prefetch_related('messages')
-        .annotate(
-            latest_message=Max('messages__created_at')
-        )
-        .order_by('-latest_message')
-    )
-    
-    conversation_data = []
-    for conv in conversations:
-        other_user = conv.get_other_participant(request.user)
-        latest_message = conv.messages.order_by('-created_at').first()
-        
-        conversation_data.append({
-            'id': conv.id,
-            'other_user': other_user,
-            'ad': conv.ad,
-            'latest_message': latest_message,
-            'unread_count': conv.unread_count,  # Using the model field
-        })
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please log in to access your inbox.')
+        return redirect('login')
 
-    unread_total = sum(conv['unread_count'] for conv in conversation_data)
+    conversations = Conversation.objects.filter(
+        participants=request.user
+    ).prefetch_related(
+        models.Prefetch(
+            'messages',
+            queryset=Message.objects.select_related('sender', 'receiver')
+        ),
+        'participants__profile'
+    ).order_by('-last_message_time')
+
+    for conv in conversations:
+        conv.other_user = conv.get_other_participant(request.user)
+        conv.unread_count = Message.objects.filter(conversation=conv, receiver=request.user, is_read=False).count()
 
     return render(request, 'ads/inbox.html', {
-        'conversations': conversation_data,
-        'unread_messages_count': unread_total,
+        'conversations': conversations,
+        'current_user_id': request.user.id
     })
 
 @login_required
@@ -329,27 +323,58 @@ def conversation_detail(request, conversation_id):
             participants=request.user
         )
         
-        # Use the model method to mark messages as read and update unread count
-        conversation.mark_messages_read(request.user)
+        # Manually mark messages as read instead of using non-existent method
+        Message.objects.filter(conversation=conversation, receiver=request.user, is_read=False).update(is_read=True)
         
-        # Update the unread count
-        conversation.update_unread_count(request.user)
+        # No need to update unread count separately as it's handled in the inbox view
         
+        ad_data = None
+        if conversation.ad:
+            ad_data = {
+                'id': conversation.ad.id,
+                'title': conversation.ad.title
+            }
+        else:
+            ad_data = {
+                'id': None,
+                'title': 'General Inquiry'
+            }
+        
+        messages = conversation.messages.all().order_by('created_at')
+        
+        other_user = conversation.get_other_participant(request.user)
+        other_user_data = {
+            'id': other_user.id if other_user else request.user.id,
+            'username': other_user.username if other_user else request.user.username,
+            'profile_picture': other_user.profile.profile_picture_url.url if other_user and hasattr(other_user.profile, 'profile_picture_url') and other_user.profile.profile_picture_url else None
+        }
+
         return JsonResponse({
             'id': conversation.id,
-            'ad': {
-                'id': conversation.ad.id if conversation.ad else None,
-                'title': conversation.ad.title if conversation.ad else 'General Inquiry',
-            },
-            'other_user': {
-                'username': conversation.get_other_participant(request.user).username,
-            },
-            'messages': [{
-                'content': msg.content,
-                'created_at': msg.created_at.isoformat(),
-                'is_sender': msg.sender == request.user,
-            } for msg in conversation.messages.all().order_by('created_at')],
-            'unread_count': conversation.unread_count  # Add this to update frontend counter
+            'ad': ad_data,
+            'other_user': other_user_data,
+            'participants': [
+                {
+                    'id': p.id,
+                    'username': p.username,
+                    'profile_picture': p.profile.profile_picture_url.url if hasattr(p.profile, 'profile_picture_url') and p.profile.profile_picture_url else None
+                } for p in conversation.participants.all()
+            ],
+            'messages': [
+                {
+                    'id': message.id,
+                    'sender': {
+                        'id': message.sender.id,
+                        'username': message.sender.username,
+                        'profile_picture': message.sender.profile.profile_picture_url.url if hasattr(message.sender.profile, 'profile_picture_url') and message.sender.profile.profile_picture_url else None
+                    },
+                    'content': message.content,
+                    'timestamp': message.created_at.isoformat() if message.created_at else '',
+                    'is_read': message.is_read,
+                    'created_at': message.created_at.isoformat()
+                } for message in messages
+            ],
+            'unread_count': sum(1 for m in messages if not m.is_read and m.receiver == request.user)
         })
     
     conversation = get_object_or_404(
@@ -358,9 +383,10 @@ def conversation_detail(request, conversation_id):
         participants=request.user
     )
     
-    # Mark messages as read for non-AJAX requests too
-    conversation.mark_messages_read(request.user)
-    conversation.update_unread_count(request.user)
+    # Manually mark messages as read instead of using non-existent method
+    Message.objects.filter(conversation=conversation, receiver=request.user, is_read=False).update(is_read=True)
+    
+    # No need to update unread count separately as it's handled in the inbox view
     
     return render(request, 'ads/conversation_detail.html', {
         'conversation': conversation,

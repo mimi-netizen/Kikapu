@@ -200,6 +200,11 @@
         border-right: none !important;
         padding-right: 0;
     }
+
+    .custom-card {
+        width: -webkit-fill-available;
+        margin-right: 1rem;
+    }
 }
 
 .empty-state {
@@ -223,7 +228,7 @@
 <div class="container-fluid py-4 mt-4">
     <div class="row gx-0">
         <!-- Conversations List -->
-        <div class="col-md-4 mb-4">
+        <div class="col-md-4 mb-4" style="width: -webkit-fill-available;">
             <div class="custom-card">
                 <div class="card-header bg-white border-bottom-0 d-flex align-items-center">
                     <div class="input-group">
@@ -265,7 +270,7 @@
                                 </small>
                             </div>
                             <div class="text-muted small">
-                                <strong>Ad:</strong> {{ conversation.ad.title|truncatechars:30 }}
+                                <strong>Ad:</strong> {% if conversation.ad %}{{ conversation.ad.title|truncatechars:30 }}{% else %}General Inquiry{% endif %}
                             </div>
                             {% if conversation.latest_message %}
                                 <div class="text-muted small">
@@ -316,9 +321,16 @@
     </div>
 </div>
 
+<input type="hidden" id="current-user-id" value="{% if user.is_authenticated %}{{ user.id }}{% endif %}">
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    let currentUserId = null;
+    // Set currentUserId from a hidden input field populated by Django template
+    const userIdElement = document.getElementById('current-user-id');
+    if (userIdElement) {
+        currentUserId = parseInt(userIdElement.value);
+    }
     let currentConversationId = null;
     const messagesContainer = document.getElementById('messages-container');
     const messageForm = document.getElementById('message-form');
@@ -355,7 +367,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 conversationTitle.textContent = `Chat with ${data.other_user.username}`;
                 document.getElementById('ad-link').href = `/ads/${data.ad.id}/`;
-                messageForm.action = `/send-message/${data.ad.id}/`;
+                
+                if (data.ad && data.ad.id) {
+                    messageForm.action = '/send-message/' + data.ad.id + '/';
+                } else if (data.other_user && data.other_user.id) {
+                    messageForm.action = '/send-message-to-seller/' + data.other_user.id + '/';
+                } else {
+                    console.error('Cannot set form action: No ad ID or other user ID available');
+                    return;
+                }
                 
                 messagesContainer.innerHTML = '';
                 data.messages.forEach(message => {
@@ -369,14 +389,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function createMessageElement(message) {
         const div = document.createElement('div');
-        div.className = `message-bubble ${message.is_sender ? 'message-sent' : 'message-received'}`;
+        div.className = message.sender.id === currentUserId ? 'message-bubble message-sent' : 'message-bubble message-received';
         
         const content = document.createElement('div');
+        content.className = 'message-content';
         content.textContent = message.content;
         
         const timestamp = document.createElement('small');
-        timestamp.className = 'text-muted d-block mt-1';
-        timestamp.textContent = new Date(message.created_at).toLocaleString();
+        timestamp.className = 'message-timestamp';
+        timestamp.textContent = new Date(message.timestamp).toLocaleString();
+        timestamp.style.fontSize = '0.8em';
+        timestamp.style.display = 'block';
+        timestamp.style.marginTop = '5px';
         
         div.appendChild(content);
         div.appendChild(timestamp);
@@ -406,8 +430,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.status === 'success') {
                 const messageElement = createMessageElement({
                     content: messageContent,
-                    created_at: data.message.created_at,
-                    is_sender: true
+                    timestamp: data.message.timestamp,
+                    sender: { id: currentUserId }
                 });
                 messagesContainer.appendChild(messageElement);
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
