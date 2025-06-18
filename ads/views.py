@@ -740,13 +740,26 @@ def edit_ad(request, pk):
 def delete_ad(request, pk):
     try:
         ad = get_object_or_404(Ads, pk=pk)
+        if ad.seller.user != request.user:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'error': 'You do not have permission to delete this ad.'}, status=403)
+            else:
+                messages.error(request, 'You do not have permission to delete this ad.')
+                return redirect('ads:ads-detail', pk=pk)
         if request.method == 'POST':
-            ad.delete()
-            messages.success(request, 'The ad has been deleted successfully.')
-            return redirect('ads:ads_listing')
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                ad.delete()
+                return JsonResponse({'status': 'success'})
+            else:
+                ad.delete()
+                messages.success(request, 'The ad has been deleted successfully.')
+                return redirect('ads:ads_listing')
     except Exception as e:
-        messages.error(request, 'An error occurred while deleting the ad. Please try again.')
-        return redirect('ads:ads-delete', pk=pk)
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'error': 'An error occurred while deleting the ad: ' + str(e)}, status=500)
+        else:
+            messages.error(request, 'An error occurred while deleting the ad. Please try again.')
+            return redirect('ads:ads-delete', pk=pk)
 
     return render(request, 'ads/ads-delete.html', {'ad': ad})
 

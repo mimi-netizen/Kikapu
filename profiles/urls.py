@@ -21,4 +21,5 @@ urlpatterns = [
     path('seller-store/<int:pk>/', views.seller_store, name='seller-store'),
     path('toggle-follow/<int:seller_id>/', views.toggle_follow, name='toggle-follow'),
     path('following/', views.following_list, name='following-list'),  # Changed from following_list to following-list
+    path('reply-to-review/<int:review_id>/', views.reply_to_review, name='reply-to-review'),
 ]

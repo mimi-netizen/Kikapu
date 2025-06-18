@@ -152,14 +152,14 @@
                                             </td>
                                             <td>
                                                 <div class="btn-group">
-                                                    <a href="{% url 'ads:ads-detail' ad.id %}" class="btn btn-sm btn-info">
-                                                        <i class="fas fa-eye"></i>
+                                                    <a href="{% url 'ads:ads-detail' ad.id %}" class="btn btn-sm btn-info" title="View Ad" data-toggle="tooltip">
+                                                        <i class="fas fa-eye" alt="View Ad"></i>
                                                     </a>
-                                                    <a href="{% url 'ads:ads-edit' ad.id %}" class="btn btn-sm btn-primary">
-                                                        <i class="fas fa-edit"></i>
+                                                    <a href="{% url 'ads:ads-edit' ad.id %}" class="btn btn-sm btn-primary" title="Edit Ad" data-toggle="tooltip">
+                                                        <i class="fas fa-edit" alt="Edit Ad"></i>
                                                     </a>
-                                                    <button class="btn btn-sm btn-danger delete-ad" data-item-id="{{ ad.id }}">
-                                                        <i class="fas fa-trash"></i>
+                                                    <button class="btn btn-sm btn-danger delete-ad" data-item-id="{{ ad.id }}" title="Delete Ad" data-toggle="tooltip">
+                                                        <i class="fas fa-trash" alt="Delete Ad"></i>
                                                     </button>
                                                 </div>
                                             </td>
@@ -202,6 +202,51 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Recent Reviews -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Recent Reviews</h5>
+                        <a href="{% url 'profiles:seller-ratings' profile.id %}" class="btn btn-sm btn-outline-primary">View All Ratings</a>
+                    </div>
+                    <div class="card-body">
+                        {% if recent_reviews %}
+                            {% for review in recent_reviews %}
+                            <div class="mb-4 pb-3 border-bottom">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <img src="{% if review.reviewer.profile.profile_pic %}{{ review.reviewer.profile.profile_pic.url }}{% else %}{% static 'images/default-profile-pic.jpg' %}{% endif %}" 
+                                             alt="{{ review.reviewer.username }}" 
+                                             class="rounded-circle mr-2" 
+                                             style="width: 40px; height: 40px; object-fit: cover;">
+                                        <span class="font-weight-bold">{{ review.reviewer.username }}</span>
+                                    </div>
+                                    <div class="star-rating" data-rating="{{ review.rating }}">
+                                        {% for i in '12345' %}
+                                            <i class="fas fa-star {% if forloop.counter <= review.rating %}text-warning{% else %}text-muted{% endif %}"></i>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <small class="text-muted">{{ review.created_at|date }}</small>
+                                <p class="mb-1">{{ review.comment }}</p>
+                                {% if review.ad %}
+                                <small class="text-muted">
+                                    For: <a href="{% url 'ads:ads-detail' review.ad.id %}">{{ review.ad.title }}</a>
+                                </small>
+                                {% endif %}
+                                {% if review.reply %}
+                                <div class="mt-2 pl-3 border-left">
+                                    <p><strong>Your Reply:</strong> {{ review.reply }}</p>
+                                    <small class="text-muted">Replied on {{ review.reply_date|date }}</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted text-center py-3">No reviews yet</p>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -268,51 +313,6 @@
                     </div>
                 </div>
 
-                <!-- Recent Reviews -->
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Recent Reviews</h5>
-                        <div class="overall-rating">
-                            <span class="text-warning">
-                                <i class="fas fa-star"></i>
-                                {{ profile.average_rating|floatformat:1 }}
-                            </span>
-                            ({{ profile.total_reviews }} reviews)
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        {% if recent_reviews %}
-                            {% for review in recent_reviews %}
-                            <div class="review-item {% if not forloop.last %}border-bottom pb-3 mb-3{% endif %}">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <div class="reviewer-info">
-                                        <h6 class="mb-0">{{ review.reviewer.username }}</h6>
-                                        <div class="rating">
-                                            {% for i in "12345" %}
-                                                {% if forloop.counter <= review.rating %}
-                                                    <i class="fas fa-star text-warning"></i>
-                                                {% else %}
-                                                    <i class="far fa-star"></i>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                    <small class="text-muted">{{ review.created_at|date }}</small>
-                                </div>
-                                <p class="mb-1">{{ review.comment }}</p>
-                                {% if review.ad %}
-                                <small class="text-muted">
-                                    For: <a href="{% url 'ads:ads-detail' review.ad.id %}">{{ review.ad.title }}</a>
-                                </small>
-                                {% endif %}
-                            </div>
-                            {% endfor %}
-                        {% else %}
-                            <p class="text-muted text-center py-3">No reviews yet</p>
-                        {% endif %}
-                    </div>
-                </div>
-
                 <!-- Store Information 
                 {# 
                 <div class="seller-dashboard mt-4">
@@ -357,24 +357,47 @@ $(document).ready(function() {
     // Handle ad deletion
     $('.delete-ad').click(function() {
         if (confirm('Are you sure you want to delete this ad?')) {
-            var adId = $(this).data('ad-id');
+            var adId = $(this).data('item-id');
             $.ajax({
-                url: `/ads/delete/${adId}/`,
+                url: `/delete/${adId}/`,
                 method: 'POST',
                 headers: {
-                    'X-CSRFToken': '{{ csrf_token }}'
+                    'X-CSRFToken': getCsrfToken()
                 },
                 success: function(response) {
                     if (response.status === 'success') {
                         location.reload();
+                    } else {
+                        alert('Failed to delete ad: ' + response.error);
                     }
+                },
+                error: function(xhr, status, error) {
+                    alert('Error deleting ad: ' + error);
                 }
             });
         }
     });
 
+    // Function to get CSRF token from cookie
+    function getCsrfToken() {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, 10) === 'csrftoken=') {
+                    cookieValue = decodeURIComponent(cookie.substring(10));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
     // Initialize tooltips
-    $('[data-toggle="tooltip"]').tooltip();
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
 
     // Feature Ad Button Click
     $('#featureAdBtn').click(function() {
@@ -390,6 +413,11 @@ $(document).ready(function() {
     $('#purchaseBannerBtn').click(function() {
         // Add your banner purchase logic here
         alert('Banner purchase functionality coming soon!');
+    });
+
+    // Inline CSS to ensure visibility
+    $(document).ready(function() {
+        $('<style>.form-visible { display: block !important; }</style>').appendTo('head');
     });
 });
 </script>

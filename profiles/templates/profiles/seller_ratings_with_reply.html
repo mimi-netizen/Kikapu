@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+<link rel="stylesheet" href="{% static 'css/listings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h2 class="mb-4">All Ratings for {{ seller.store_name|default:seller.user.username }}</h2>
+  <a href="{% url 'profiles:seller-profile' seller.id %}" class="btn btn-secondary mb-3">&larr; Back to Seller Profile</a>
+  {% if ratings %}
+    <div class="list-group">
+      {% for review in ratings %}
+        <div class="list-group-item mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="d-flex align-items-center">
+              <img src="{% if review.reviewer.profile.profile_pic %}{{ review.reviewer.profile.profile_pic.url }}{% else %}{% static 'images/default-profile-pic.jpg' %}{% endif %}" 
+                   alt="{{ review.reviewer.user.username }}" 
+                   class="rounded-circle mr-2" 
+                   style="width: 40px; height: 40px; object-fit: cover;">
+              <strong>{{ review.reviewer.user.username }}</strong>
+              <span class="text-muted ml-2">{{ review.created_at|naturaltime }}</span>
+            </div>
+            <div>
+              <span class="badge badge-warning" style="font-size:1em;">&#9733; {{ review.rating }}/5</span>
+            </div>
+          </div>
+          <div>{{ review.comment|linebreaks }}</div>
+          {% if review.reply %}
+            <div class="mt-2 pl-3 border-left">
+              <h6>Reply:</h6>
+              <div class="mb-2">
+                <strong>{{ seller.user.username }}</strong> <span class="text-muted">{{ review.reply_date|naturaltime }}</span>
+                <div>{{ review.reply|linebreaks }}</div>
+              </div>
+            </div>
+          {% endif %}
+          {% if review.ad %}
+            <small class="text-muted">
+              For: <a href="{% url 'ads:ads-detail' review.ad.id %}">{{ review.ad.title }}</a>
+            </small>
+          {% endif %}
+          <div class="mt-2">
+            <button class="btn btn-sm btn-outline-secondary reply-btn" data-review-id="{{ review.id }}">Reply</button>
+            <form method="POST" class="reply-form mt-2" id="reply-form-{{ review.id }}" data-review-id="{{ review.id }}" style="display: none;">
+              <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+              <div class="form-group">
+                <textarea name="reply_text" class="form-control" rows="3" placeholder="Write your reply..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-sm btn-primary">Submit Reply</button>
+              <button type="button" class="btn btn-sm btn-secondary cancel-reply" data-review-id="{{ review.id }}">Cancel</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No ratings found for this seller yet.</p>
+  {% endif %}
+</div>
+
+<script>
+// Get CSRF token from cookies
+function getCsrfToken() {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, 10) === 'csrftoken=') {
+                cookieValue = decodeURIComponent(cookie.substring(10));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Handle reply button click
+$(document).ready(function() {
+    $('.reply-btn').click(function() {
+        console.log('Reply button clicked');
+        var reviewId = $(this).data('review-id');
+        console.log('Review ID:', reviewId);
+        var form = $('#reply-form-' + reviewId);
+        console.log('Form element:', form);
+        if (form.hasClass('form-visible')) {
+            form.removeClass('form-visible');
+        } else {
+            form.addClass('form-visible');
+        }
+    });
+});
+
+// Inline CSS to ensure visibility
+$(document).ready(function() {
+    $('<style>.form-visible { display: block !important; }</style>').appendTo('head');
+});
+
+// Handle reply form submission
+$(document).ready(function() {
+    $('.reply-form').submit(function(e) {
+        e.preventDefault();
+        var reviewId = $(this).data('review-id');
+        console.log('Submitting reply for Review ID:', reviewId);
+        if (!reviewId) {
+            alert('Error: Review ID is not defined. Please refresh the page and try again.');
+            return;
+        }
+        var replyText = $(this).find('textarea').val();
+        if (replyText.trim() === '') {
+            alert('Reply cannot be empty.');
+            return;
+        }
+        $.ajax({
+            url: "/reply-to-review/" + reviewId + "/",
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken()
+            },
+            data: {
+                'reply_text': replyText
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    // Force a full page reload to ensure updated data is displayed
+                    window.location.reload(true);
+                } else {
+                    alert('Failed to submit reply: ' + response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Error submitting reply: ' + error);
+            }
+        });
+    });
+});
+
+// Handle cancel reply button click
+$(document).ready(function() {
+    $('.cancel-reply').click(function() {
+        var reviewId = $(this).data('review-id');
+        $('#reply-form-' + reviewId).removeClass('form-visible');
+    });
+});
+</script>
+{% endblock %}

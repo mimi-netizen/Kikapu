@@ -344,13 +344,16 @@ def rate_seller(request, seller_id):
 
 @login_required
 def seller_ratings(request, pk):
-    seller = get_object_or_404(Profile, pk=pk, is_seller=True)
-    ratings = seller.received_reviews.select_related('reviewer').order_by('-created_at')
-    return render(request, 'profiles/seller_ratings.html', {
+    seller = get_object_or_404(Profile, pk=pk)
+    ratings = Review.objects.filter(seller=seller).order_by('-created_at')
+    context = {
         'seller': seller,
-        'ratings': ratings,
-    })
-
+        'ratings': ratings
+    }
+    if request.user.is_authenticated and request.user.profile == seller:
+        return render(request, 'profiles/seller_ratings_with_reply.html', context)
+    else:
+        return render(request, 'profiles/seller_ratings.html', context)
 
 @login_required
 def seller_store(request, pk):
@@ -514,3 +517,24 @@ def delete_favorite_ad(request, ad_id):
             from django.contrib import messages
             messages.error(request, 'An error occurred while removing the ad.')
             return redirect('profiles:profile-favorite-ads')
+
+@login_required
+def reply_to_review(request, review_id):
+    """Allow seller to reply to a review"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
+    
+    try:
+        review = get_object_or_404(Review, id=review_id, seller=request.user.profile)
+        reply_text = request.POST.get('reply_text', '').strip()
+        if not reply_text:
+            return JsonResponse({'error': 'Reply cannot be empty'}, status=400)
+        
+        review.reply = reply_text
+        review.reply_date = timezone.now()
+        review.save()
+        return JsonResponse({'status': 'success', 'reply': reply_text, 'reply_date': review.reply_date.strftime('%Y-%m-%d')})
+    except Review.DoesNotExist:
+        return JsonResponse({'error': 'Review not found or you do not have permission to reply'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
