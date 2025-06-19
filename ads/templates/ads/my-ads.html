@@ -95,19 +95,18 @@
                         <p class="text-muted mb-2 small">
                           <i class="fas fa-tag me-1"></i> {{ ad.category }}
                         </p>
+                        
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                           <span class="price fw-bold">Ksh {{ ad.price|intcomma }}</span>
-                          <div class="dropdown">
+                          <div class="dropdown position-relative">  
                             <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                               Actions
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
+                            <ul class="dropdown-menu dropdown-menu-end" style="z-index: 1000;">  
                               <li><a class="dropdown-item" href="{% url 'ads:ads-edit' ad.id %}">
                                 <i class="fas fa-edit me-2"></i> Edit
                               </a></li>
-                              <li><a class="dropdown-item" href="{% url 'ads:ads-detail' ad.id %}">
-                                <i class="fas fa-sync me-2"></i> Renew
-                              </a></li>
+                              
                               <li><a class="dropdown-item text-danger" href="#" 
                                      onclick="confirmDelete('{% url 'ads:ads-delete' ad.id %}')">
                                 <i class="fas fa-trash me-2"></i> Delete
@@ -115,6 +114,7 @@
                             </ul>
                           </div>
                         </div>
+                        
                         <div class="stats mt-2 small text-muted d-flex gap-3">
                           <span><i class="fas fa-eye me-1"></i> {{ ad.views_count }}</span>
                           <span><i class="fas fa-heart me-1"></i> {{ ad.saved_by.count }}</span>
@@ -168,6 +168,29 @@
   </div>
 </section>
 
+<button onclick="scrollToTop()" class="btn btn-primary btn-floating btn-lg" id="btn-back-to-top" style="position: fixed; bottom: 20px; right: 20px; display: none; z-index: 99;">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<script>
+// Show/hide back to top button
+function scrollFunction() {
+  var btn = document.getElementById("btn-back-to-top");
+  if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    btn.style.display = "block";
+  } else {
+    btn.style.display = "none";
+  }
+}
+
+// Scroll to top function
+function scrollToTop() {
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+window.onscroll = function() {scrollFunction()};
+</script>
+
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
@@ -211,6 +234,10 @@
   z-index: 9999 !important;
   left: 0; /* Adjust as needed */
   top: 100%; /* Adjust as needed */
+  }
+
+  .dropdown:hover .dropdown-menu {
+    display: flex;
   }
 
   .ad-card:hover {
@@ -265,11 +292,26 @@
 
 {% block extra_js %}
 <script>
-function confirmDelete(deleteUrl) {
-  const modal = document.getElementById('deleteModal');
-  const deleteConfirm = document.getElementById('deleteConfirm');
+function confirmDelete(adId) {
+  var modal = document.getElementById('deleteModal');
+  var deleteConfirm = modal.querySelector('#deleteConfirm');
+  var deleteUrl = `/ads/delete/${adId}/`;
   deleteConfirm.href = deleteUrl;
   new bootstrap.Modal(modal).show();
+}
+
+document.getElementById('deleteConfirm').addEventListener('click', function(event) {
+  event.preventDefault();
+  var adId = this.href.split('/').pop();
+  deleteAd(adId);
+  var modal = document.getElementById('deleteModal');
+  var bootstrapModal = bootstrap.Modal.getInstance(modal);
+  bootstrapModal.hide();
+});
+
+function deleteAd(adId) {
+  // implement delete ad logic here
+  console.log('Delete ad with id: ' + adId);
 }
 </script>
 {% endblock %}

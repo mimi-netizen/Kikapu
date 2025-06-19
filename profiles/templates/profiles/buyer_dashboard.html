@@ -9,7 +9,7 @@
 
 {% block content %}
 <section class="section-padding">
-    <div class="container-fluid px-0" style="margin-top: 32px;">
+    <div class="container-fluid px-0">
         <div class="row gx-0">
             <!-- Sidebar -->
             <div class="col-lg-3 col-md-12">
@@ -17,7 +17,7 @@
             </div>
             
             <!-- Main Content -->
-            <div class="col-lg-9 col-md-12">
+            <div class="col-lg-9 col-md-12 py-5">
                 <!-- Quick Actions -->
                 <div class="card mb-4">
                     <div class="card-body">
@@ -36,6 +36,11 @@
                             <div class="col-md-4">
                                 <a href="{% url 'profiles:profile-favorite-ads' %}" class="btn btn-secondary btn-block mb-2">
                                     <i class="fas fa-heart"></i> Saved Ads
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="{% url 'profiles:following-list' %}" class="btn btn-secondary btn-block mb-2">
+                                    <i class="fas fa-heart"></i> Following List
                                 </a>
                             </div>
                         </div>

@@ -440,9 +440,9 @@ def following_list(request):
         followers=user_profile
     ).annotate(
         avg_rating=Avg('received_reviews__rating'),
-        reviews_count=Count('received_reviews'),
-        total_ads=Count('ads'),
-        active_ads_count=Count('ads', filter=Q(ads__is_active=True, ads__is_sold=False))
+        reviews_count=Count('received_reviews', distinct=True),
+        total_ads=Count('ads', distinct=True),
+        active_ads_count=Count('ads', filter=Q(ads__is_active=True, ads__is_sold=False), distinct=True)
     ).select_related('user')
     
     context = {
@@ -452,6 +452,17 @@ def following_list(request):
     
     return render(request, 'profiles/following_list.html', context)
 
+@login_required
+def followers_list(request):
+    """Display list of followers for a seller"""
+    profile = request.user.profile
+    followers = profile.followers.all()
+    followers_count = followers.count()
+    context = {
+        'followers': followers,
+        'followers_count': followers_count,
+    }
+    return render(request, 'profiles/followers_list.html', context)
 
 @login_required
 def toggle_bookmark(request, ad_id):
