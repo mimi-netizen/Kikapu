@@ -742,19 +742,25 @@ def delete_ad(request, pk):
         ad = get_object_or_404(Ads, pk=pk)
         if ad.seller.user != request.user:
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                print(f"Permission denied for user {request.user.username} to delete ad {pk}")
                 return JsonResponse({'error': 'You do not have permission to delete this ad.'}, status=403)
             else:
                 messages.error(request, 'You do not have permission to delete this ad.')
                 return redirect('ads:ads-detail', pk=pk)
         if request.method == 'POST':
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                print(f"AJAX POST request received to delete ad {pk} by user {request.user.username}")
                 ad.delete()
+                print(f"Ad {pk} successfully deleted via AJAX")
                 return JsonResponse({'status': 'success'})
             else:
+                print(f"Non-AJAX POST request received to delete ad {pk} by user {request.user.username}")
                 ad.delete()
+                print(f"Ad {pk} successfully deleted via non-AJAX")
                 messages.success(request, 'The ad has been deleted successfully.')
-                return redirect('ads:ads_listing')
+                return redirect('ads:my-ads')
     except Exception as e:
+        print(f"Exception occurred while deleting ad {pk}: {str(e)}")
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({'error': 'An error occurred while deleting the ad: ' + str(e)}, status=500)
         else:

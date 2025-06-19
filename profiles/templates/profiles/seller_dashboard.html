@@ -355,24 +355,38 @@
 <script>
 $(document).ready(function() {
     // Handle ad deletion
-    $('.delete-ad').click(function() {
+    $('.delete-ad').off('click').click(function() {
         if (confirm('Are you sure you want to delete this ad?')) {
-            var adId = $(this).data('item-id');
+            var $button = $(this);
+            var adId = $button.data('item-id');
+            // Disable the button to prevent multiple clicks
+            $button.prop('disabled', true);
+            // Generate a unique request ID and timestamp for debugging
+            var requestId = 'REQ_' + Math.floor(Math.random() * 1000000);
+            var timestamp = new Date().toISOString();
+            console.log('Initiating delete request for ad ' + adId + ' with Request ID: ' + requestId + ' at ' + timestamp);
             $.ajax({
                 url: `/delete/${adId}/`,
                 method: 'POST',
                 headers: {
-                    'X-CSRFToken': getCsrfToken()
+                    'X-CSRFToken': getCsrfToken(),
+                    'X-Request-ID': requestId,
+                    'X-Timestamp': timestamp
                 },
                 success: function(response) {
                     if (response.status === 'success') {
+                        console.log('Delete successful for ad ' + adId + ' with Request ID: ' + requestId);
                         location.reload();
                     } else {
+                        console.log('Delete failed for ad ' + adId + ' with Request ID: ' + requestId + ', Error: ' + response.error);
                         alert('Failed to delete ad: ' + response.error);
+                        $button.prop('disabled', false); // Re-enable button on failure
                     }
                 },
                 error: function(xhr, status, error) {
+                    console.log('Delete error for ad ' + adId + ' with Request ID: ' + requestId + ', Status: ' + status + ', Error: ' + error);
                     alert('Error deleting ad: ' + error);
+                    $button.prop('disabled', false); // Re-enable button on error
                 }
             });
         }
