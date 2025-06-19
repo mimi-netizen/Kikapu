@@ -533,6 +533,13 @@ def reply_to_review(request, review_id):
         review.reply = reply_text
         review.reply_date = timezone.now()
         review.save()
+        print(f"Reply saved for review {review_id} by user {request.user.username}: {reply_text}")
+        # Confirm the reply was actually saved by fetching it again, with error handling
+        try:
+            saved_review = Review.objects.get(id=review_id)
+            print(f"Confirmed reply in database for review {review_id}: {saved_review.reply}")
+        except Exception as e:
+            print(f"Error confirming reply in database for review {review_id}: {str(e)}")
         return JsonResponse({'status': 'success', 'reply': reply_text, 'reply_date': review.reply_date.strftime('%Y-%m-%d')})
     except Review.DoesNotExist:
         return JsonResponse({'error': 'Review not found or you do not have permission to reply'}, status=404)

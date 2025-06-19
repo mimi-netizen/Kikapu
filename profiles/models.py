@@ -152,6 +152,8 @@ class Review(models.Model):
     )
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    reply = models.TextField(blank=True, null=True, help_text="Seller's reply to the review")
+    reply_date = models.DateTimeField(blank=True, null=True, help_text="Date and time of the seller's reply")
     updated_at = models.DateTimeField(auto_now=True)
     ad = models.ForeignKey('ads.Ads', on_delete=models.SET_NULL, null=True, blank=True)
 

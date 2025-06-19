@@ -21,7 +21,7 @@
                    alt="{{ review.reviewer.user.username }}" 
                    class="rounded-circle mr-2" 
                    style="width: 40px; height: 40px; object-fit: cover;">
-              <strong>{{ review.reviewer.user.username }}</strong>
+              <strong>{{ review.reviewer.username }}</strong>
               <span class="text-muted ml-2">{{ review.created_at|naturaltime }}</span>
             </div>
             <div>
@@ -38,11 +38,13 @@
               </div>
             </div>
           {% endif %}
-          {% if review.ad %}
-            <small class="text-muted">
-              For: <a href="{% url 'ads:ads-detail' review.ad.id %}">{{ review.ad.title }}</a>
-            </small>
-          {% endif %}
+          <div class="reply-container">
+            {% if review.ad %}
+              <small class="text-muted">
+                For: <a href="{% url 'ads:ads-detail' review.ad.id %}">{{ review.ad.title }}</a>
+              </small>
+            {% endif %}
+          </div>
           <div class="mt-2">
             <button class="btn btn-sm btn-outline-secondary reply-btn" data-review-id="{{ review.id }}">Reply</button>
             <form method="POST" class="reply-form mt-2" id="reply-form-{{ review.id }}" data-review-id="{{ review.id }}" style="display: none;">
@@ -104,13 +106,14 @@ $(document).ready(function() {
 $(document).ready(function() {
     $('.reply-form').submit(function(e) {
         e.preventDefault();
-        var reviewId = $(this).data('review-id');
+        var form = $(this);
+        var reviewId = form.data('review-id');
         console.log('Submitting reply for Review ID:', reviewId);
         if (!reviewId) {
             alert('Error: Review ID is not defined. Please refresh the page and try again.');
             return;
         }
-        var replyText = $(this).find('textarea').val();
+        var replyText = form.find('textarea').val();
         if (replyText.trim() === '') {
             alert('Reply cannot be empty.');
             return;
@@ -126,8 +129,15 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.status === 'success') {
-                    // Force a full page reload to ensure updated data is displayed
-                    window.location.reload(true);
+                    // Manually append the reply to the DOM
+                    var replyHtml = '<div class="mt-2 pl-3 border-left"><h6>Reply:</h6><div class="mb-2"><strong>{{ seller.user.username }}</strong> <span class="text-muted">Just now</span><div>' + replyText + '</div></div></div>';
+                    form.closest('.list-group-item').find('.reply-container').html(replyHtml);
+                    // Hide the form
+                    form.hide();
+                    // Add automatic page refresh after a short delay
+                    setTimeout(function() {
+                        window.location.reload(true);
+                    }, 1000); // Delay by 1 second
                 } else {
                     alert('Failed to submit reply: ' + response.error);
                 }

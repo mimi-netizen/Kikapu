@@ -21,14 +21,26 @@
                    alt="{{ review.reviewer.user.username }}" 
                    class="rounded-circle mr-2" 
                    style="width: 40px; height: 40px; object-fit: cover;">
-              <strong>{{ review.reviewer.user.username }}</strong>
+              <strong>{{ review.reviewer.username }}</strong>
               <span class="text-muted ml-2">{{ review.created_at|naturaltime }}</span>
             </div>
             <div>
               <span class="badge badge-warning" style="font-size:1em;">&#9733; {{ review.rating }}/5</span>
             </div>
           </div>
-          <div>{{ review.comment|linebreaks }}</div>
+          <div>
+            <div class="mb-2"><strong>{{ review.reviewer.username|default:review.reviewer.first_name }}</strong> <span class="text-muted">{{ review.created_at|date:"M d, Y" }}</span>
+              <div>{{ review.comment|linebreaks }}</div>
+            </div>
+            {% if review.reply %}
+            <div class="mt-2 pl-3 border-left">
+              <h6>Reply:</h6>
+              <div class="mb-2"><strong>{{ seller.user.username }}</strong> <span class="text-muted">{{ review.reply_date|date:"M d, Y" }}</span>
+                <div>{{ review.reply }}</div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
         </div>
       {% endfor %}
     </div>
