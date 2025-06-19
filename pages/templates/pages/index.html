@@ -173,7 +173,7 @@
                   <div class="deal-card">
                     <img src="{{ deal.images.first.image.url }}" alt="{{ deal.title }}">
                     <div class="deal-info">
-                      <h4 class="deal-title">{{ deal.title }}</h4>
+                      <h4 class="deal-title"  style="height: 100%;">{{ deal.title|truncatechars:40 }}</h4>
                       <div class="deal-price" style="color: #EB1B23;">KES{{ deal.price|floatformat:2 }}</div>
                       {% if deal.original_price %}
                       <div class="original-price" style="color: #EB1B23;">KES{{ deal.original_price|floatformat:2 }}</div>
@@ -198,7 +198,7 @@
                   <div class="deal-card">
                     <img src="{{ deal.images.first.image.url }}" alt="{{ deal.title }}" class="deal-img">
                     <div class="deal-info">
-                      <h4 class="deal-title">{{ deal.title }}</h4>
+                      <h4 class="deal-title" style="height: 100%;">{{ deal.title|truncatechars:40 }}</h4>
                       <div class="deal-price" style="color: #EB1B23;">KES{{ deal.price|floatformat:2 }}</div>
                       {% if deal.original_price %}
                       <div class="original-price" style="color: #EB1B23;">KES{{ deal.original_price|floatformat:2 }}</div>
@@ -223,7 +223,7 @@
                   <div class="deal-card">
                     <img src="{{ deal.images.first.image.url }}" alt="{{ deal.title }}" class="deal-img">
                     <div class="deal-info">
-                      <h4 class="deal-title">{{ deal.title }}</h4>
+                      <h4 class="deal-title" style="height: 100%;">{{ deal.title|truncatechars:40 }}</h4>
                       <div class="deal-price" style="color: #EB1B23;">KES{{ deal.price|floatformat:2 }}</div>
                       {% if deal.original_price %}
                       <div class="original-price" style="color: #EB1B23;">KES{{ deal.original_price|floatformat:2 }}</div>
