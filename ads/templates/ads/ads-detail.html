@@ -189,10 +189,12 @@
                 <li class="spec-item"><strong>Posted On:</strong> {{ ads_detail.date_created|date:"F j, Y" }}</li>
               </ul>
             </div>
+
+            <!-- Seller Info -->
             <div id="seller-info" class="tab-pane fade">
-              <div class="seller-profile-card">
-                <div class="seller-header">
-                  <div class="seller-avatar-wrapper">
+              <div class="seller-profile-card" style="overflow-x: auto; white-space: nowrap;">
+                <div class="seller-header d-flex flex-column flex-md-row align-items-center align-items-md-start">
+                  <div class="seller-avatar-wrapper mb-3 mb-md-0 mr-md-3">
                     {% if ads_detail.seller.profile_pic %}
                       <img src="{{ ads_detail.seller.profile_pic.url }}" alt="{{ ads_detail.seller.user.username }}" class="seller-avatar">
                     {% else %}
@@ -206,10 +208,10 @@
                   </div>
                   <div class="seller-info-main">
                     <h4 class="seller-name">{{ ads_detail.seller.user.username }}</h4>
-                    <div class="seller-badges">
-                      <span class="badge badge-success"><i class="far fa-clock"></i> Member since {{ ads_detail.seller.user.date_joined|date:"F Y" }}</span>
+                    <div class="seller-badges d-flex flex-wrap">
+                      <span class="badge badge-success mb-1 mr-1"><i class="far fa-clock"></i> Member since {{ ads_detail.seller.user.date_joined|date:"F Y" }}</span>
                       {% if ads_detail.seller.response_rate %}
-                        <span class="badge badge-info"><i class="far fa-envelope"></i> {{ ads_detail.seller.response_rate }}% Response Rate</span>
+                        <span class="badge badge-info mb-1"><i class="far fa-envelope"></i> {{ ads_detail.seller.response_rate }}% Response Rate</span>
                       {% endif %}
                     </div>
                   </div>
@@ -226,7 +228,7 @@
                   <div class="stat-item">
                     <i class="lni-star"></i>
                     <div class="stat-details">
-                      <h5>{{ ads_detail.seller.average_rating|default:"New" }}</h5>
+                      <h5>{{ ads_detail.seller.average_rating|floatformat:1|default:"New" }}</h5>
                       <span>Rating</span>
                     </div>
                   </div>
@@ -393,7 +395,7 @@
 <!-- Ads Details End -->
 
 <!-- More Like This Section -->
-<section class="featured section-padding">
+<section class="featured section-padding" style="margin: 10px;">
   <div class="container-fluid px-0">
     <h1 class="section-title">More Like This</h1>
     <div class="row gx-0" id="related-ads-container">

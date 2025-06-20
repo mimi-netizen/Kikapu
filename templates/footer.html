@@ -1,154 +1,17 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/footer.css' %}">
 
-<style>
-  /* Footer Responsive Styles */
-  @media (max-width: 768px) {
-    .footer-Content {
-      padding: 40px 15px; /* Added horizontal padding */
-    }
 
-    .footer-Content .widget {
-      margin-bottom: 30px;
-    }
-
-    .footer-logo img {
-      width: 150px;
-      margin-bottom: 15px;
-    }
-
-    .textwidget p {
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .media-content-list li {
-      margin-bottom: 15px;
-    }
-
-    .media-content-list .media-left {
-      width: 70px;
-      height: 55px;
-    }
-
-    .media-content-list .media-body {
-      margin-left: 80px;
-    }
-
-    .media-content-list .media-body h4 {
-      font-size: 13px;
-      line-height: 18px;
-    }
-
-    .block-title {
-      font-size: 18px;
-      margin-bottom: 15px;
-      padding-bottom: 15px;
-    }
-
-    .footer-social {
-      margin-top: 15px;
-    }
-
-    .footer-social li {
-      margin-right: 8px;
-    }
-
-    .footer-social li a {
-      width: 28px;
-      height: 28px;
-      line-height: 28px;
-      font-size: 14px;
-    }
-
-    #copyright {
-      text-align: center;
-      padding: 15px;  /* Added horizontal padding */
-    }
-
-    #copyright .site-info {
-      float: none !important;
-      margin-bottom: 10px;
-    }
-
-    #copyright .float-right {
-      float: none !important;
-      text-align: center;
-    }
-
-    #copyright p {
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    .footer-logo {
-      display: none;
-    }
-    
-    /* Add container padding for small screens */
-    .container {
-      padding-left: 15px;
-      padding-right: 15px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .footer-Content {
-      padding: 30px 15px;  /* Kept horizontal padding */
-    }
-
-    .footer-Content [class*="col-"] {
-      margin-bottom: 30px;
-      padding-left: 15px;  /* Added column padding */
-      padding-right: 15px;  /* Added column padding */
-    }
-
-    .footer-Content [class*="col-"]:last-child {
-      margin-bottom: 0;
-    }
-
-    .block-title {
-      font-size: 16px;
-    }
-
-    .media-content-list .media-left {
-      width: 60px;
-      height: 45px;
-    }
-
-    .media-content-list .media-body h4 {
-      font-size: 12px;
-      line-height: 16px;
-    }
-
-    .footer-social li {
-      margin-right: 5px;
-    }
-
-    .footer-social li a {
-      width: 24px;
-      height: 24px;
-      line-height: 24px;
-      font-size: 12px;
-    }
-    
-    /* Fix container width for very small screens */
-    .container {
-      width: 100%;
-      max-width: 100%;
-    }
-  }
-</style>
 
 <!-- Footer Section Start -->
 <footer itemscope itemtype="http://schema.org/WPFooter" role="contentinfo">
     <section class="footer-Content">
-      <div class="container-fluid px-0 py-5">
+      <div class="container-fluid px-0 py-3">
         <div class="row gx-4" style="margin: 15px;">
           <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6 col-mb-12">
             <div class="widget" itemscope itemtype="http://schema.org/Organization">
-              <h3 class="footer-logo d-none d-lg-block">
-                <img itemprop="logo" src="{% static 'images/lgo.png' %}" alt="Kikapu Marketplace Logo">
+              <h3 class="footer-logo">
+                <img itemprop="logo" src="{% static 'images/kikapu-variant.png' %}" alt="Kikapu Marketplace Logo">
               </h3>
               <div class="textwidget">
                 <p itemprop="description">Buy And Sell Everything From Vehicles, Animal feeds, Merchandise Or Search up Land, Guide Jobs And More</p>

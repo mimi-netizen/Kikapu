@@ -23,11 +23,11 @@
         </button>
 
         <a href="{% url 'home' %}" class="navbar-brand d-none d-lg-block"
-           ><img src="{% static 'images/lgo.png' %}" alt="" style="max-height: 25px; width: auto;"
+           ><img src="{% static 'images/kikapu-variant.png' %}" alt="" style="max-height: 35px; width: auto;"
          /></a>
       </div>
       <div class="collapse navbar-collapse" id="main-navbar">
-        <!-- Mobile search bar inside menu -->
+        <!-- Search bar inside menu -->
         <div class="mobile-search-bar px-3 py-2 d-block d-lg-none" style="background:#fff;">
           <form method="GET" action="{% url 'ads:ads-listing' %}" class="w-100">
             <div class="input-group">
@@ -152,6 +152,21 @@
     <!-- Mobile Menu Start -->
 <ul class="mobile-menu">
   <li>
+    <a class="mobile-search-toggle">
+      <i class="lni-search"></i> Search
+    </a>
+    <div class="mobile-search-bar px-3 py-2 d-none" style="background:#fff;">
+      <form method="GET" action="{% url 'ads:ads-listing' %}" class="w-100">
+        <div class="input-group">
+          <input type="text" name="q" class="form-control" placeholder="Search for items..." autocomplete="off">
+          <div class="input-group-append">
+            <button type="submit" class="btn btn-primary"><i class="lni-search"></i></button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </li>
+  <li>
     <a class="active" href="{% url 'home' %}"> Home </a>
   </li>
 
@@ -257,6 +272,7 @@
 
 <!-- Add this JavaScript before closing body tag -->
 <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+<script src="{% static 'js/header.js' %}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const postAdButtons = document.querySelectorAll('.post-ad-btn');

@@ -241,7 +241,7 @@
 
         <!-- Results Count -->
         <div class="mb-3">
-          <h5>
+          <h5 style="text-align: center;">
             {% if request.GET.search or request.GET.category %}
               Search Results ({{ seller_ads.count }} items found)
             {% else %}
@@ -251,7 +251,7 @@
         </div>
 
         <!-- Ads Grid -->
-        <div class="row">
+        <div class="row" style="margin:2px;">
           {% if seller_ads %}
             {% for ad in seller_ads %}
               <div class="col-xs-6 col-sm-6 col-md-2 col-lg-2" style="margin: 5px;">

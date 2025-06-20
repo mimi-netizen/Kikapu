@@ -26,7 +26,6 @@
   }
 
   .footer-logo img {
-    width: 150px;
     margin-bottom: 15px;
   }
 
@@ -94,9 +93,7 @@
     line-height: 1.6;
   }
 
-  .footer-logo {
-    display: none;
-  }
+ 
   
   /* Add container padding for small screens */
   .container {

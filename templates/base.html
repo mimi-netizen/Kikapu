@@ -6,8 +6,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'images/lgre.png' %}" />
+    
     <!-- Primary Meta Tags -->
-    <title>{% block title %}Kikapu - Buy and Sell in Kenya{% endblock %}</title>
+    <title>{% block title %}Kikapu - Kenya's Premier Online Marketplace{% endblock %}</title>
     <meta name="title" content="{% block meta_title %}Kikapu - Kenya's Premier Online Marketplace{% endblock %}">
     <meta name="description" content="{% block meta_description %}Buy and sell anything in Kenya. Find great deals on electronics, furniture, cars, fashion and more on Kikapu Marketplace.{% endblock %}">
     <meta name="keywords" content="{% block meta_keywords %}marketplace, ecommerce, kenya, buy, sell, ads, jiji, jumia, kilimall, olx, pigiame, cheki, nairobi, mombasa, kisumu, nakuru, online shopping, classified ads, 
@@ -33,7 +36,7 @@
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:title" content="{% block og_title %}{{ meta_title }}{% endblock %}">
     <meta property="og:description" content="{% block og_description %}{{ meta_description }}{% endblock %}">
-    <meta property="og:image" content="{% block og_image %}{% static 'images/kikapu-social.png' %}{% endblock %}">
+    <meta property="og:image" content="{% static 'images/lgre.png' %}">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
@@ -55,9 +58,6 @@
     <meta name="csrf-token" content="{{ csrf_token }}">
     {% csrf_token %}
     
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
-
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
 
