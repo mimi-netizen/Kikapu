@@ -171,7 +171,7 @@
                 {% for deal in bundle_deals %}
                 <a href="{% url 'ads:ads-detail' deal.id %}" class="deal-card-link">
                   <div class="deal-card">
-                    <img src="{{ deal.images.first.image.url }}" alt="{{ deal.title }}">
+                    <img src="{{ deal.images.first.image.url }}" alt="{{ deal.title }}" class="deal-img">
                     <div class="deal-info">
                       <h4 class="deal-title"  style="height: 100%;">{{ deal.title|truncatechars:40 }}</h4>
                       <div class="deal-price" style="color: #EB1B23;">KES{{ deal.price|floatformat:2 }}</div>
@@ -297,7 +297,7 @@
         </div>
 
         <!-- Right Grid - Featured Promotion -->
-        <div class="promotion-section container-fluid px-0">
+        <div class="promotion-section container-fluid px-0 d-none d-md-block">
           <a href="{% url 'ads:category-archive' 'living-room-furniture' %}" class="promotion-card">
             <div class="promotion-content">
               <h3>Your Furniture</h3>

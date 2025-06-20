@@ -249,7 +249,7 @@ header {
 
 .promotion-content {
   position: relative;
-  /*padding: 2rem;*/
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -4060,7 +4060,17 @@ figure img, .image-wrapper img {
 
 .deal-card img {
   width: 100%;
-  height: auto; 
-  object-fit: cover; /* Ensure images scale properly within their container */
+  /*height: auto; */
+  object-fit: contain; /* Ensure images scale properly within their container */
 }
 
+@media (max-width: 767px) {
+  .popular-categories-slider {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem;
+  }
+  .popular-category-card {
+    width: 100%;
+  }
+}
