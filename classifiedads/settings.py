@@ -11,38 +11,20 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-from django.core.exceptions import ImproperlyConfigured
-from dotenv import load_dotenv
+import environ
 
-# Load environment variables from .env file
-load_dotenv()
-
-# Get environment variables or provide defaults
-def get_env_variable(var_name, default=None):
-    try:
-        value = os.getenv(var_name)
-        if value is None and default is not None:
-            return default
-        if value is None:
-            raise ImproperlyConfigured(f"Set the {var_name} environment variable")
-        return value
-    except KeyError:
-        if default is not None:
-            return default
-        raise ImproperlyConfigured(f"Set the {var_name} environment variable")
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+# Initialize environment variables
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
+env = environ.Env(
+    DEBUG=(bool, True)
+)
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_env_variable('DJANGO_SECRET_KEY')
+SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = get_env_variable('DJANGO_DEBUG', 'True') == 'True'
+DEBUG = env('DJANGO_DEBUG', default=True)
 
 # Added these headers for development
 if DEBUG:
@@ -91,8 +73,7 @@ INSTALLED_APPS = [
     'embed_video',
 ]
 
-# Add SITE_ID after INSTALLED_APPS
-SITE_ID = 1
+SITE_ID = 1  # Site ID configuration
 
 MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -112,7 +93,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'classifiedads.urls'
 
 # Google Maps API Key
-GOOGLE_MAPS_API_KEY = get_env_variable('GOOGLE_MAPS_API_KEY')
+GOOGLE_MAPS_API_KEY = env('GOOGLE_MAPS_API_KEY')
 
 TEMPLATES = [
     {
@@ -166,12 +147,12 @@ WSGI_APPLICATION = 'classifiedads.wsgi.application'
 """SQLite DB - Commented out after data export"""
 DATABASES = {
     'default': {
-        'ENGINE': get_env_variable('DB_ENGINE', 'django.db.backends.sqlite3'),
-        'NAME': get_env_variable('DB_NAME', os.path.join(BASE_DIR, 'db.sqlite3')),
-        'USER': get_env_variable('DB_USER', ''),
-        'PASSWORD': get_env_variable('DB_PASSWORD', ''),
-        'HOST': get_env_variable('DB_HOST', ''),
-        'PORT': get_env_variable('DB_PORT', ''),
+        'ENGINE': env('DB_ENGINE', default='django.db.backends.sqlite3'),
+        'NAME': env('DB_NAME', default=os.path.join(BASE_DIR, 'db.sqlite3')),
+        'USER': env('DB_USER', default=''),
+        'PASSWORD': env('DB_PASSWORD', default=''),
+        'HOST': env('DB_HOST', default=''),
+        'PORT': env('DB_PORT', default=''),
     }
 }
 
@@ -396,17 +377,17 @@ else:
     
 # Email settings
 EMAIL_USE_TLS = True
-EMAIL_HOST = get_env_variable('EMAIL_HOST')
-EMAIL_HOST_USER = get_env_variable('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = get_env_variable('EMAIL_HOST_PASSWORD')
-EMAIL_PORT = get_env_variable('EMAIL_PORT')
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = env.int('EMAIL_PORT', default=587)
 
 # Daraja API Settings
-MPESA_ENVIRONMENT = 'sandbox'
-MPESA_CONSUMER_KEY = get_env_variable('MPESA_CONSUMER_KEY')
-MPESA_CONSUMER_SECRET = get_env_variable('MPESA_CONSUMER_SECRET')
-MPESA_SHORTCODE = get_env_variable('MPESA_SHORTCODE')
-MPESA_EXPRESS_SHORTCODE = get_env_variable('MPESA_EXPRESS_SHORTCODE')
-MPESA_PASSKEY = get_env_variable('MPESA_PASSKEY')
-MPESA_INITIATOR_NAME = get_env_variable('MPESA_INITIATOR_NAME')
-MPESA_INITIATOR_PASSWORD = get_env_variable('MPESA_INITIATOR_PASSWORD')
+MPESA_ENVIRONMENT = env('MPESA_ENVIRONMENT', default='sandbox')
+MPESA_CONSUMER_KEY = env('MPESA_CONSUMER_KEY')
+MPESA_CONSUMER_SECRET = env('MPESA_CONSUMER_SECRET')
+MPESA_SHORTCODE = env('MPESA_SHORTCODE')
+MPESA_EXPRESS_SHORTCODE = env('MPESA_EXPRESS_SHORTCODE')
+MPESA_PASSKEY = env('MPESA_PASSKEY')
+MPESA_INITIATOR_NAME = env('MPESA_INITIATOR_NAME')
+MPESA_INITIATOR_PASSWORD = env('MPESA_INITIATOR_PASSWORD')
