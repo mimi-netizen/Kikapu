@@ -120,31 +120,9 @@ WSGI_APPLICATION = 'classifiedads.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-"""MySQL DB - Now active with dedicated user"""
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.mysql',
-#        'NAME': 'ClassifiedAdsDB',
-#        'USER': 'kikapu',
-#        'PASSWORD': 'Kikapu#2023Secure',
-#        'HOST': 'localhost',
-#        'PORT': '3306',
-#    }
-#}
 
-"""PostgreSQL DB"""
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': 'ClassifiedAdsDB',
-#        'USER': 'kikapu_admin',
-#        'PASSWORD': 'beautiful34',
-#        'HOST': 'localhost',
-#        'PORT': '5432',
-#    }
-#}
 
-"""SQLite DB - Commented out after data export"""
+
 DATABASES = {
     'default': {
         'ENGINE': env('DB_ENGINE', default='django.db.backends.sqlite3'),
