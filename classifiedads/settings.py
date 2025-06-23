@@ -42,7 +42,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = get_env_variable('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = get_env_variable('DJANGO_DEBUG', 'True') == 'True'
 
 # Added these headers for development
 if DEBUG:
@@ -112,7 +112,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'classifiedads.urls'
 
 # Google Maps API Key
-GOOGLE_MAPS_API_KEY = 'your_google_maps_api_key_here'
+GOOGLE_MAPS_API_KEY = get_env_variable('GOOGLE_MAPS_API_KEY')
 
 TEMPLATES = [
     {
@@ -139,25 +139,41 @@ WSGI_APPLICATION = 'classifiedads.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-"""PostgreSQL DB"""
-# DATABASES = {
-#     'default': {
-#         'NAME': 'ClassifiedAdsDB',
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'USER': 'postgres',
-#         'PASSWORD': 'admin123',
-#         'HOST': 'localhost',
-#     }
-# }
+"""MySQL DB - Now active with dedicated user"""
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': 'ClassifiedAdsDB',
+#        'USER': 'kikapu',
+#        'PASSWORD': 'Kikapu#2023Secure',
+#        'HOST': 'localhost',
+#        'PORT': '3306',
+#    }
+#}
 
-"""SQLite DB"""
+"""PostgreSQL DB"""
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql',
+#        'NAME': 'ClassifiedAdsDB',
+#        'USER': 'kikapu_admin',
+#        'PASSWORD': 'beautiful34',
+#        'HOST': 'localhost',
+#        'PORT': '5432',
+#    }
+#}
+
+"""SQLite DB - Commented out after data export"""
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': get_env_variable('DB_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': get_env_variable('DB_NAME', os.path.join(BASE_DIR, 'db.sqlite3')),
+        'USER': get_env_variable('DB_USER', ''),
+        'PASSWORD': get_env_variable('DB_PASSWORD', ''),
+        'HOST': get_env_variable('DB_HOST', ''),
+        'PORT': get_env_variable('DB_PORT', ''),
     }
 }
-
 
 
 # Password validation
@@ -379,26 +395,18 @@ else:
 
     
 # Email settings
-EMAIL_USE_TLS = True  
-EMAIL_HOST = 'smtp.gmail.com'  
-EMAIL_HOST_USER = 'celynekydd@gmail.com'  
-EMAIL_HOST_PASSWORD = 'kqtw mbmj tpyx fisu'
-EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST = get_env_variable('EMAIL_HOST')
+EMAIL_HOST_USER = get_env_variable('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = get_env_variable('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = get_env_variable('EMAIL_PORT')
 
 # Daraja API Settings
-MPESA_ENVIRONMENT = 'sandbox'  # Change to 'production' in production
-MPESA_CONSUMER_KEY = '02bdhSdIbeQhL9gc7AfdCiduQFQdI3LCeijEswTJ9e0Tu7RG'  # Your consumer key
-MPESA_CONSUMER_SECRET = 'SBC7GAEqqeXN3wLSWgRN5RuMFilPXBZwlpM5VNctUykpdhWnIu0hT3pCQKDWoZEp'  # Your consumer secret
-MPESA_SHORTCODE = '174379'  # Your shortcode
-MPESA_EXPRESS_SHORTCODE = '174379'  # Your Lipa Na MPesa Online Shortcode
-MPESA_PASSKEY = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'  # Your LNM Passkey
-MPESA_INITIATOR_NAME = 'testapi'  # Optional: For B2C/B2B APIs
-MPESA_INITIATOR_PASSWORD = 'Safaricom999!*!'  # Optional: For B2C/B2B APIs
-
-# Callback base URL for MPesa endpoints - Change in production
-CALLBACK_DOMAIN = 'https://e7dd-197-237-53-119.ngrok-free.app'
-MPESA_CALLBACK_URL = f'{CALLBACK_DOMAIN}/payments/mpesa-callback/'
-
-# Optional: B2C/B2B additional configuration
-B2C_SECURITY_CREDENTIAL = 'your_security_credential'  # Optional: For B2C transactions
-B2B_SECURITY_CREDENTIAL = 'your_security_credential'  # Optional: For B2B transactions
+MPESA_ENVIRONMENT = 'sandbox'
+MPESA_CONSUMER_KEY = get_env_variable('MPESA_CONSUMER_KEY')
+MPESA_CONSUMER_SECRET = get_env_variable('MPESA_CONSUMER_SECRET')
+MPESA_SHORTCODE = get_env_variable('MPESA_SHORTCODE')
+MPESA_EXPRESS_SHORTCODE = get_env_variable('MPESA_EXPRESS_SHORTCODE')
+MPESA_PASSKEY = get_env_variable('MPESA_PASSKEY')
+MPESA_INITIATOR_NAME = get_env_variable('MPESA_INITIATOR_NAME')
+MPESA_INITIATOR_PASSWORD = get_env_variable('MPESA_INITIATOR_PASSWORD')
